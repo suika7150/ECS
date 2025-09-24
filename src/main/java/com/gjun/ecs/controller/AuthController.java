@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-test
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Authentication", description = "使用者認證相關 API")
