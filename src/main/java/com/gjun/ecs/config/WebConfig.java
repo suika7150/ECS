@@ -1,8 +1,26 @@
 package com.gjun.ecs.config;
 
-//@Configuration
-public class WebConfig {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// @Configuration
+// public class WebConfig {
+
+// 	@Bean
+// 	public WebMvcConfigurer corsConfigurer() {
+// 		return new WebMvcConfigurer(){
+
+// 			@Override
+// 			public void addCorsMappings(CorsRegistry registry) {
+// 				registry.addMapping("/**")// 要允許跨域的路徑
+// 				.allowedOrigins("http://my-vue-app.local:5173") // 要允許跨域的網域
+// 				.allowedMethods("*") // 要允許跨域的請求方法
+// 				.allowCredentials(true);
+// 			}
+// 		};
+// 	}
 	// @Bean
 	// WebMvcConfigurer corsConfigurer() {
 	// return new WebMvcConfigurer() {
