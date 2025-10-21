@@ -27,6 +27,8 @@ public class OrderService{
             .notes(req.getNotes())
             .paymentMethod(req.getPaymentMethod())
             .total(req.getTotal())
+            .cardLast4(req.getCardLast4())
+            .paymentStatus(req.getPaymentStatus())
             .build();
             
             Order newOrder = ordersRepository.save(orders);
@@ -40,6 +42,8 @@ public class OrderService{
                 .notes(newOrder.getNotes())
                 .paymentMethod(newOrder.getPaymentMethod())
                 .total(newOrder.getTotal())
+                .cardLast4(req.getCardLast4())
+                .paymentStatus(req.getPaymentStatus())
                 .build();
 
     }

@@ -14,13 +14,13 @@ import com.gjun.ecs.service.OrderService;
 
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/api")
 public class OrderController {
     
     @Autowired
     private OrderService orderService;
     
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/orders", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Outbound> createOrder(
         @RequestBody OrderReq orderReq){
         Outbound resp = Outbound.ok(orderService.createOrder(orderReq));

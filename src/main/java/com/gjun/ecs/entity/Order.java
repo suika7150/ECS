@@ -44,4 +44,10 @@ public class Order {
 
     @Column(name="total",nullable=false)
     private Integer total;
+
+    @Column(name="card_last4",length=4)
+    private String cardLast4;
+
+    @Column(name="payment_status")
+    private String paymentStatus;
 }

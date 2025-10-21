@@ -29,4 +29,8 @@ public class OrderResp {
     private String paymentMethod;
     @Schema(description = "總金額")
     private Integer total;
+    @Schema(description = "信用卡最後四碼")
+    private String cardLast4;
+    @Schema(description = "付款狀態")
+    private String paymentStatus;
 }
