@@ -8,9 +8,11 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.stereotype.Component;
 
 @Component
+@DependsOnDatabaseInitialization
 public class StartupRunner implements ApplicationRunner {
 
 	@Autowired

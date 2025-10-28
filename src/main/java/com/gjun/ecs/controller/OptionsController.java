@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/options")
@@ -40,13 +39,13 @@ public class OptionsController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Outbound> deleteOption(@PathVariable("id") Integer id) throws Exception {
+    public ResponseEntity<Outbound> deleteOption(@PathVariable Integer id) throws Exception {
         Outbound resp = categoriesService.deleteCategorie(id);
         return ResponseEntity.ok(resp);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Outbound> updateOption(@PathVariable("id") Integer id,
+    public ResponseEntity<Outbound> updateOption(@PathVariable Integer id,
             @RequestBody AddOptionReq req) throws Exception {
         Outbound resp = categoriesService.updateCategorie(id, req);
         return ResponseEntity.ok(resp);

@@ -12,7 +12,6 @@ import com.gjun.ecs.dto.response.OptionResp;
 import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.dto.response.SelectOptions;
 import com.gjun.ecs.entity.Categories;
-import com.gjun.ecs.exception.ApplicationException;
 import com.gjun.ecs.repository.CategoriesRepository;
 
 @Service

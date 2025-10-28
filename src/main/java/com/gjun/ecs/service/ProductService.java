@@ -69,7 +69,7 @@ public class ProductService {
               .price(product.getPrice())
               .description(product.getDescription())
               .category(product.getCategory())
-              .rating(null) // TODO:根據實際資料庫欄位填入product.getRating()
+              .rating(null) //TODO根據實際資料庫欄位填入product.getRating()
               .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
               .build();
         }).collect(Collectors.toList());

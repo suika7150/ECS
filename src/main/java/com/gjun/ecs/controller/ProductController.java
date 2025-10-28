@@ -56,7 +56,7 @@ public class ProductController {
    * @return
    */
   @GetMapping("/products/edit/{id}")
-  public ResponseEntity<Outbound> getProductById(@PathVariable("id") Integer id) throws Exception {
+  public ResponseEntity<Outbound> getProductById(@PathVariable Integer id) throws Exception {
     Outbound resp = productService.getProductById(id);
     return ResponseEntity.ok(resp);
   }
@@ -69,7 +69,7 @@ public class ProductController {
    * @return
    */
   @PutMapping("/updateProducts/{id}")
-  public ResponseEntity<Outbound> updateProduct(@PathVariable("id") Integer id,
+  public ResponseEntity<Outbound> updateProduct(@PathVariable Integer id,
       @RequestBody ProductUploadReq req) throws Exception {
     Outbound resp = productService.updateProduct(id, req);
     return ResponseEntity.ok(resp);
@@ -93,7 +93,7 @@ public class ProductController {
    * @return
    */
   @PutMapping("/deleteProduct/{id}")
-  public ResponseEntity<Outbound> deleteProduct(@PathVariable("id") Integer id) throws Exception {
+  public ResponseEntity<Outbound> deleteProduct(@PathVariable Integer id) throws Exception {
     Outbound resp = productService.deleteProduct(id);
     return ResponseEntity.ok(resp);
   }

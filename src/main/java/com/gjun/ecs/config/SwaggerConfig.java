@@ -23,7 +23,7 @@ public class SwaggerConfig {
     public static final String VERSION = "v.1.20240520.01";
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    OpenAPI customOpenAPI() {
 
         return new OpenAPI()
                 .info(new Info()
