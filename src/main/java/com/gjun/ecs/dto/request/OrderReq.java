@@ -1,5 +1,7 @@
 package com.gjun.ecs.dto.request;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -27,4 +29,16 @@ public class OrderReq {
     private String cardLast4;
     @Schema(description = "付款狀態")
     private String paymentStatus;
+
+    @Schema(description = "訂單明細")
+    private List<Item> items;
+
+    @Data
+    @Builder
+    public static class Item {
+        @Schema(description = "商品ID")
+        private Integer productId;
+        @Schema(description = "數量")
+        private Integer quantity;
+    }
 }
