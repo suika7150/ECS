@@ -11,6 +11,8 @@ import com.gjun.ecs.repository.OrdersRepository;
 import com.gjun.ecs.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
     購物車結帳訂單
@@ -24,19 +26,35 @@ public class OrderService{
     @Autowired
     private ProductRepository productRepository;
     
+    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
     @Transactional
     public OrderResp createOrder(OrderReq req) {
 
+        log.info("建立訂單請求 : {}",req);    
+
         for(OrderReq.Item item : req.getItems()) {
             Product product = productRepository.findByIdForUpdate(item.getProductId());
+
             if(product == null) {
+                log.warn("商品不存在 ID: {}", item.getProductId());
                 throw new RuntimeException("商品不存在" + item.getProductId());
             }
+
+            log.info("🛒 商品名稱={} | ID={} | 原庫存={} | 訂購數量={}",
+                 product.getName(), product.getId(), product.getStock(), item.getQuantity());
+
             if(product.getStock() < item.getQuantity()) {
+             log.warn("❌ 庫存不足：{} (剩餘 {}，訂購 {})",
+                     product.getName(), product.getStock(), item.getQuantity());
                 throw new RuntimeException("商品庫存不足: " + product.getName());
             }
             product.setStock(product.getStock() - item.getQuantity());
             productRepository.save(product);
+        
+            log.info("✅ 庫存更新後：{} (剩餘 {}，訂購 {})",
+                 product.getName(), product.getStock(), item.getQuantity());
+
         }
 
         Order orders = Order.builder()
@@ -53,6 +71,9 @@ public class OrderService{
             
             Order newOrder = ordersRepository.save(orders);
             
+            log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
+
+
             return OrderResp.builder()
                 .id(newOrder.getId())
                 .name(newOrder.getName())
