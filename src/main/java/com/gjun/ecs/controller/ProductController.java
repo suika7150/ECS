@@ -17,6 +17,7 @@ import com.gjun.ecs.service.ProductService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Product", description = "產品相關 API")
@@ -48,6 +49,20 @@ public class ProductController {
     Outbound resp = productService.getAllProducts();
     return ResponseEntity.ok(resp);
   }
+
+/**
+   * 取得產品資料
+   * 
+   * @param id 商品ID
+   * @return
+   */
+@GetMapping("/products/{id}")
+public ResponseEntity<Outbound> getProductDetail(@PathVariable Integer id) throws Exception {
+    //沿用已有的 Service 方法來獲取產品資料
+    Outbound resp = productService.getProductById(id);
+    return ResponseEntity.ok(resp);
+
+}
 
   /**
    * 取得產品資料
