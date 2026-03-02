@@ -20,6 +20,25 @@ public class ProductService {
   @Autowired
   private ProductRepository productRepository;
 
+public Outbound searchProducts(String keyword) {
+    List<ProductShow> result = productRepository.findByNameContainingIgnoreCase(keyword).stream()
+        .map(product -> {
+
+          return ProductShow.builder()
+              .id(product.getId())
+              .name(product.getName())
+              .price(product.getPrice())
+              .description(product.getDescription())
+              .category(product.getCategory())
+              .rating(null) //TODO根據實際資料庫欄位填入product.getRating()
+              .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+              .build();
+        }).collect(Collectors.toList());
+
+    return Outbound.ok(result);
+
+}
+
   public Outbound saveProduct(ProductUploadReq req) {
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(),
         req.getImageType());

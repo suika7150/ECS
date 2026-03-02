@@ -1,5 +1,8 @@
 package com.gjun.ecs.repository;
 
+
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,4 +27,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("SELECT p FROM Product p WHERE p.id = :id")
 	Product findByIdForUpdate(@Param("id") Integer id);
+
+	@Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	List<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
 }

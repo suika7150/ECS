@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gjun.ecs.dto.request.ProductUploadReq;
@@ -45,8 +46,16 @@ public class ProductController {
    * @return
    */
   @GetMapping("/products")
-  public ResponseEntity<Outbound> getProducts() throws Exception {
-    Outbound resp = productService.getAllProducts();
+  public ResponseEntity<Outbound> getProducts(@RequestParam(value = "keyword", required = false) String keyword) throws Exception {
+    Outbound resp ;
+    
+    if(keyword !=null && !keyword.isEmpty()){
+      //如果有提供 keyword，則呼叫搜尋方法
+      resp = productService.searchProducts(keyword);
+    }else{
+      resp = productService.getAllProducts();
+    }
+
     return ResponseEntity.ok(resp);
   }
 
