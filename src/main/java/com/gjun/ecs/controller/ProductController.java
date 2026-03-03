@@ -41,7 +41,7 @@ public class ProductController {
   }
 
   /**
-   * 取得所有產品資料
+   * 取得所有產品資料 & 搜尋產品資料
    * 
    * @return
    */
