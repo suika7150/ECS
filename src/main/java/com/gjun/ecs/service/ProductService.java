@@ -21,10 +21,18 @@ public class ProductService {
   private ProductRepository productRepository;
 
 public Outbound searchProducts(String keyword) {
-    List<ProductShow> result = productRepository.findByNameContainingIgnoreCase(keyword).stream()
-        .map(product -> {
+    List<Product> products;
 
-          return ProductShow.builder()
+          // 判斷邏輯：如果關鍵字是空的，就抓全部；否則才執行模糊搜尋
+          if(keyword == null || keyword.trim().isEmpty()) {
+            products = productRepository.findAll();
+          } else {
+          // 對傳入的關鍵字做 trim()，避免空白字元影響結果
+            products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
+          }
+    List<ProductShow> result = products.stream()
+        .map(product -> {
+              return ProductShow.builder()
               .id(product.getId())
               .name(product.getName())
               .price(product.getPrice())

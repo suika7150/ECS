@@ -28,6 +28,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query("SELECT p FROM Product p WHERE p.id = :id")
 	Product findByIdForUpdate(@Param("id") Integer id);
 
-	@Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	//查詢商品列表
+	@Query("SELECT p FROM Product p WHERE" + 
+	" LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"+
+	" LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"+
+	" LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
 }
