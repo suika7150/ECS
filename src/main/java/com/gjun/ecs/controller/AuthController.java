@@ -127,6 +127,7 @@ public class AuthController extends BaseController {
    * 登出使用者
    */
   @PostMapping("/logout")
+  @Operation(summary = "使用者登出")
   public ResponseEntity<Outbound> logout() {
     Outbound response = authService.logout();
     return ResponseEntity.status(HttpStatus.OK).body(response);

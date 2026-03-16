@@ -12,6 +12,8 @@ import com.gjun.ecs.dto.request.OrderReq;
 import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 
 @RestController
 @RequestMapping("/api")
@@ -21,6 +23,7 @@ public class OrderController {
     private OrderService orderService;
     
     @PostMapping(path = "/orders", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "建立訂單")
     public ResponseEntity<Outbound> createOrder(
         @RequestBody OrderReq orderReq){
         Outbound resp = Outbound.ok(orderService.createOrder(orderReq));
