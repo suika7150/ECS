@@ -13,10 +13,12 @@ import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.service.OrderService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Order", description = "訂單相關API")
 public class OrderController {
     
     @Autowired
