@@ -1,4 +1,6 @@
-package com.gjun.ecs.config;
+//設置都在SecurityConfig.java設置
+
+// package com.gjun.ecs.config;
 
 // import org.springframework.context.annotation.Bean;
 // import org.springframework.context.annotation.Configuration;
@@ -8,31 +10,17 @@ package com.gjun.ecs.config;
 // @Configuration
 // public class WebConfig {
 
-// 	@Bean
-// 	public WebMvcConfigurer corsConfigurer() {
-// 		return new WebMvcConfigurer(){
-
-// 			@Override
-// 			public void addCorsMappings(CorsRegistry registry) {
-// 				registry.addMapping("/**")// 要允許跨域的路徑
-// 				.allowedOrigins("http://my-vue-app.local:5173") // 要允許跨域的網域
-// 				.allowedMethods("*") // 要允許跨域的請求方法
-// 				.allowCredentials(true);
-// 			}
-// 		};
-// 	}
-	// @Bean
-	// WebMvcConfigurer corsConfigurer() {
-	// return new WebMvcConfigurer() {
-	// @Override
-	// public void addCorsMappings(CorsRegistry registry) {
-	// registry.addMapping("/**")// 要允許跨域的路徑
-	// .allowedHeaders("*") // 要允許跨域的請求頭
-	// .allowedMethods("GET", "POST", "PUT", "DELETE") // 要允許跨域的請求方法
-	// .allowedOrigins("http://localhost:5173"); // 要允許跨域的網域
-	// // .allowCredentials(true); // 是否允許請求帶有憑證
-	// }
-	// };
-	// }
-
+//     @Bean
+//     public WebMvcConfigurer corsConfigurer() {
+//         return new WebMvcConfigurer(){
+//             @Override
+//             public void addCorsMappings(CorsRegistry registry) {
+//                 registry.addMapping("/**") // 所有 API
+//                         .allowedOrigins("http://192.168.50.43:5173") // 前端 URL
+//                         .allowedMethods("GET","POST","PUT","DELETE","OPTIONS") // 允許所有方法
+//                         .allowedHeaders("*") // 所有 header
+//                         .allowCredentials(true); // 允許帶 cookie/session
+//             }
+//         };
+//     }
 // }

@@ -48,7 +48,11 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 或List.of("http://localhost:5173")
+    // 指定區網前端 URL，不能用 "*" 
+    config.setAllowedOriginPatterns(List.of(
+        "http://192.168.50.43:5173", // 你的開發電腦
+        "http://192.168.50.44:5173"  // 區網其他測試電腦
+    ));
     config
         .setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(List.of("*"));

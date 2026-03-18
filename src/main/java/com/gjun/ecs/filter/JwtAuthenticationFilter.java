@@ -31,6 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
+	// 放行預檢請求
+    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        filterChain.doFilter(request, response); // 繼續執行後續 filter，保證 CORS header 正確回傳
+        return;
+    }
+
 		String authHeader = request.getHeader("Authorization");
 		System.out.println("🟡 進入 JwtAuthenticationFilter");
 
