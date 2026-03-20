@@ -50,6 +50,7 @@ public class SecurityConfig {
     CorsConfiguration config = new CorsConfiguration();
     // 指定區網前端 URL，不能用 "*" 
     config.setAllowedOriginPatterns(List.of(
+        "http://localhost:5173", // 本地開發
         "http://192.168.50.43:5173", // 你的開發電腦
         "http://192.168.50.44:5173"  // 區網其他測試電腦
     ));
