@@ -51,9 +51,12 @@ public class SecurityConfig {
     // 跨域允許清單，指定區網前端 URL 
     config.setAllowedOriginPatterns(List.of(
         "http://localhost:5173", // 本地開發
-        "http://192.168.50.43:5173", // 你的開發電腦
+        "http://192.168.1.152:5173", // 家中電腦
+        "http://192.168.50.43:5173", // 公司電腦
+        "http://192.168.100.46:5173", // 公司電腦(德)
         "http://192.168.50.44:5173",  // 區網其他測試電腦
-        "http://172.20.10.13:5173/" // 個人熱點測試電腦
+        "http://172.20.10.13:5173" // 個人熱點測試電腦
+        
     ));
     config
         .setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
