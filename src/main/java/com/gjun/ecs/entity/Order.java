@@ -25,29 +25,35 @@ public class Order {
     private Long id;
 
     @Column(name="name",nullable=false)
-    private String name;
+    private String name; // 姓名
 
     @Column(name="phone",nullable=false)
-    private String phone;
+    private String phone; // 電話
 
     @Column(name="address",nullable=false)
-    private String address;
+    private String address; // 地址
 
     @Column(name="shipping_method",nullable=false)
-    private String shippingMethod;
+    private String shippingMethod; // 運送方式
 
     @Column(name="notes",nullable=true)
-    private String notes;
+    private String notes; // 備註
 
     @Column(name="payment_method",nullable=false)
-    private String paymentMethod;
+    private String paymentMethod; // 付款方式
+
+    @Column(name="coupon_code",length=50)
+    private String couponCode; // 優惠券代碼
+    
+    @Column(name="discount",nullable = false)
+    private Integer discount; // 優惠券折扣金額
 
     @Column(name="total",nullable=false)
-    private Integer total;
+    private Integer total; // 總金額
 
     @Column(name="card_last4",length=4)
-    private String cardLast4;
+    private String cardLast4; // 信用卡最後四碼
 
     @Column(name="payment_status")
-    private String paymentStatus;
+    private String paymentStatus; // 付款狀態
 }

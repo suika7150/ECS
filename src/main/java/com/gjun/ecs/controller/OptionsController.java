@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/options")
+@RequestMapping("/api/options")
 @Tag(name = "Options", description = "選單管理")
 public class OptionsController {
 
