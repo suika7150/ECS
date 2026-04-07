@@ -2,8 +2,8 @@
  * 根據代碼字串（code）回傳對應的 ResultCode 物件
  * * @param code 前端或資料庫傳入的代碼字串，例如 "0000" 或 "0104"
  * @return 對應的 ResultCode 枚舉項
- * @throws IllegalArgumentException 當傳入的代碼不在定義清單中時拋出異常
- */
+ * @throws IllegalArgumentException 當傳入的代碼不在定義清單中時拋出異常 
+*/
 
 package com.gjun.ecs.enums;
 
@@ -26,13 +26,13 @@ public enum ResultCode {
   INTERNAL_SERVER_ERROR("0504", "INTERNAL_SERVER_ERROR"),
   ACCOUNT_IS_EXIST("0101", "帳號已存在"),
   EMAIL_IS_EXIST("0102", "Email 已存在"),
-  USER_NOT_FOUND("0103", "使用者不存在"),
-  PASSWORD_NOT_MATCH("0104", "密碼不正確"),
-  USER_IS_EXIST("0105", "使用者已存在"),
-  USER_IS_NOT_EXIST("0106", "使用者不存在"),
-  USER_IS_NOT_ACTIVE("0107", "使用者未啟用"),
-  USER_IS_NOT_AUTHORIZED("0108", "使用者未授權"),
-  USER_IS_NOT_AUTHENTICATED("0109", "使用者未驗證");
+  USER_NOT_FOUND("0103", "帳號不存在，請重新輸入"),
+  PASSWORD_NOT_MATCH("0104", "帳號或密碼輸入錯誤"),
+  USER_IS_EXIST("0105", "帳號已存在"),
+  USER_IS_NOT_EXIST("0106", "帳號不存在，請重新輸入"),
+  USER_IS_NOT_ACTIVE("0107", "帳號未啟用"),
+  USER_IS_NOT_AUTHORIZED("0108", "帳號未授權"),
+  USER_IS_NOT_AUTHENTICATED("0109", "帳號未驗證");
 
   private final String code;
   private final String msg;
@@ -55,6 +55,24 @@ public enum ResultCode {
   }
 }
 
+/**
+ * 若 ResultCode 增加到上百個，可考慮使用靜態 Map 來優化查找效率，避免每次都要迴圈遍歷 Enum 項目。
+private static final Map<String, ResultCode> CODE_MAP = new HashMap<>();
+
+static {
+    for (ResultCode value : values()) {
+        CODE_MAP.put(value.getCode(), value);
+    }
+}
+
+public static ResultCode fromCode(String code) {
+    ResultCode result = CODE_MAP.get(code);
+    if (result == null) {
+        throw new IllegalArgumentException("Unknown code: " + code);
+    }
+    return result;
+}
+*/
 
 /**
  * Java 8+ 的寫法(Stream API)
