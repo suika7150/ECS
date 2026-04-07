@@ -45,14 +45,44 @@ public class AuthService {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
 
+    // 模擬信箱驗證碼檢查
+    // 只要有輸入驗證碼就放行
+    if (req.getSmsCode() == null || req.getSmsCode().isEmpty()) {
+    throw new ApplicationException(ResultCode.SMS_CODE_ERROR);
+}
+
     UserInfo userInfo = UserInfo.builder().username(req.getUsername())
         .password(passwordEncoder.encode(req.getPassword()))
         .email(req.getEmail()).fullName(req.getFullName())
-        .phone(req.getPhone()).build();
+        .phone(req.getPhone()).gender(req.getGender())
+        .birthday(req.getBirthday()).role("USER").build();
 
     userService.save(userInfo);
     return Outbound.ok("註冊成功");
 
+  }
+
+  /**
+ * 模擬發送信箱驗證碼
+ */
+  public Outbound sendEmailCode(String email) throws ApplicationException{
+    // 檢查 Email 是否已被註冊過
+    if(userService.existsByEmail(email)){
+      // 如果已存在，直接拋出異常，讓前端進入 catch 區塊
+      throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
+    }
+    // 生成隨機 6 位數驗證碼
+    String mockCode = String.valueOf((int)((Math.random() * 9 +1)*100000));
+  
+    // 日誌記錄，暫時先印出來
+    System.out.println("========================================");
+    System.out.println("【ECS 系統日誌】正在向信箱 " + email + " 發送驗證碼");
+    System.out.println("驗證碼為: " + mockCode);
+    System.out.println("========================================");
+  
+    // 實務上這裡要存入 Redis 並設定 5 分鐘過期
+    // 模擬階段先回傳成功
+    return Outbound.ok(mockCode);
   }
 
   /**
@@ -124,6 +154,8 @@ public class AuthService {
     userInfo.setFullName(request.getFullName());
     userInfo.setPhone(request.getPhone());
     userInfo.setEmail(request.getEmail());
+    userInfo.setGender(request.getGender());
+    userInfo.setBirthday(request.getBirthday());
 
     try {
       UserInfo upUserInfo = userService.save(userInfo);

@@ -57,6 +57,18 @@ public class UserInfo extends BaseEntity {
   private String phone;
 
   /**
+   * 使用者性別
+   */
+  @Column(name = "gender")
+  private String gender;
+
+  /**
+   * 使用者生日
+   */
+  @Column(name = "birthday")
+  private String birthday;  
+
+  /**
    * 使用者角色
    */
   @Builder.Default // 預設值

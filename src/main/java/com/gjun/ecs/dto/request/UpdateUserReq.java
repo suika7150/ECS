@@ -30,4 +30,12 @@ public class UpdateUserReq {
   @NotBlank
   @Schema(description = "電子郵件", example = "john@example.com")
   private String email;
+
+  @NotBlank
+  @Schema(description = "性別", example = "M")
+  private String gender;
+
+  @NotBlank
+  @Schema(description = "生日", example = "1990-01-01")
+  private String birthday;
 }

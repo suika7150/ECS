@@ -65,3 +65,15 @@ public class SecurityConfig {
     return source;
   }
 }
+
+/*
+未來若要細分權限，可以在 authorizeHttpRequests 裡面這樣寫：
+.authorizeHttpRequests(auth -> auth
+    // 1. 公開資源：登入、註冊、發送簡訊、Swagger 文件
+    .requestMatchers("/api/login", "/api/register", "/api/send-sms", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+    // 2. 特殊權限：例如只有管理員能刪除商品
+    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+    // 3. 其餘所有 API 都必須通過 JWT 驗證
+    .anyRequest().authenticated() 
+)
+*/

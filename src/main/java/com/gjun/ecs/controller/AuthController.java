@@ -1,6 +1,7 @@
 package com.gjun.ecs.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +49,25 @@ public class AuthController extends BaseController {
 
   }
 
+  /**
+   * 發送信箱驗證碼
+   * @param payload 包含 email 的 Map
+   * @return
+   * @throws ApplicationException  <-- 必須加上這個
+   */
+  @PostMapping("/send-email-code")
+  @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
+  public ResponseEntity<Outbound>sendEmailCode(@RequestBody java.util.Map<String, String> payload)
+    throws ApplicationException {
+    
+    // 從 Payload 取得前端傳來的 email
+    String email = payload.get("email");
+
+    // 呼叫 AuthService 的 sendSmsCode 方法傳送驗證碼並回傳結果
+    Outbound response = authService.sendEmailCode(email);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+  
   /**
    * 使用者登入
    * 

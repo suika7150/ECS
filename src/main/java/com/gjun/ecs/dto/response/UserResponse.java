@@ -33,4 +33,10 @@ public class UserResponse {
 
   @Schema(description = "建立時間")
   private LocalDateTime createdAt;
+
+  @Schema(description = "性別", example = "M")
+  private String gender;
+
+  @Schema(description = "生日", example = "1990-01-01")
+  private String birthday;
 }

@@ -1,4 +1,5 @@
 /**
+ * 
  * 根據代碼字串（code）回傳對應的 ResultCode 物件
  * * @param code 前端或資料庫傳入的代碼字串，例如 "0000" 或 "0104"
  * @return 對應的 ResultCode 枚舉項
@@ -32,7 +33,8 @@ public enum ResultCode {
   USER_IS_NOT_EXIST("0106", "帳號不存在，請重新輸入"),
   USER_IS_NOT_ACTIVE("0107", "帳號未啟用"),
   USER_IS_NOT_AUTHORIZED("0108", "帳號未授權"),
-  USER_IS_NOT_AUTHENTICATED("0109", "帳號未驗證");
+  USER_IS_NOT_AUTHENTICATED("0109", "帳號未驗證"),
+  SMS_CODE_ERROR("0110","驗證碼錯誤或已過期");
 
   private final String code;
   private final String msg;
