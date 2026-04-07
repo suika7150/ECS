@@ -1,5 +1,5 @@
 /**
- * 根據代碼字串（code）回傳對應的 ResultCode 枚舉物件
+ * 根據代碼字串（code）回傳對應的 ResultCode 物件
  * * @param code 前端或資料庫傳入的代碼字串，例如 "0000" 或 "0104"
  * @return 對應的 ResultCode 枚舉項
  * @throws IllegalArgumentException 當傳入的代碼不在定義清單中時拋出異常
@@ -54,3 +54,14 @@ public enum ResultCode {
     throw new IllegalArgumentException("Unknown code: " + code);
   }
 }
+
+
+/**
+ * Java 8+ 的寫法(Stream API)
+public static ResultCode fromCode(String code) {
+    return Arrays.stream(ResultCode.values())
+           .filter(v -> v.getCode().equals(code))
+           .findFirst()
+           .orElseThrow(() -> new IllegalArgumentException("Unknown code: " + code));
+}
+ */

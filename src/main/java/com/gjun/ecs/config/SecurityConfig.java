@@ -31,11 +31,8 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 開啟
-                                                                           // CORS
-                                                                           // 支援
-
-        .authorizeHttpRequests(auth -> auth
+        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 開啟CORS                                                                       
+            .authorizeHttpRequests(auth -> auth
             .requestMatchers("/**", "/api/login", "/api/register", "/api/user",
                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html") // 白名單
             .permitAll() // 允許所有
