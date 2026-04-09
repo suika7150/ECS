@@ -24,6 +24,9 @@ public class Payment {
     @Column(name = "id")
     private Long id;
 
+    @Column(name="order_id")
+    private Long orderId;
+
     // 必須跟綠界的 TotalAmount 對應 (整數)
     private Integer totalAmount;
 

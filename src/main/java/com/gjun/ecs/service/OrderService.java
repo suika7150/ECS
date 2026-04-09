@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gjun.ecs.dto.request.OrderReq;
+import com.gjun.ecs.dto.response.EcpayParamsResp;
 import com.gjun.ecs.dto.response.OrderResp;
 import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.Product;
@@ -25,7 +26,9 @@ public class OrderService{
     private OrdersRepository ordersRepository;
     @Autowired
     private ProductRepository productRepository;
-    
+    @Autowired
+    private EcpayService ecpayService;
+
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     @Transactional
@@ -66,15 +69,19 @@ public class OrderService{
             .notes(req.getNotes())
             .paymentMethod(req.getPaymentMethod())
             .couponCode(req.getCouponCode())
-            .discount(req.getDiscount())
+            .discount(req.getDiscount() == null ? 0 : req.getDiscount())
             .total(req.getTotal())
             .cardLast4(req.getCardLast4())
-            .paymentStatus(req.getPaymentStatus())
+            .paymentStatus(("pending"))
             .build();
             
             Order newOrder = ordersRepository.save(orders);
             
             log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
+
+            // 3. 呼叫 PaymentService 產生綠界參數 (關鍵步驟)
+            // 假設你的 paymentService 有個方法可以傳入訂單並回傳 EcpayParamsResp
+            EcpayParamsResp ecpayParams = ecpayService.createPayment(newOrder);
 
             // 回傳訂單資訊
             return OrderResp.builder()
@@ -86,10 +93,12 @@ public class OrderService{
                 .notes(newOrder.getNotes())
                 .paymentMethod(newOrder.getPaymentMethod())
                 .couponCode(req.getCouponCode())
-                .discount(req.getDiscount())
+                .discount(newOrder.getDiscount())
                 .total(newOrder.getTotal())
                 .cardLast4(req.getCardLast4())
-                .paymentStatus(req.getPaymentStatus())
+                .paymentStatus(newOrder.getPaymentStatus())
+                .ecpayParams(ecpayParams) 
+                .merchantTradeNo(ecpayParams.getMerchantTradeNo())
                 .build();
 
     }

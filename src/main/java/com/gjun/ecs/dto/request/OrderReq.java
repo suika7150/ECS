@@ -32,13 +32,13 @@ public class OrderReq {
     @Schema(description="優惠券代碼")
     private String couponCode;
 
-    @Schema(description ="優惠券折扣金額" )
+    @Schema(description ="優惠券折扣金額", defaultValue = "0" )
     private Integer discount;
 
     @Schema(description = "總金額")
     private Integer total;
 
-    @Schema(description = "信用卡最後四碼")
+    @Schema(description = "信用卡最後四碼" , example = "1111")
     private String cardLast4;
     
     @Schema(description = "付款狀態")

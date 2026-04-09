@@ -48,4 +48,10 @@ public class OrderResp {
     
     @Schema(description = "付款狀態")
     private String paymentStatus;
+
+    @Schema(description = "綠界金流專用參數包")
+    private EcpayParamsResp ecpayParams;
+
+    @Schema(description = "交易編號")
+    private String merchantTradeNo;
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.gjun.ecs.dto.response.EcpayParamsResp;
+import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.Payment;
 import com.gjun.ecs.repository.PaymentRepository;
 
@@ -34,6 +35,27 @@ public class EcpayService {
 
     @Value("${ecpay.return-url}")
     private String returnUrl;
+
+    /**
+    * 這是給 OrderService 呼叫的入口
+    * 負責建立 Payment 紀錄並產生綠界參數
+    */
+    @org.springframework.transaction.annotation.Transactional
+    public EcpayParamsResp createPayment(Order order) {
+    
+    // 1. 建立一筆新的 Payment 紀錄（這張表是你早上建的）
+    Payment payment = new Payment();
+    payment.setOrderId(order.getId());         // 關聯訂單 ID
+    payment.setTotalAmount(order.getTotal());  // 同步金額
+    payment.setRtnCode("0");           // 初始狀態設為 0 (代表未付款)
+    
+    // 2. 存入資料庫以取得 paymentId
+    Payment savedPayment = paymentRepository.save(payment);
+    
+    // 3. 呼叫你原本就寫好的參數產生邏輯
+    // 這樣就能重複利用你寫好的加密 (CheckMacValue) 邏輯
+    return generatePaymentParams(savedPayment.getId());
+}
 
     public EcpayParamsResp generatePaymentParams(Long paymentId) {
         

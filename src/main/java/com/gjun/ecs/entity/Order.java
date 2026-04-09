@@ -45,8 +45,9 @@ public class Order {
     @Column(name="coupon_code",length=50)
     private String couponCode; // 優惠券代碼
     
+    @Builder.Default
     @Column(name="discount",nullable = false)
-    private Integer discount; // 優惠券折扣金額
+    private Integer discount = 0; // 優惠券折扣金額
 
     @Column(name="total",nullable=false)
     private Integer total; // 總金額
@@ -54,6 +55,15 @@ public class Order {
     @Column(name="card_last4",length=4)
     private String cardLast4; // 信用卡最後四碼
 
-    @Column(name="payment_status")
-    private String paymentStatus; // 付款狀態
+    @Builder.Default
+    @Column(name="payment_status", nullable = false)
+    private String paymentStatus = "pending"; // 付款狀態
+
+    @Column(name="created_at",updatable=false)
+    private java.time.LocalDateTime createdAt;
+
+    @jakarta.persistence.PrePersist
+    protected void onCreate() {
+        createdAt = java.time.LocalDateTime.now();
+    }
 }
