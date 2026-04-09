@@ -33,9 +33,18 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 開啟CORS                                                                       
             .authorizeHttpRequests(auth -> auth
+
+            // 允許 Swagger 、 登入註冊
             .requestMatchers("/**", "/api/login", "/api/register", "/api/user",
                 "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html") // 白名單
-            .permitAll() // 允許所有
+                
+            // 允許所有 API 都可訪問
+            .permitAll() 
+
+            // 確保綠界 Callback 接口是完全公開的，且不經過 JWT 驗證
+            .requestMatchers("/api/payment/params/**").permitAll()
+            
+            // 其他靜態資源或測試路徑
             .anyRequest().permitAll())
         .addFilterBefore(jwtAuthenticationFilter,
             UsernamePasswordAuthenticationFilter.class);// 設定JWT驗證過濾器
@@ -52,7 +61,8 @@ public class SecurityConfig {
         "http://192.168.50.43:5173", // 公司電腦
         "http://192.168.100.46:5173", // 公司電腦(德)
         "http://192.168.50.44:5173",  // 區網其他測試電腦
-        "http://172.20.10.13:5173" // 個人熱點測試電腦
+        "http://172.20.10.13:5173", // 個人熱點測試電腦
+        "https://palladous-upmost-margaretta.ngrok-free.dev" // ngrok 服務器(我的測試服務器)
         
     ));
     config
