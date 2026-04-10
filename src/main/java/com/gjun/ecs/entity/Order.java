@@ -1,10 +1,13 @@
 package com.gjun.ecs.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,4 +69,11 @@ public class Order {
     protected void onCreate() {
         createdAt = java.time.LocalDateTime.now();
     }
+
+    @Column(name = "merchant_trade_no" , length = 50)
+    private String merchantTradeNo ; // 交易編號
+
+
+    @OneToMany(mappedBy = "order", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true, fetch = jakarta.persistence.FetchType.EAGER)
+    private List<OrderItem> items; // 訂單明細
 }

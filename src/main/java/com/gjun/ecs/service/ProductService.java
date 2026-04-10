@@ -220,4 +220,11 @@ public Outbound searchProducts(String keyword) {
             + Base64.getEncoder().encodeToString(imageData)
         : null;
   }
+
+
+    // 取得商品圖片
+    public Product getProductEntityById(Integer id) {
+    return productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("找不到編號為 " + id + " 的商品"));
+  }
 }

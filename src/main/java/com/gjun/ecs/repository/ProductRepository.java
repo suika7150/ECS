@@ -17,6 +17,11 @@ import jakarta.transaction.Transactional;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
 	@Modifying
+    @Transactional
+    @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :id")
+    void updateStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
+
+	@Modifying
 	@Transactional
 	@Query("UPDATE Product p SET p.states = :states WHERE p.id = :id")
 	void updateProductStates(@Param("id") Integer id,

@@ -28,4 +28,9 @@ public class EcpayParamsResp {
     @JsonProperty("CheckMacValue")
     private String checkMacValue; // 校驗資料是否正確 
     
+    @JsonProperty("PaymentType")
+    private String paymentType = "aio"; 
+
+    @JsonProperty("ChoosePayment")
+    private String choosePayment = "ALL"; 
 }

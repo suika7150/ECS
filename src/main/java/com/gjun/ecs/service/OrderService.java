@@ -12,6 +12,9 @@ import com.gjun.ecs.repository.OrdersRepository;
 import com.gjun.ecs.repository.ProductRepository;
 
 import jakarta.transaction.Transactional;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,27 +82,62 @@ public class OrderService{
             
             log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
 
-            // 3. 呼叫 PaymentService 產生綠界參數 (關鍵步驟)
-            // 假設你的 paymentService 有個方法可以傳入訂單並回傳 EcpayParamsResp
+            // 呼叫 PaymentService 產生綠界參數
             EcpayParamsResp ecpayParams = ecpayService.createPayment(newOrder);
 
-            // 回傳訂單資訊
-            return OrderResp.builder()
-                .id(newOrder.getId())
-                .name(newOrder.getName())
-                .phone(newOrder.getPhone())
-                .address(newOrder.getAddress())
-                .shippingMethod(newOrder.getShippingMethod())
-                .notes(newOrder.getNotes())
-                .paymentMethod(newOrder.getPaymentMethod())
-                .couponCode(req.getCouponCode())
-                .discount(newOrder.getDiscount())
-                .total(newOrder.getTotal())
-                .cardLast4(req.getCardLast4())
-                .paymentStatus(newOrder.getPaymentStatus())
-                .ecpayParams(ecpayParams) 
-                .merchantTradeNo(ecpayParams.getMerchantTradeNo())
-                .build();
+            // 將編號存回 newOrder 並再次存檔
+            newOrder.setMerchantTradeNo(ecpayParams.getMerchantTradeNo());
+            ordersRepository.save(newOrder);
+
+            // 將綠界參數回傳
+            OrderResp resp = convertToOrderResp(newOrder);
+            resp.setEcpayParams(ecpayParams);
+            return resp;
+        
+
+    }
+
+        /**
+        * 獲取使用者訂單列表
+        */
+        public List<OrderResp> getUserOrders(){
+            List<Order> orders = ordersRepository.findAllByOrderByIdDesc();
+        
+            return orders.stream()
+                .map(this::convertToOrderResp)
+                    .toList();
+                        
+    }
+
+        /**
+        * 獲取單筆訂單詳情
+        */
+       public OrderResp getOrderDetail(String orderId){
+       
+            Order order = ordersRepository.findById(Long.parseLong(orderId))
+            .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
+
+
+            return convertToOrderResp(order);
+    }
+
+    private OrderResp convertToOrderResp(Order order){
+
+        return OrderResp.builder()
+            .id(order.getId())
+            .name(order.getName())
+            .phone(order.getPhone())
+            .address(order.getAddress())
+            .shippingMethod(order.getShippingMethod())
+            .notes(order.getNotes())
+            .paymentMethod(order.getPaymentMethod())
+            .discount(order.getDiscount())
+            .total(order.getTotal())
+            .paymentStatus(order.getPaymentStatus())
+            // 這裡要注意：如果不是剛下單，merchantTradeNo 可能要從資料庫欄位拿
+            // 建議你的 Order Entity 也要存下 merchantTradeNo
+            .merchantTradeNo(order.getMerchantTradeNo()) 
+            .build();
 
     }
 }

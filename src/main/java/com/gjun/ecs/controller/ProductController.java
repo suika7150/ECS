@@ -131,4 +131,24 @@ public ResponseEntity<Outbound> getProductDetail(@PathVariable Integer id) throw
     return ResponseEntity.ok(resp);
   }
 
+
+  /**
+  * 取得商品圖片
+  * * @param id 商品ID
+  * @return 圖片二進位資料
+  */
+  @GetMapping("/products/{id}/image")
+  @Operation(summary = "取得商品圖片流 (用於訂單詳情或列表)")
+  public ResponseEntity<byte[]> getProductImage(@PathVariable Integer id) throws Exception {
+    
+    com.gjun.ecs.entity.Product product = productService.getProductEntityById(id);
+
+    if(product != null && product.getImageData() != null){
+
+      return ResponseEntity.ok()
+          .contentType(MediaType.parseMediaType(product.getImageType())) // 動態設定 image/png 或 image/jpeg
+          .body(product.getImageData());
+    }
+    return ResponseEntity.notFound().build();
+  }
 }
