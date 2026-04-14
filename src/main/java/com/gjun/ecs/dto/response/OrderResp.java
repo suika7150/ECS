@@ -1,5 +1,6 @@
 package com.gjun.ecs.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,6 +51,9 @@ public class OrderResp {
     
     @Schema(description = "付款狀態")
     private String paymentStatus;
+    
+    @Schema(description = "訂單建立時間")
+    private LocalDateTime createdAt;
 
     @Schema(description = "綠界金流專用參數包")
     private EcpayParamsResp ecpayParams;

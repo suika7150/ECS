@@ -172,6 +172,7 @@ public class OrderService{
             .shippingMethod(order.getShippingMethod())
             .notes(order.getNotes())
             .paymentMethod(order.getPaymentMethod())
+            .createdAt(order.getCreatedAt())
             .discount(order.getDiscount())
             .total(order.getTotal())
             .paymentStatus(order.getPaymentStatus())
