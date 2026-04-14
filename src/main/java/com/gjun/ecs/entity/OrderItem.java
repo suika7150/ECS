@@ -16,28 +16,31 @@ import lombok.*;
 @AllArgsConstructor
 @Data
 @Builder
-@Table(name = "order_items")
+@Table(name = "order_item")
 public class OrderItem {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    // 指向所屬的訂單
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
+    @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Order order;
 
     @Column(name="product_id")
     private Integer productId;
     
     @Column(name = "product_name")
-    private String productName; // 商品名稱 (快照，防止商品改名後找不到當時買什麼)
+    private String productName; // 商品名稱
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity; // 購買數量
 
     @Column(name = "price", nullable = false)
-    private Integer price; // 購買時單價
+    private Integer price; // 單價
 
+    @Column(name = "product_image",columnDefinition = "LONGTEXT")
+    private String productImage; // 商品圖片
 }

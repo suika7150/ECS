@@ -1,5 +1,7 @@
 package com.gjun.ecs.dto.response;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +56,7 @@ public class OrderResp {
 
     @Schema(description = "交易編號")
     private String merchantTradeNo;
+
+    @Schema(description = "訂單商品清單")
+    private List<OrderItemResp> items;
 }

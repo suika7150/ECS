@@ -13,6 +13,7 @@ import com.gjun.ecs.dto.response.ProductShow;
 import com.gjun.ecs.entity.Product;
 import com.gjun.ecs.enums.ProductStutes;
 import com.gjun.ecs.repository.ProductRepository;
+import com.gjun.ecs.utils.ImageUtils;
 
 @Service
 public class ProductService {
@@ -38,8 +39,8 @@ public Outbound searchProducts(String keyword) {
               .price(product.getPrice())
               .description(product.getDescription())
               .category(product.getCategory())
-              .rating(null) //TODO根據實際資料庫欄位填入product.getRating()
-              .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+              .rating(null)
+              .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
               .build();
         }).collect(Collectors.toList());
 
@@ -78,7 +79,7 @@ public Outbound searchProducts(String keyword) {
         .states(product.getStates())
         .description(product.getDescription())
         .category(product.getCategory())
-        .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+        .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
         .build();
 
     return Outbound.ok(response);
@@ -97,7 +98,7 @@ public Outbound searchProducts(String keyword) {
               .description(product.getDescription())
               .category(product.getCategory())
               .rating(null) //TODO根據實際資料庫欄位填入product.getRating()
-              .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+              .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
               .build();
         }).collect(Collectors.toList());
 
@@ -138,7 +139,7 @@ public Outbound searchProducts(String keyword) {
               .stock(product.getStock())
               .description(product.getDescription())
               .category(product.getCategory())
-              .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+              .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
               .states(ProductStutes.getDesc(product.getStates())).build();
         }).collect(Collectors.toList());
 
@@ -158,7 +159,7 @@ public Outbound searchProducts(String keyword) {
         .stock(product.getStock())
         .description(product.getDescription())
         .category(product.getCategory())
-        .imageBase64(generateImageBase64(product.getImageData(), product.getImageType()))
+        .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
         .states(ProductStutes.getDesc(product.getStates()))
         .build();
 
@@ -206,22 +207,7 @@ public Outbound searchProducts(String keyword) {
       throw new RuntimeException("無效的 Base64 圖片格式", e);
     }
   }
-
-  /**
-   * 產生圖片 Base64 字串
-   * 
-   * @param imageData 圖片資料
-   * @param imageType 圖片類型
-   * @return
-   */
-  private String generateImageBase64(byte[] imageData, String imageType) {
-    return imageData != null && imageType != null
-        ? "data:" + imageType + ";base64,"
-            + Base64.getEncoder().encodeToString(imageData)
-        : null;
-  }
-
-
+  
     // 取得商品圖片
     public Product getProductEntityById(Integer id) {
     return productRepository.findById(id)

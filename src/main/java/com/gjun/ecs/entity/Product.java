@@ -75,4 +75,6 @@ public class Product extends BaseEntity {
    */
   @Column(name = "states", nullable = false)
   private String states;
+
+
 }

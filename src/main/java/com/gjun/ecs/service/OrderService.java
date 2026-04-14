@@ -5,14 +5,19 @@ import org.springframework.stereotype.Service;
 
 import com.gjun.ecs.dto.request.OrderReq;
 import com.gjun.ecs.dto.response.EcpayParamsResp;
+import com.gjun.ecs.dto.response.OrderItemResp;
 import com.gjun.ecs.dto.response.OrderResp;
 import com.gjun.ecs.entity.Order;
+import com.gjun.ecs.entity.OrderItem;
 import com.gjun.ecs.entity.Product;
-import com.gjun.ecs.repository.OrdersRepository;
+import com.gjun.ecs.enums.OrderStatus;
+import com.gjun.ecs.repository.OrderRepository;
 import com.gjun.ecs.repository.ProductRepository;
+import com.gjun.ecs.utils.ImageUtils;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -26,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class OrderService{
 
     @Autowired
-    private OrdersRepository ordersRepository;
+    private OrderRepository orderRepository;
     @Autowired
     private ProductRepository productRepository;
     @Autowired
@@ -75,10 +80,31 @@ public class OrderService{
             .discount(req.getDiscount() == null ? 0 : req.getDiscount())
             .total(req.getTotal())
             .cardLast4(req.getCardLast4())
-            .paymentStatus(("pending"))
+            .paymentStatus(OrderStatus.PENDING.name().toLowerCase())
             .build();
             
-            Order newOrder = ordersRepository.save(orders);
+            List<OrderItem> itemList = new ArrayList<>();
+
+            for (OrderReq.Item itemReq : req.getItems()) {
+                Product product = productRepository.findById(itemReq.getProductId()).orElse(null);
+    
+                OrderItem orderItem = OrderItem.builder()
+                    .order(orders) 
+                    .productId(itemReq.getProductId())
+                    .productName(product != null ? product.getName() : "未知商品")
+                    .price(product != null ? product.getPrice() : 0)
+                    .quantity(itemReq.getQuantity())
+                    .productImage(product != null ? ImageUtils.toBase64Src(product.getImageData(), product.getImageType()) : "")
+                    .build();
+    
+                itemList.add(orderItem);
+            } 
+
+        
+            // 存 Order 的同時會自動存 OrderItem
+            orders.setItems(itemList);
+
+            Order newOrder = orderRepository.save(orders);
             
             log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
 
@@ -87,7 +113,7 @@ public class OrderService{
 
             // 將編號存回 newOrder 並再次存檔
             newOrder.setMerchantTradeNo(ecpayParams.getMerchantTradeNo());
-            ordersRepository.save(newOrder);
+            orderRepository.save(newOrder);
 
             // 將綠界參數回傳
             OrderResp resp = convertToOrderResp(newOrder);
@@ -99,10 +125,25 @@ public class OrderService{
 
         /**
         * 獲取使用者訂單列表
+        * @param status 篩選狀態 (UNPAID, PAID, SHIPPED, COMPLETED 等)
         */
-        public List<OrderResp> getUserOrders(){
-            List<Order> orders = ordersRepository.findAllByOrderByIdDesc();
+        public List<OrderResp> getUserOrders(String status){
+            log.info("📢 收到訂單篩選請求，原始狀態參數: [{}]", status);
+            List<Order> orders;
         
+            // 判斷是否需要篩選狀態
+            if(status == null || status.trim().isEmpty() || status.equalsIgnoreCase("all")){
+                // 如果 status 是 null、空字串或 "all"，則切換為查詢所有訂單
+                orders = orderRepository.findAllByOrderByIdDesc();
+            } else {
+                String normalizedStatus = status.toLowerCase();
+                log.info("🔍 執行條件查詢，標準化狀態碼: [{}]", normalizedStatus);
+
+                orders = orderRepository.findByPaymentStatusOrderByIdDesc(normalizedStatus);
+            }
+
+            log.info("✅ 查詢完成，結果筆數: {}", orders.size());
+
             return orders.stream()
                 .map(this::convertToOrderResp)
                     .toList();
@@ -114,7 +155,7 @@ public class OrderService{
         */
        public OrderResp getOrderDetail(String orderId){
        
-            Order order = ordersRepository.findById(Long.parseLong(orderId))
+            Order order = orderRepository.findById(Long.parseLong(orderId))
             .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
 
 
@@ -123,7 +164,7 @@ public class OrderService{
 
     private OrderResp convertToOrderResp(Order order){
 
-        return OrderResp.builder()
+        OrderResp resp = OrderResp.builder()
             .id(order.getId())
             .name(order.getName())
             .phone(order.getPhone())
@@ -134,10 +175,24 @@ public class OrderService{
             .discount(order.getDiscount())
             .total(order.getTotal())
             .paymentStatus(order.getPaymentStatus())
-            // 這裡要注意：如果不是剛下單，merchantTradeNo 可能要從資料庫欄位拿
-            // 建議你的 Order Entity 也要存下 merchantTradeNo
             .merchantTradeNo(order.getMerchantTradeNo()) 
             .build();
 
+            if(order.getItems() != null){
+
+                List<OrderItemResp> itemResps = order.getItems().stream()
+                    .map(item -> OrderItemResp.builder()
+                        .name(item.getProductName())             
+                        .price(item.getPrice())
+                        .quantity(item.getQuantity())
+                        .productImage(item.getProductImage()) 
+                        .build())
+                    .toList();
+                        
+                resp.setItems(itemResps);
+        }
+
+        return resp;
+    
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gjun.ecs.dto.request.OrderReq;
@@ -38,10 +39,10 @@ public class OrderController {
         return ResponseEntity.ok(Outbound.ok(resp));
         
     }
-    @GetMapping("/orders")
+    @GetMapping("/orderList")
     @Operation(summary = "獲取目前登入使用者的訂單列表")
-    public ResponseEntity<Outbound> getOrderList(){
-        List<OrderResp> orders = orderService.getUserOrders();
+    public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false)String status){
+        List<OrderResp> orders = orderService.getUserOrders(status);
         return ResponseEntity.ok(Outbound.ok(orders));
     }
     
