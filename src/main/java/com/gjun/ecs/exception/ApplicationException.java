@@ -1,7 +1,6 @@
 package com.gjun.ecs.exception;
 import com.gjun.ecs.enums.ResultCode;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 // @EqualsAndHashCode(callSuper = true)

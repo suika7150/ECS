@@ -23,7 +23,7 @@ public class JwtUtil {
 	private JwtProperties jwtProperties;
 	
 	// JWT 的有效時間（毫秒）- 這裡設定為 1 小時
-	private static  final long EXPIRATION_MS = 3600_000;
+	// private static  final long EXPIRATION_MS = 20_000;
 
 	/**
 	 * 產生 JWT token，內含 username（主體）與自定義的 role 欄位
@@ -32,12 +32,17 @@ public class JwtUtil {
 	 *                 用戶資訊
 	 * @return JWT 字串
 	 */
-	public String generateToken(UserInfo userInfo) {
-		return Jwts.builder().setSubject(userInfo.getUsername()) // 設定主要身份資訊（username）
+	public String generateToken(UserInfo userInfo,boolean rememberMe) {
+
+		long expiration = rememberMe? (7L * 24 * 60 * 60 * 1000) : (30L * 60 * 1000);
+
+		return Jwts.builder().
+				setSubject(userInfo.getUsername()) // 設定主要身份資訊（username）
 				.claim("role", userInfo.getRole()) // 加入自定義資訊（例如角色）
+				.claim("rm", rememberMe) // 加入保持登入的資訊
 				.setIssuedAt(new Date()) // 簽發時間
 				.setExpiration(
-						new Date(System.currentTimeMillis() + EXPIRATION_MS)) // 過期時間
+						new Date(System.currentTimeMillis() + expiration)) // 過期時間
 				.signWith(getSignKey(), SignatureAlgorithm.HS256)// 使用 HMAC SHA256 簽章
 				.compact(); // 建立 JWT 字串
 	}

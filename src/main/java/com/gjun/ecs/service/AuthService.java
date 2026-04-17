@@ -92,6 +92,10 @@ public class AuthService {
    * @return
    */
   public Outbound login(LoginReq req) throws ApplicationException {
+
+    System.out.println("=== 登入偵錯 ===");
+    System.out.println("帳號: " + req.getUsername());
+    System.out.println("RememberMe 狀態: " + req.isRememberMe());
     UserInfo userInfo = userService.findUserByUsername(req.getUsername());
 
     if (userInfo == null) {
@@ -102,7 +106,7 @@ public class AuthService {
         userInfo.getPassword())) {
       throw new ApplicationException(ResultCode.PASSWORD_NOT_MATCH);
     }
-    String token = jwtUtil.generateToken(userInfo);
+    String token = jwtUtil.generateToken(userInfo, req.isRememberMe());
     LoginResp loginResp = LoginResp.builder()
         .token(token)
         .role(userInfo.getRole())

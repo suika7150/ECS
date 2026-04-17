@@ -34,7 +34,8 @@ public enum ResultCode {
   USER_IS_NOT_ACTIVE("0107", "帳號未啟用"),
   USER_IS_NOT_AUTHORIZED("0108", "帳號未授權"),
   USER_IS_NOT_AUTHENTICATED("0109", "帳號未驗證"),
-  SMS_CODE_ERROR("0110","驗證碼錯誤或已過期");
+  SMS_CODE_ERROR("0110","驗證碼錯誤或已過期"),
+  USER_STATUS_ERROR("0111", "使用者狀態異常，請聯繫客服");
 
   private final String code;
   private final String msg;

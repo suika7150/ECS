@@ -20,4 +20,7 @@ public class LoginReq {
   @NotBlank
   @Schema(description = "使用者密碼", example = "P@ssw0rd123")
   private String password;
+
+  @Schema(description = "保持登入", example = "true")
+  private boolean rememberMe;
 }
