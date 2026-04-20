@@ -134,9 +134,14 @@ public class AuthService {
     }
 
     UserResponse userResponse = UserResponse.builder().id(userInfo.getId())
-        .username(userInfo.getUsername()).email(userInfo.getEmail())
-        .fullName(userInfo.getFullName()).phone(userInfo.getPhone())
-        .role(userInfo.getRole()).createdAt(userInfo.getCreatedAt())
+        .username(userInfo.getUsername())
+        .email(userInfo.getEmail())
+        .fullName(userInfo.getFullName())
+        .phone(userInfo.getPhone())
+        .role(userInfo.getRole())
+        .createdAt(userInfo.getCreatedAt())
+        .gender(userInfo.getGender())
+        .birthday(userInfo.getBirthday())
         .build();
 
     return Outbound.ok(userResponse);

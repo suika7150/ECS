@@ -3,6 +3,7 @@ package com.gjun.ecs.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,11 +32,11 @@ public class UpdateUserReq {
   @Schema(description = "電子郵件", example = "john@example.com")
   private String email;
 
-  @NotBlank
+  @NotNull
   @Schema(description = "性別", example = "M")
   private String gender;
 
-  @NotBlank
+  @NotNull
   @Schema(description = "生日", example = "1990-01-01")
   private String birthday;
 }
