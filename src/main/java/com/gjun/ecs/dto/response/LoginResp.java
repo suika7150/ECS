@@ -9,5 +9,7 @@ public class LoginResp {
 
     private String token;
     private String role;
+    private String username;
+    private String fullName;
 
 }

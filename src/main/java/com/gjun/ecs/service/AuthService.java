@@ -110,6 +110,8 @@ public class AuthService {
     LoginResp loginResp = LoginResp.builder()
         .token(token)
         .role(userInfo.getRole())
+        .username(userInfo.getUsername())
+        .fullName(userInfo.getFullName())
         .build();
 
     return Outbound.ok(loginResp);
