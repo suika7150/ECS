@@ -11,5 +11,6 @@ public class LoginResp {
     private String role;
     private String username;
     private String fullName;
+    private boolean rememberMe;
 
 }

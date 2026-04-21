@@ -34,15 +34,24 @@ public class JwtUtil {
 	 */
 	public String generateToken(UserInfo userInfo,boolean rememberMe) {
 
-		long expiration = rememberMe? (7L * 24 * 60 * 60 * 1000) : (30L * 60 * 1000);
+		long expiration = rememberMe?
+				jwtProperties.getRememberMeExpiration() : 
+				jwtProperties.getNormalExpiration();	
+
+
+    System.out.println("================ JWT Debug ================");
+    System.out.println("用戶帳號: " + userInfo.getUsername());
+    System.out.println("登入模式: " + (rememberMe ? "保持登入 (7天)" : "一般登入 (24小時)"));
+    System.out.println("有效毫秒: " + expiration);
+    System.out.println("===========================================");
+
 
 		return Jwts.builder().
 				setSubject(userInfo.getUsername()) // 設定主要身份資訊（username）
 				.claim("role", userInfo.getRole()) // 加入自定義資訊（例如角色）
 				.claim("rm", rememberMe) // 加入保持登入的資訊
 				.setIssuedAt(new Date()) // 簽發時間
-				.setExpiration(
-						new Date(System.currentTimeMillis() + expiration)) // 過期時間
+				.setExpiration(new Date(System.currentTimeMillis() + expiration)) // 過期時間
 				.signWith(getSignKey(), SignatureAlgorithm.HS256)// 使用 HMAC SHA256 簽章
 				.compact(); // 建立 JWT 字串
 	}
@@ -100,6 +109,7 @@ public class JwtUtil {
 
 	//統一取得密鑰
 	private Key getSignKey() {
+		System.out.println("當前使用的密鑰: " + jwtProperties.getSecret());
 		return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
 	}
 }

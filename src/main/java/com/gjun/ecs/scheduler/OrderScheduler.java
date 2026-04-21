@@ -28,7 +28,7 @@ public class OrderScheduler {
     private ProductRepository productRepository;
 
 
-    @Scheduled(fixedRate = 10000) 
+    @Scheduled(fixedRate = 3600000) // 每小時執行一次
     @Transactional 
     public void releaseUnpaidOrders() {
 

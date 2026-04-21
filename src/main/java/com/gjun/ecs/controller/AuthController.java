@@ -80,8 +80,8 @@ public class AuthController extends BaseController {
   public ResponseEntity<Outbound> login(
       @Valid @RequestBody LoginReq request)
       throws ApplicationException {
-    Outbound res = authService.login(request);
-    return ResponseEntity.status(HttpStatus.OK).body(res);
+    Outbound response = authService.login(request);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   /**

@@ -49,7 +49,7 @@ public class AuthService {
     // 只要有輸入驗證碼就放行
     if (req.getSmsCode() == null || req.getSmsCode().isEmpty()) {
     throw new ApplicationException(ResultCode.SMS_CODE_ERROR);
-}
+    }
 
     UserInfo userInfo = UserInfo.builder().username(req.getUsername())
         .password(passwordEncoder.encode(req.getPassword()))
@@ -112,6 +112,7 @@ public class AuthService {
         .role(userInfo.getRole())
         .username(userInfo.getUsername())
         .fullName(userInfo.getFullName())
+        .rememberMe(req.isRememberMe())
         .build();
 
     return Outbound.ok(loginResp);

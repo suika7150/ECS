@@ -8,7 +8,8 @@ import lombok.Data;
 @Configuration
 @ConfigurationProperties(prefix = "jwt") // 自動找 jwt.secret
 public class JwtProperties {
-    // 變數名稱必須跟 properties 裡的 . 之後對齊
-    // jwt.secret -> secret
     private String secret;
+    private long normalExpiration;     // 一般登入 (毫秒)
+    private long rememberMeExpiration; // 保持登入 (毫秒)
+
 }
