@@ -57,7 +57,7 @@ public class Order {
     @Column(name="payment_status", nullable = false)
     private String paymentStatus = "pending"; // 付款狀態
 
-    @Column(name="created_at",updatable=false)
+    @Column(name="created_at",updatable=false,columnDefinition = "DATETIME(0)")
     private java.time.LocalDateTime createdAt;
 
     @jakarta.persistence.PrePersist

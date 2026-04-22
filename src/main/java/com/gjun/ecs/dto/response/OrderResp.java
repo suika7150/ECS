@@ -3,6 +3,8 @@ package com.gjun.ecs.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,6 +54,7 @@ public class OrderResp {
     @Schema(description = "付款狀態")
     private String paymentStatus;
     
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @Schema(description = "訂單建立時間")
     private LocalDateTime createdAt;
 
