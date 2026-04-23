@@ -42,9 +42,9 @@ public class SecurityConfig {
 
           // 白名單路徑
               .requestMatchers( 
-                "/api/login", 
+                "/api/login",
+                "/api/logout", 
                 "/api/register", 
-                "/api/user",
                 "/swagger-ui/**", 
                 "/v3/api-docs/**", 
                 "/swagger-ui.html",
@@ -52,10 +52,17 @@ public class SecurityConfig {
               ).permitAll() // 允許所有 API 都可訪問 
 
             // 確保綠界 Callback 接口是完全公開的，且不經過 JWT 驗證
-            .requestMatchers("/api/payment/params/**").permitAll()
+            // .requestMatchers("/api/payment/params/**").permitAll()
             
             // 其他靜態資源或測試路徑
-            .anyRequest().permitAll())
+            .anyRequest().authenticated())
+            .exceptionHandling(exception -> exception
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED); // 強制回傳 401
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"code\": \"401\", \"msg\": \"尚未登入或登入已逾時\"}");
+            })
+        )
         .addFilterBefore(jwtAuthenticationFilter,
             UsernamePasswordAuthenticationFilter.class);// 設定JWT驗證過濾器
     return http.build();

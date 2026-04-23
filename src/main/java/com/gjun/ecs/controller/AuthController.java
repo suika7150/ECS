@@ -1,6 +1,7 @@
 package com.gjun.ecs.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -78,6 +79,13 @@ public class AuthController extends BaseController {
    * @return
    * @throws ApplicationException
    */
+
+  @Value("${jwt.normal-expiration}")
+    private long jwtExpiration;
+    
+  @Value("${jwt.remember-me-expiration}")
+    private long jwtRememberMeExpiration;
+
   @PostMapping("/login")
   @Operation(summary = "使用者登入", description = "成功後會自動寫入 HttpOnly Cookie")
   public ResponseEntity<Outbound> login(
@@ -97,13 +105,12 @@ public class AuthController extends BaseController {
         cookie.setHttpOnly(true);  // 防止 JS 讀取 (防 XSS)
         cookie.setSecure(false);   // 開發環境 http 設 false，生產環境 https 設 true
         cookie.setPath("/");       // 全站路徑可用
-        cookie.setMaxAge(24 * 60 * 60); // 有效期 1 天
 
         // 根據是否勾選保持登入來設定 Cookie 的壽命
-        // 如果 loginData.isRememberMe() 為 true，給 7 天，否則 1 天
-        int maxAge = loginData.isRememberMe() ? (7 * 24 * 60 * 60) : (24 * 60 * 60);
-        cookie.setMaxAge(maxAge);
+        long finalMs = loginData.isRememberMe() ? jwtRememberMeExpiration : jwtExpiration;
+        int finalMaxAge = (int) (finalMs / 1000);
 
+        cookie.setMaxAge(finalMaxAge);
         response.addCookie(cookie);
 
     return ResponseEntity.status(HttpStatus.OK).body(outbound);

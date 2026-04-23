@@ -83,7 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			// 瀏覽器刪除 token cookie
 			Cookie cookie = new Cookie("token", null);
 			cookie.setPath("/");
-			cookie.setMaxAge(0); // 設為 0 代表立刻刪除
+			cookie.setMaxAge(10); // 設為 0 代表立刻刪除
 			response.addCookie(cookie);
 
 			response.getWriter().write(String.format(
