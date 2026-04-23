@@ -23,6 +23,9 @@ public class OrderReq {
     @Schema(description = "運送方式")
     private String shippingMethod;
     
+    @Schema(description = "運費")
+    private Integer shippingFee;
+
     @Schema(description = "備註")
     private String notes;
     

@@ -74,6 +74,7 @@ public class OrderService{
             .phone(req.getPhone())
             .address(req.getAddress())
             .shippingMethod(req.getShippingMethod())
+            .shippingFee(req.getShippingFee() == null ? 0 : req.getShippingFee())
             .notes(req.getNotes())
             .paymentMethod(req.getPaymentMethod())
             .couponCode(req.getCouponCode())

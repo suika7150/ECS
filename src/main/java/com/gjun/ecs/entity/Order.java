@@ -34,6 +34,9 @@ public class Order {
     @Column(name="shipping_method",nullable=false)
     private String shippingMethod; // 運送方式
 
+    @Column(name="shipping_fee",nullable=false)
+    private Integer shippingFee; // 運費
+
     @Column(name="notes",nullable=true)
     private String notes; // 備註
 
