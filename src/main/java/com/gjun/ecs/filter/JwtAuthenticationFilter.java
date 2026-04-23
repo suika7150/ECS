@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.gjun.ecs.entity.UserInfo;
+import com.gjun.ecs.enums.ResultCode;
 import com.gjun.ecs.service.UserService;
 import com.gjun.ecs.utils.JwtUtil;
 
@@ -50,8 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 	}
 
-	System.out.println("🟡 進入 JwtAuthenticationFilter，從 Cookie 取得 Token: " + (token != null ? "存在" : "不存在"));
-
 	// 如果拿到 Token 開始驗證邏輯
 	if(token != null) {
 		try{
@@ -61,27 +60,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				UserInfo userInfo = userService.findUserByUsername(username);
 				
 				if(jwtUtil.validateToken(token, userInfo)){
-					// 建立認證物件
+						// 建立認證物件
                         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                                 userInfo, null, null); // Role 可以塞進第三個參數
 				
 						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         
-                        // 存入 SecurityContext，AuthController 就能 getName() 拿到帳號了
+                        // 存入 SecurityContext，AuthController 就能 getName() 拿到帳號
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                         
-                        System.out.println("✅ Cookie Token 驗證成功，User: " + username);		
 				
 				}
 			}
 		}catch(Exception e){
-			System.out.println("🛑 Cookie Token 解析失敗: " + e.getMessage());
-		}	
-	}
+			System.out.println("Cookie Token 解析失敗: " + e.getMessage());
+			
+			ResultCode status = ResultCode.UNAUTHORIZED; 
+    		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    		response.setContentType("application/json;charset=UTF-8");
+			response.setCharacterEncoding("UTF-8");
 		
-		
+			// 瀏覽器刪除 token cookie
+			Cookie cookie = new Cookie("token", null);
+			cookie.setPath("/");
+			cookie.setMaxAge(0); // 設為 0 代表立刻刪除
+			response.addCookie(cookie);
 
+			response.getWriter().write(String.format(
+        "{\"code\": \"%s\", \"msg\": \"%s\"}", 
+        		status.getCode(), 
+        		status.getMsg()
+    		));
+
+			return;
+			
+			}	
+		}
+		
 		filterChain.doFilter(request, response);
+
+		
 	}
 
 }

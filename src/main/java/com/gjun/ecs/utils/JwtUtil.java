@@ -35,12 +35,14 @@ public class JwtUtil {
 				jwtProperties.getRememberMeExpiration() : 
 				jwtProperties.getNormalExpiration();	
 
+		// 計算過期時間點
+		Date expirationDate = new Date(System.currentTimeMillis() + expiration);
 
-    System.out.println("================ JWT Debug ================");
-    System.out.println("用戶帳號: " + userInfo.getUsername());
-    System.out.println("登入模式: " + (rememberMe ? "保持登入 (7天)" : "一般登入 (24小時)"));
-    System.out.println("有效毫秒: " + expiration);
-    System.out.println("===========================================");
+		System.out.println("================ JWT Debug ================");
+		System.out.println("用戶帳號: " + userInfo.getUsername());
+		System.out.println("登入模式: " + (rememberMe ? "保持登入 (7天)" : "一般登入 (24小時)"));
+		System.out.println("有效毫秒: " + expiration);
+		System.out.println("===========================================");
 
 
 		return Jwts.builder().
@@ -48,7 +50,7 @@ public class JwtUtil {
 				.claim("role", userInfo.getRole()) // 加入自定義資訊（例如角色）
 				.claim("rm", rememberMe) // 加入保持登入的資訊
 				.setIssuedAt(new Date()) // 簽發時間
-				.setExpiration(new Date(System.currentTimeMillis() + expiration)) // 過期時間
+				.setExpiration(expirationDate) // 過期時間
 				.signWith(getSignKey(), SignatureAlgorithm.HS256)// 使用 HMAC SHA256 簽章
 				.compact(); // 建立 JWT 字串
 	}
@@ -92,7 +94,15 @@ public class JwtUtil {
 	 * @return 是否過期
 	 */
 	private boolean isTokenExpired(String token) {
-		return extractAllClaims(token).getExpiration().before(new Date());
+		// return extractAllClaims(token).getExpiration().before(new Date());
+	
+		Date exp = extractAllClaims(token).getExpiration();
+    	System.out.println(">>> 檢查 Token 是否過期: " + exp);
+    	System.out.println(">>> 現在時間: " + new Date());
+    	boolean expired = exp.before(new Date());
+    	System.out.println(">>> 是否過期? " + expired);
+    	return expired;
+	
 	}
 
 	//封裝解析邏輯，減少重複代碼
@@ -106,7 +116,7 @@ public class JwtUtil {
 
 	//統一取得密鑰
 	private Key getSignKey() {
-		System.out.println("當前使用的密鑰: " + jwtProperties.getSecret());
+		// System.out.println("當前使用的密鑰: " + jwtProperties.getSecret());
 		return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
 	}
 }
