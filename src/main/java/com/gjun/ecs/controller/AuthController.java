@@ -1,27 +1,30 @@
 package com.gjun.ecs.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import com.gjun.ecs.dto.request.ChangePswReq;
 import com.gjun.ecs.dto.request.LoginReq;
 import com.gjun.ecs.dto.request.RegisterReq;
 import com.gjun.ecs.dto.request.UpdateUserReq;
+import com.gjun.ecs.dto.response.LoginResp;
 import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.exception.ApplicationException;
 import com.gjun.ecs.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 
 @RestController
@@ -76,12 +79,34 @@ public class AuthController extends BaseController {
    * @throws ApplicationException
    */
   @PostMapping("/login")
-  @Operation(summary = "使用者登入", description = "使用帳號密碼登入，成功回傳 JWT Token")
+  @Operation(summary = "使用者登入", description = "成功後會自動寫入 HttpOnly Cookie")
   public ResponseEntity<Outbound> login(
-      @Valid @RequestBody LoginReq request)
+      @Valid @RequestBody LoginReq request,
+      HttpServletResponse response)
       throws ApplicationException {
-    Outbound response = authService.login(request);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+      Outbound outbound = authService.login(request);
+
+      // 取出 LoginResp 物件
+      LoginResp loginData = (LoginResp) outbound.getResult();
+
+      // 從物件中抽取出 token 字串，用來寫入 Cookie
+      String token = loginData.getToken();
+
+        // 建立 HttpOnly Cookie
+        Cookie cookie = new Cookie("token", token);
+        cookie.setHttpOnly(true);  // 防止 JS 讀取 (防 XSS)
+        cookie.setSecure(false);   // 開發環境 http 設 false，生產環境 https 設 true
+        cookie.setPath("/");       // 全站路徑可用
+        cookie.setMaxAge(24 * 60 * 60); // 有效期 1 天
+
+        // 根據是否勾選保持登入來設定 Cookie 的壽命
+        // 如果 loginData.isRememberMe() 為 true，給 7 天，否則 1 天
+        int maxAge = loginData.isRememberMe() ? (7 * 24 * 60 * 60) : (24 * 60 * 60);
+        cookie.setMaxAge(maxAge);
+
+        response.addCookie(cookie);
+
+    return ResponseEntity.status(HttpStatus.OK).body(outbound);
   }
 
   /**
@@ -92,11 +117,9 @@ public class AuthController extends BaseController {
    * @throws ApplicationException
    */
   @GetMapping("/finduser")
-  public ResponseEntity<Outbound> getUser(
-      @RequestHeader(name = "Authorization") String Bearertoken)
-      throws ApplicationException {
-    String token = extractBearerToken(Bearertoken);
-    Outbound response = authService.findUserByUsername(token);
+  public ResponseEntity<Outbound> getUser()  throws ApplicationException{
+    String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    Outbound response = authService.findUserByUsername(username);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
@@ -147,9 +170,18 @@ public class AuthController extends BaseController {
    * 登出使用者
    */
   @PostMapping("/logout")
-  @Operation(summary = "使用者登出")
-  public ResponseEntity<Outbound> logout() {
-    Outbound response = authService.logout();
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+  @Operation(summary = "使用者登出", description = "手動清除瀏覽器端的 Cookie")
+  public ResponseEntity<Outbound> logout(HttpServletResponse response) {
+    
+      // 建立同名且立即過期的 Cookie
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+    
+        response.addCookie(cookie);
+
+    Outbound resp = authService.logout();
+    return ResponseEntity.status(HttpStatus.OK).body(resp);
   }
 }

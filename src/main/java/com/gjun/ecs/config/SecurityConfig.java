@@ -31,15 +31,25 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 開啟CORS                                                                       
-            .authorizeHttpRequests(auth -> auth
+        .cors(cors -> cors.configurationSource(corsConfigurationSource())) // 開啟CORS
+        
+        // 設定為無狀態模式，不產生 HttpSession
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)
+        )
 
-            // 允許 Swagger 、 登入註冊
-            .requestMatchers("/**", "/api/login", "/api/register", "/api/user",
-                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html") // 白名單
-                
-            // 允許所有 API 都可訪問
-            .permitAll() 
+        .authorizeHttpRequests(auth -> auth
+
+          // 白名單路徑
+              .requestMatchers( 
+                "/api/login", 
+                "/api/register", 
+                "/api/user",
+                "/swagger-ui/**", 
+                "/v3/api-docs/**", 
+                "/swagger-ui.html",
+                "/api/payment/params/**"
+              ).permitAll() // 允許所有 API 都可訪問 
 
             // 確保綠界 Callback 接口是完全公開的，且不經過 JWT 驗證
             .requestMatchers("/api/payment/params/**").permitAll()

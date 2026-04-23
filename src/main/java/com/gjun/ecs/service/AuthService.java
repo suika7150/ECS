@@ -93,9 +93,6 @@ public class AuthService {
    */
   public Outbound login(LoginReq req) throws ApplicationException {
 
-    System.out.println("=== 登入偵錯 ===");
-    System.out.println("帳號: " + req.getUsername());
-    System.out.println("RememberMe 狀態: " + req.isRememberMe());
     UserInfo userInfo = userService.findUserByUsername(req.getUsername());
 
     if (userInfo == null) {
@@ -106,7 +103,11 @@ public class AuthService {
         userInfo.getPassword())) {
       throw new ApplicationException(ResultCode.PASSWORD_NOT_MATCH);
     }
+
+    // 生成 Token
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());
+
+    // 回傳給 Controller 的 DTO，Controller 從這裡拿 token 寫入 Cookie
     LoginResp loginResp = LoginResp.builder()
         .token(token)
         .role(userInfo.getRole())
@@ -124,10 +125,8 @@ public class AuthService {
    * @param token
    * @return
    */
-  public Outbound findUserByUsername(String token)
-      throws ApplicationException {
+  public Outbound findUserByUsername(String username)throws ApplicationException {
 
-    String username = jwtUtil.getUsernameFromToken(token);
     UserInfo userInfo = userService.findUserByUsername(username);
 
     if (userInfo == null) {

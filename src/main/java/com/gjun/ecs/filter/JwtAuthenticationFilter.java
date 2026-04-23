@@ -1,6 +1,7 @@
 package com.gjun.ecs.filter;
 
 import java.io.IOException;
+import jakarta.servlet.http.Cookie;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,50 +39,47 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return;
     }
 
-		String authHeader = request.getHeader("Authorization");
-		System.out.println("🟡 進入 JwtAuthenticationFilter");
-
-		if (authHeader != null && authHeader.startsWith("Bearer ")) {
-			String token = authHeader.substring(7).trim();
-			try {
-				String username = jwtUtil.getUsernameFromToken(token);
-				System.out.println("🔑 Token username: " + username);
-
-				// 若使用者尚未被驗證
-				if (username != null && SecurityContextHolder.getContext()
-						.getAuthentication() == null) {
-					UserInfo userInfo = userService
-							.findUserByUsername(username);
-					System.out.println(
-							"🔍 從資料庫查到的使用者: " + userInfo.getUsername());
-
-					if (jwtUtil.validateToken(token, userInfo)) {
-						// List<GrantedAuthority> authorities = List
-						// .of(new SimpleGrantedAuthority("ROLE_"
-						// + userInfo.getRole().toUpperCase()));
-
-						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-								userInfo, null, null);
-
-						authToken
-								.setDetails(new WebAuthenticationDetailsSource()
-										.buildDetails(request));
-						SecurityContextHolder.getContext()
-								.setAuthentication(authToken);
-						System.out.println("✅ 驗證成功，設置 Authentication");
-					} else {
-						System.out.println("⚠️ 已存在 Authentication，不再處理");
-
-					}
-				}
-			} catch (Exception e) {
-				System.out.println("🛑 Token 解析失敗: " + e.getMessage());
-
-				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.getWriter().write("Token 無效或過期");
-				return;
+	// 從 Cookie 中拿 Token
+	String token = null;
+	if(request.getCookies() != null) {
+		for(Cookie cookie : request.getCookies()) {
+			if("token".equals(cookie.getName())){
+				token = cookie.getValue();
+				break;
 			}
 		}
+	}
+
+	System.out.println("🟡 進入 JwtAuthenticationFilter，從 Cookie 取得 Token: " + (token != null ? "存在" : "不存在"));
+
+	// 如果拿到 Token 開始驗證邏輯
+	if(token != null) {
+		try{
+			String username = jwtUtil.getUsernameFromToken(token);
+			
+			if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
+				UserInfo userInfo = userService.findUserByUsername(username);
+				
+				if(jwtUtil.validateToken(token, userInfo)){
+					// 建立認證物件
+                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                userInfo, null, null); // Role 可以塞進第三個參數
+				
+						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        
+                        // 存入 SecurityContext，AuthController 就能 getName() 拿到帳號了
+                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        
+                        System.out.println("✅ Cookie Token 驗證成功，User: " + username);		
+				
+				}
+			}
+		}catch(Exception e){
+			System.out.println("🛑 Cookie Token 解析失敗: " + e.getMessage());
+		}	
+	}
+		
+		
 
 		filterChain.doFilter(request, response);
 	}

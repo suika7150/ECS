@@ -21,9 +21,6 @@ public class JwtUtil {
 	// @Value("${jwt.secret}")
 	@Autowired
 	private JwtProperties jwtProperties;
-	
-	// JWT 的有效時間（毫秒）- 這裡設定為 1 小時
-	// private static  final long EXPIRATION_MS = 20_000;
 
 	/**
 	 * 產生 JWT token，內含 username（主體）與自定義的 role 欄位
