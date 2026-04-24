@@ -55,7 +55,7 @@ public class ProductController {
     Outbound resp ;
     
     if(keyword !=null && !keyword.isEmpty()){
-      //如果有提供 keyword，則呼叫搜尋方法
+      // 如果有提供 keyword，則呼叫搜尋方法
       resp = productService.searchProducts(keyword);
     }else{
       resp = productService.getAllProducts();
