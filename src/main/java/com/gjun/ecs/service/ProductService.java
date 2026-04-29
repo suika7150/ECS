@@ -32,6 +32,7 @@ public Outbound searchProducts(String keyword) {
             products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
           }
     List<ProductShow> result = products.stream()
+        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
         .map(product -> {
               return ProductShow.builder()
               .id(product.getId())
@@ -58,7 +59,7 @@ public Outbound searchProducts(String keyword) {
         .price(req.getPrice())
         .stock(req.getStock())
         .description(req.getDescription())
-        .states(req.getStates())
+        .status(req.getStatus())
         .imageData(imageInfo.imageData)
         .imageType(imageInfo.imageType)
         .build();
@@ -76,7 +77,7 @@ public Outbound searchProducts(String keyword) {
         .name(product.getName())
         .price(product.getPrice())
         .stock(product.getStock())
-        .states(product.getStates())
+        .status(product.getStatus())
         .description(product.getDescription())
         .category(product.getCategory())
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
@@ -87,9 +88,8 @@ public Outbound searchProducts(String keyword) {
 
   public Outbound getAllProducts() {
     List<ProductShow> result = productRepository.findAll().stream()
-    
+        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
         .map(product -> {
-
           return ProductShow.builder()
               .id(product.getId())
               .name(product.getName())
@@ -115,7 +115,7 @@ public Outbound searchProducts(String keyword) {
         .category(req.getCategory())
         .stock(req.getStock())
         .price(req.getPrice())
-        .states(req.getStates())
+        .status(req.getStatus())
         .description(req.getDescription())
         .imageData(imageInfo.imageData)
         .imageType(imageInfo.imageType)
@@ -139,7 +139,7 @@ public Outbound searchProducts(String keyword) {
               .description(product.getDescription())
               .category(product.getCategory())
               .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-              .states(ProductStatus.getDesc(product.getStates())).build();
+              .status(ProductStatus.getDesc(product.getStatus())).build();
         }).collect(Collectors.toList());
 
     return Outbound.ok(result);
@@ -147,7 +147,7 @@ public Outbound searchProducts(String keyword) {
 
   public Outbound deleteProduct(Integer id) {
 
-    productRepository.updateProductStates(id, ProductStatus.DELETE.getCode());
+    productRepository.updateProductStatus(id, ProductStatus.DELETED.getCode());
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Product not found after update"));
 
@@ -159,7 +159,7 @@ public Outbound searchProducts(String keyword) {
         .description(product.getDescription())
         .category(product.getCategory())
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-        .states(ProductStatus.getDesc(product.getStates()))
+        .status(ProductStatus.getDesc(product.getStatus()))
         .build();
 
     return Outbound.ok(response);

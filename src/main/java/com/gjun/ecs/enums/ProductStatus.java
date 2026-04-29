@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ProductStatus {
-  ONSALE("2", "銷售中"),
-  STOPED("1", "停售"),
-  DELETE("0", "刪除");
+  ON_SALE("ON_SALE", "銷售中"),
+  OFF_SALE("OFF_SALE", "停售"),
+  DELETED("DELETED", "刪除");
 
   private final String code;
   private final String desc;
