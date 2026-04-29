@@ -73,8 +73,8 @@ public class Product extends BaseEntity {
   /**
    * 商品狀態
    */
-  @Column(name = "states", nullable = false)
-  private String states;
+  @Column(name = "status", nullable = false)
+  private String status;
 
 
 }
