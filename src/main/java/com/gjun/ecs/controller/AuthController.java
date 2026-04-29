@@ -128,6 +128,7 @@ public class AuthController extends BaseController {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     Outbound response = authService.findUserByUsername(username);
     return ResponseEntity.status(HttpStatus.OK).body(response);
+    
   }
 
   /**
