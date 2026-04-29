@@ -24,7 +24,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Product", description = "商品相關 API")
-@CrossOrigin(origins = "*") //允許任何來源
 public class ProductController {
 
   @Autowired

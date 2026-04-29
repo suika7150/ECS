@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api")
 @Tag(name = "Authentication", description = "使用者認證相關 API")
-public class AuthController extends BaseController {
+public class AuthController {
 
   @Autowired
   private AuthService authService;

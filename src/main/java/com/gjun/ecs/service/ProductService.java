@@ -11,7 +11,7 @@ import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.dto.response.ProductResp;
 import com.gjun.ecs.dto.response.ProductShow;
 import com.gjun.ecs.entity.Product;
-import com.gjun.ecs.enums.ProductStutes;
+import com.gjun.ecs.enums.ProductStatus;
 import com.gjun.ecs.repository.ProductRepository;
 import com.gjun.ecs.utils.ImageUtils;
 
@@ -87,8 +87,7 @@ public Outbound searchProducts(String keyword) {
 
   public Outbound getAllProducts() {
     List<ProductShow> result = productRepository.findAll().stream()
-        // .filter(product ->
-        // product.getStates().equals(ProductStutes.ONSALE.getCode()))
+    
         .map(product -> {
 
           return ProductShow.builder()
@@ -140,7 +139,7 @@ public Outbound searchProducts(String keyword) {
               .description(product.getDescription())
               .category(product.getCategory())
               .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-              .states(ProductStutes.getDesc(product.getStates())).build();
+              .states(ProductStatus.getDesc(product.getStates())).build();
         }).collect(Collectors.toList());
 
     return Outbound.ok(result);
@@ -148,7 +147,7 @@ public Outbound searchProducts(String keyword) {
 
   public Outbound deleteProduct(Integer id) {
 
-    productRepository.updateProductStates(id, ProductStutes.DELETE.getCode());
+    productRepository.updateProductStates(id, ProductStatus.DELETE.getCode());
     Product product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Product not found after update"));
 
@@ -160,7 +159,7 @@ public Outbound searchProducts(String keyword) {
         .description(product.getDescription())
         .category(product.getCategory())
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-        .states(ProductStutes.getDesc(product.getStates()))
+        .states(ProductStatus.getDesc(product.getStates()))
         .build();
 
     return Outbound.ok(response);
