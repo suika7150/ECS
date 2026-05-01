@@ -53,18 +53,18 @@ public class OrderService{
                 throw new RuntimeException("商品不存在" + item.getProductId());
             }
 
-            log.info("🛒 商品名稱={} | ID={} | 原庫存={} | 訂購數量={}",
+            log.info("商品名稱={} | ID={} | 原庫存={} | 訂購數量={}",
                  product.getName(), product.getId(), product.getStock(), item.getQuantity());
 
             if(product.getStock() < item.getQuantity()) {
-             log.warn("❌ 庫存不足：{} (剩餘 {}，訂購 {})",
+             log.warn("庫存不足：{} (剩餘 {}，訂購 {})",
                      product.getName(), product.getStock(), item.getQuantity());
                 throw new RuntimeException("商品庫存不足: " + product.getName());
             }
             product.setStock(product.getStock() - item.getQuantity());
             productRepository.save(product);
         
-            log.info("✅ 庫存更新後：{} (剩餘 {}，訂購 {})",
+            log.info("庫存更新後：{} (剩餘 {}，訂購 {})",
                  product.getName(), product.getStock(), item.getQuantity());
 
         }
@@ -75,7 +75,7 @@ public class OrderService{
             .address(req.getAddress())
             .shippingMethod(req.getShippingMethod())
             .shippingFee(req.getShippingFee() == null ? 0 : req.getShippingFee())
-            .notes(req.getNotes())
+            .notes(req.getNotes() == null || req.getNotes().isBlank() ? "None" : req.getNotes())
             .paymentMethod(req.getPaymentMethod())
             .couponCode(req.getCouponCode())
             .discount(req.getDiscount() == null ? 0 : req.getDiscount())
@@ -129,7 +129,7 @@ public class OrderService{
         * @param status 篩選狀態 (UNPAID, PAID, SHIPPED, COMPLETED 等)
         */
         public List<OrderResp> getUserOrders(String status){
-            log.info("📢 收到訂單篩選請求，原始狀態參數: [{}]", status);
+            log.info("收到訂單篩選請求，原始狀態參數: [{}]", status);
             List<Order> orders;
         
             // 判斷是否需要篩選狀態
@@ -138,12 +138,12 @@ public class OrderService{
                 orders = orderRepository.findAllByOrderByIdDesc();
             } else {
                 String normalizedStatus = status.toLowerCase();
-                log.info("🔍 執行條件查詢，標準化狀態碼: [{}]", normalizedStatus);
+                log.info("執行條件查詢，標準化狀態碼: [{}]", normalizedStatus);
 
                 orders = orderRepository.findByPaymentStatusOrderByIdDesc(normalizedStatus);
             }
 
-            log.info("✅ 查詢完成，結果筆數: {}", orders.size());
+            log.info("查詢完成，結果筆數: {}", orders.size());
 
             return orders.stream()
                 .map(this::convertToOrderResp)
