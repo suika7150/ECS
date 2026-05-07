@@ -123,7 +123,7 @@ public ResponseEntity<Outbound> getProductDetail(@PathVariable Integer id) throw
    * @param id
    * @return
    */
-  @PutMapping("/deleteProduct/{id}")
+  @PutMapping("/deleteProducts/{id}")
   @Operation(summary = "刪除商品")
   public ResponseEntity<Outbound> deleteProduct(@PathVariable Integer id) throws Exception {
     Outbound resp = productService.deleteProduct(id);
