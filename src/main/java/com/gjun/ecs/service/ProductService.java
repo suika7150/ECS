@@ -24,7 +24,7 @@ public class ProductService {
 public Outbound searchProducts(String keyword) {
     List<Product> products;
 
-          // 判斷邏輯：如果關鍵字是空的，就抓全部；否則才執行模糊搜尋
+          // 如果關鍵字是空的，就抓全部；否則才執行模糊搜尋
           if(keyword == null || keyword.trim().isEmpty()) {
             products = productRepository.findAll();
           } else {
@@ -96,7 +96,7 @@ public Outbound searchProducts(String keyword) {
               .price(product.getPrice())
               .description(product.getDescription())
               .category(product.getCategory())
-              .rating(null) //TODO根據實際資料庫欄位填入product.getRating()
+              .rating(null) 
               .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
               .build();
         }).collect(Collectors.toList());
@@ -163,6 +163,16 @@ public Outbound searchProducts(String keyword) {
         .build();
 
     return Outbound.ok(response);
+  }
+
+  /**
+   * 篩選商品
+   * 
+   * @return
+   */
+  public Outbound getCategories() {
+    List<String> categories = productRepository.findDistinctCategories();
+    return Outbound.ok(categories);
   }
 
   /**

@@ -130,6 +130,19 @@ public ResponseEntity<Outbound> getProductDetail(@PathVariable Integer id) throw
     return ResponseEntity.ok(resp);
   }
 
+  /**
+   * 篩選商品
+   * 
+   * @param id
+   * @return
+   */
+  @GetMapping("/categories")
+  @Operation(summary = "取得商品類別")
+  public ResponseEntity<Outbound> getCategories() throws Exception {
+    Outbound resp = productService.getCategories();
+    return ResponseEntity.ok(resp);
+}
+
 
   /**
   * 取得商品圖片

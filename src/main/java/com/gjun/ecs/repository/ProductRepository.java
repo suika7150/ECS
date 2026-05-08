@@ -39,4 +39,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	" LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"+
 	" LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
+
+	// 篩選商品
+	@Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL")
+	List<String> findDistinctCategories();
 }
