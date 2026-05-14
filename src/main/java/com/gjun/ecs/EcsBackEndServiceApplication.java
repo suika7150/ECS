@@ -10,8 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class EcsBackEndServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EcsBackEndServiceApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(EcsBackEndServiceApplication.class, args);
+  }
 }

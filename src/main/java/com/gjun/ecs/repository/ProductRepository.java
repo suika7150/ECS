@@ -1,46 +1,41 @@
 package com.gjun.ecs.repository;
 
-
+import com.gjun.ecs.entity.Product;
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.gjun.ecs.entity.Product;
-
-import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
-
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-	@Modifying
-    @Transactional
-    @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :id")
-    void updateStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
+  @Modifying
+  @Transactional
+  @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :id")
+  void updateStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
 
-	@Modifying
-	@Transactional
-	@Query("UPDATE Product p SET p.status = :status WHERE p.id = :id")
-	void updateProductStatus(@Param("id") Integer id,
-			@Param("status") String status);
+  @Modifying
+  @Transactional
+  @Query("UPDATE Product p SET p.status = :status WHERE p.id = :id")
+  void updateProductStatus(@Param("id") Integer id, @Param("status") String status);
 
+  // 新增 查商品時加悲觀鎖
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @Query("SELECT p FROM Product p WHERE p.id = :id")
+  Product findByIdForUpdate(@Param("id") Integer id);
 
-	// 新增 查商品時加悲觀鎖
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
-	@Query("SELECT p FROM Product p WHERE p.id = :id")
-	Product findByIdForUpdate(@Param("id") Integer id);
+  // 查詢商品列表
+  @Query(
+      "SELECT p FROM Product p WHERE"
+          + " LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"
+          + " LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"
+          + " LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  List<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
 
-	//查詢商品列表
-	@Query("SELECT p FROM Product p WHERE" + 
-	" LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"+
-	" LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"+
-	" LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-	List<Product> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
-
-	// 篩選商品
-	@Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL")
-	List<String> findDistinctCategories();
+  // 篩選商品
+  @Query("SELECT DISTINCT p.category FROM Product p WHERE p.category IS NOT NULL")
+  List<String> findDistinctCategories();
 }

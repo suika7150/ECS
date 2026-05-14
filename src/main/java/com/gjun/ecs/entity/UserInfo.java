@@ -19,65 +19,44 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class UserInfo extends BaseEntity {
 
-  /**
-   * 使用者 ID
-   */
+  /** 使用者 ID */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  /**
-   * 使用者帳號
-   */
+  /** 使用者帳號 */
   @Column(name = "username", unique = true, nullable = false)
   private String username;
 
-  /**
-   * 使用者密碼
-   */
+  /** 使用者密碼 */
   @Column(name = "password", nullable = false)
   private String password;
 
-  /**
-   * 使用者電子郵件
-   */
+  /** 使用者電子郵件 */
   @Column(name = "email", unique = true, nullable = false)
   private String email;
 
-  /**
-   * 使用者姓名
-   */
+  /** 使用者姓名 */
   @Column(name = "full_name")
   private String fullName;
 
-  /**
-   * 使用者電話
-   */
+  /** 使用者電話 */
   @Column(name = "phone")
   private String phone;
 
-  /**
-   * 使用者性別
-   */
+  /** 使用者性別 */
   @Column(name = "gender")
   private String gender;
 
-  /**
-   * 使用者生日
-   */
+  /** 使用者生日 */
   @Column(name = "birthday")
-  private String birthday;  
+  private String birthday;
 
-  /**
-   * 使用者角色
-   */
+  /** 使用者角色 */
   @Builder.Default // 預設值
   private String role = "USER";
 
-  /**
-   * 使用者狀態
-   */
+  /** 使用者狀態 */
   @Builder.Default // 預設值
   private Integer status = 1;
-
 }

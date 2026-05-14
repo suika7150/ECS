@@ -9,17 +9,21 @@ import lombok.Data;
 @Schema(description = "新增選項資料")
 public class AddOptionReq {
 
-    @Schema(description = "分類選項名稱", example = "category")
-    private String listName;
-    @Schema(description = "選項名稱", example = "電子產品")
-    private String name;
-    @Schema(description = "選項值", example = "1")
-    private String value;
-    @Schema(description = "排序", example = "0")
-    private Integer sortOrder;
-    @Schema(description = "是否啟用", example = "true")
-    private Boolean isActive;
-    @Schema(description = "描述", example = "商品分類")
-    private String description;
+  @Schema(description = "分類選項名稱", example = "category")
+  private String listName;
 
+  @Schema(description = "選項名稱", example = "電子產品")
+  private String name;
+
+  @Schema(description = "選項值", example = "1")
+  private String value;
+
+  @Schema(description = "排序", example = "0")
+  private Integer sortOrder;
+
+  @Schema(description = "是否啟用", example = "true")
+  private Boolean isActive;
+
+  @Schema(description = "描述", example = "商品分類")
+  private String description;
 }

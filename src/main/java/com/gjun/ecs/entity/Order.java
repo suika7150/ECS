@@ -1,9 +1,7 @@
 package com.gjun.ecs.entity;
 
-import java.util.List;
-
 import jakarta.persistence.*;
-
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,61 +15,60 @@ import lombok.NoArgsConstructor;
 @Table(name = "orders")
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name="name",nullable=false)
-    private String name; // 姓名
+  @Column(name = "name", nullable = false)
+  private String name; // 姓名
 
-    @Column(name="phone",nullable=false)
-    private String phone; // 電話
+  @Column(name = "phone", nullable = false)
+  private String phone; // 電話
 
-    @Column(name="address",nullable=false)
-    private String address; // 地址
+  @Column(name = "address", nullable = false)
+  private String address; // 地址
 
-    @Column(name="shipping_method",nullable=false)
-    private String shippingMethod; // 運送方式
+  @Column(name = "shipping_method", nullable = false)
+  private String shippingMethod; // 運送方式
 
-    @Column(name="shipping_fee",nullable=false)
-    private Integer shippingFee; // 運費
+  @Column(name = "shipping_fee", nullable = false)
+  private Integer shippingFee; // 運費
 
-    @Column(name="notes",nullable=true)
-    private String notes; // 備註
+  @Column(name = "notes", nullable = true)
+  private String notes; // 備註
 
-    @Column(name="payment_method",nullable=false)
-    private String paymentMethod; // 付款方式
+  @Column(name = "payment_method", nullable = false)
+  private String paymentMethod; // 付款方式
 
-    @Column(name="coupon_code",length=50)
-    private String couponCode; // 優惠券代碼
-    
-    @Builder.Default
-    @Column(name="discount",nullable = false)
-    private Integer discount = 0; // 優惠券折扣金額
+  @Column(name = "coupon_code", length = 50)
+  private String couponCode; // 優惠券代碼
 
-    @Column(name="total",nullable=false)
-    private Integer total; // 總金額
+  @Builder.Default
+  @Column(name = "discount", nullable = false)
+  private Integer discount = 0; // 優惠券折扣金額
 
-    @Column(name="card_last4",length=4)
-    private String cardLast4; // 信用卡最後四碼
+  @Column(name = "total", nullable = false)
+  private Integer total; // 總金額
 
-    @Builder.Default
-    @Column(name="payment_status", nullable = false)
-    private String paymentStatus = "pending"; // 付款狀態
+  @Column(name = "card_last4", length = 4)
+  private String cardLast4; // 信用卡最後四碼
 
-    @Column(name="created_at",updatable=false,columnDefinition = "DATETIME(0)")
-    private java.time.LocalDateTime createdAt;
+  @Builder.Default
+  @Column(name = "payment_status", nullable = false)
+  private String paymentStatus = "pending"; // 付款狀態
 
-    @jakarta.persistence.PrePersist
-    protected void onCreate() {
-        createdAt = java.time.LocalDateTime.now();
-    }
+  @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME(0)")
+  private java.time.LocalDateTime createdAt;
 
-    @Column(name = "merchant_trade_no" , length = 50)
-    private String merchantTradeNo ; // 交易編號
+  @jakarta.persistence.PrePersist
+  protected void onCreate() {
+    createdAt = java.time.LocalDateTime.now();
+  }
 
+  @Column(name = "merchant_trade_no", length = 50)
+  private String merchantTradeNo; // 交易編號
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<OrderItem> items; // 訂單明細
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  private List<OrderItem> items; // 訂單明細
 }

@@ -6,10 +6,7 @@ import lombok.Data;
 @Data
 public class ChangePswReq {
 
-  @NotBlank
-  private String username;
+  @NotBlank private String username;
 
-  @NotBlank
-  private String newPassword;
-
+  @NotBlank private String newPassword;
 }

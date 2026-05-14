@@ -1,4 +1,3 @@
-
 package com.gjun.ecs.dto.response;
 
 import lombok.Builder;
@@ -8,7 +7,7 @@ import lombok.Data;
 @Builder
 public class SelectOptions {
 
-    private String label;
-    private String value;
-    private Integer sortOrder;
+  private String label;
+  private String value;
+  private Integer sortOrder;
 }

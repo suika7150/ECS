@@ -1,13 +1,11 @@
 package com.gjun.ecs.repository;
 
-import org.springframework.stereotype.Repository;
 import com.gjun.ecs.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment,Long>{
+public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    Payment findByMerchantTradeNo(String merchantTradeNo);    
-
+  Payment findByMerchantTradeNo(String merchantTradeNo);
 }

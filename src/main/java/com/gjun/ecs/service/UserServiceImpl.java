@@ -1,22 +1,19 @@
 package com.gjun.ecs.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.gjun.ecs.entity.UserInfo;
 import com.gjun.ecs.repository.UserRepository;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-  @Autowired
-  private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
   /**
    * 根據 username 查找使用者
-   * 
+   *
    * @param username
    */
   @Override
@@ -26,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * 儲存使用者
-   * 
+   *
    * @param userInfo
    */
   @Override
@@ -36,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * 判斷帳號是否存在
-   * 
+   *
    * @param username
    */
   @Override
@@ -46,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * 判斷 Email 是否存在
-   * 
+   *
    * @param email
    */
   @Override
@@ -54,12 +51,9 @@ public class UserServiceImpl implements UserService {
     return userRepository.existsByEmail(email);
   }
 
-  /**
-   * 取得所有使用者
-   */
+  /** 取得所有使用者 */
   @Override
   public List<UserInfo> findAll() {
     return userRepository.findAll();
   }
-
 }

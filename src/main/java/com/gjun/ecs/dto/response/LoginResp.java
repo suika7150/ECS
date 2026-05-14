@@ -7,10 +7,9 @@ import lombok.Data;
 @Builder
 public class LoginResp {
 
-    private String token;
-    private String role;
-    private String username;
-    private String fullName;
-    private boolean rememberMe;
-
+  private String token;
+  private String role;
+  private String username;
+  private String fullName;
+  private boolean rememberMe;
 }

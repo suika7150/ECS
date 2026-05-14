@@ -22,5 +22,4 @@ public enum ProductStatus {
     }
     return code;
   }
-
 }

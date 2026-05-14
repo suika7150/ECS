@@ -1,36 +1,35 @@
 package com.gjun.ecs.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Data;
 
 @Data
 public class EcpayParamsResp {
-    
-    @JsonProperty("MerchantID")
-    private String merchantID;
 
-    @JsonProperty("MerchantTradeNo")
-    private String merchantTradeNo;
+  @JsonProperty("MerchantID")
+  private String merchantID;
 
-    @JsonProperty("RtnCode")
-    private String rtnCode;    // 付款狀態 (0:未付, 1:已付, 2:失敗)
-    
-    @JsonProperty("RtnMsg")
-    private String rtnMsg;
+  @JsonProperty("MerchantTradeNo")
+  private String merchantTradeNo;
 
-    @JsonProperty("TradeAmt")
-    private Integer tradeAmt;
+  @JsonProperty("RtnCode")
+  private String rtnCode; // 付款狀態 (0:未付, 1:已付, 2:失敗)
 
-    @JsonProperty("PaymentDate")
-    private String paymentDate;
+  @JsonProperty("RtnMsg")
+  private String rtnMsg;
 
-    @JsonProperty("CheckMacValue")
-    private String checkMacValue; // 校驗資料是否正確 
-    
-    @JsonProperty("PaymentType")
-    private String paymentType = "aio"; 
+  @JsonProperty("TradeAmt")
+  private Integer tradeAmt;
 
-    @JsonProperty("ChoosePayment")
-    private String choosePayment = "ALL"; 
+  @JsonProperty("PaymentDate")
+  private String paymentDate;
+
+  @JsonProperty("CheckMacValue")
+  private String checkMacValue; // 校驗資料是否正確
+
+  @JsonProperty("PaymentType")
+  private String paymentType = "aio";
+
+  @JsonProperty("ChoosePayment")
+  private String choosePayment = "ALL";
 }

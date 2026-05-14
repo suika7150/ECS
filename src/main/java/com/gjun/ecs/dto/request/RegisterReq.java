@@ -25,7 +25,7 @@ public class RegisterReq {
   public String email;
 
   @NotBlank
-  @Schema(description = "信箱驗證碼",example = "123456")
+  @Schema(description = "信箱驗證碼", example = "123456")
   public String smsCode;
 
   @NotBlank
@@ -35,7 +35,7 @@ public class RegisterReq {
   @NotBlank
   @Schema(description = "使用者姓名", example = "John Doe")
   public String fullName;
-  
+
   @NotBlank
   @Schema(description = "性別", example = "M")
   public String gender;
@@ -47,5 +47,4 @@ public class RegisterReq {
   @NotBlank
   @Schema(description = "手機號碼", example = "0912345678")
   public String phone;
-
-  }
+}
