@@ -43,17 +43,17 @@ public class EcpayService {
     @org.springframework.transaction.annotation.Transactional
     public EcpayParamsResp createPayment(Order order) {
     
-    // 1. 建立一筆新的 Payment 紀錄（這張表是你早上建的）
+    // 建立一筆新的 Payment 紀錄
     Payment payment = new Payment();
     payment.setOrderId(order.getId());         // 關聯訂單 ID
     payment.setTotalAmount(order.getTotal());  // 同步金額
     payment.setRtnCode("0");           // 初始狀態設為 0 (代表未付款)
     
-    // 2. 存入資料庫以取得 paymentId
+    // 存入資料庫以取得 paymentId
     Payment savedPayment = paymentRepository.save(payment);
     
-    // 3. 呼叫你原本就寫好的參數產生邏輯
-    // 這樣就能重複利用你寫好的加密 (CheckMacValue) 邏輯
+    // 呼叫原本就寫好的參數產生邏輯
+    // 這樣就能重複利用寫好的加密 (CheckMacValue) 邏輯
     return generatePaymentParams(savedPayment.getId());
 }
 
@@ -82,18 +82,17 @@ public class EcpayService {
         params.put("ChoosePayment", "Credit");
         params.put("EncryptType", "1");
 
-        // 4. 計算 CheckMacValue
+        // 計算 CheckMacValue
         String checkMacValue = generateCheckMacValue(params);
 
-        // 5. 封裝進 DTO 回傳
+        // 封裝進 DTO 回傳
         EcpayParamsResp resp = new EcpayParamsResp();
         resp.setMerchantID(merchantId);
         resp.setMerchantTradeNo(merchantTradeNo);
         resp.setCheckMacValue(checkMacValue);
         resp.setTradeAmt(payment.getTotalAmount()); // 金額
         resp.setRtnCode(payment.getRtnCode());
-        // 如果你的 DTO 還有其他欄位，記得在這裡補上 set
-        
+
         // 初始狀態 (前端需要知道現在是未付款)
         resp.setRtnCode(payment.getRtnCode());
 
