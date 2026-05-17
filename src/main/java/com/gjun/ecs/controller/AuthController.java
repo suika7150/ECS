@@ -3,9 +3,11 @@ package com.gjun.ecs.controller;
 import com.gjun.ecs.dto.request.ChangePswReq;
 import com.gjun.ecs.dto.request.LoginReq;
 import com.gjun.ecs.dto.request.RegisterReq;
+import com.gjun.ecs.dto.request.SendEmailCodeReq;
 import com.gjun.ecs.dto.request.UpdateUserReq;
 import com.gjun.ecs.dto.response.LoginResp;
 import com.gjun.ecs.dto.response.Outbound;
+import com.gjun.ecs.dto.request.VerifyEmailCodeReq;
 import com.gjun.ecs.exception.ApplicationException;
 import com.gjun.ecs.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authentication", description = "使用者認證相關 API")
 public class AuthController {
 
-  @Autowired private AuthService authService;
+  @Autowired
+  private AuthService authService;
 
   /**
    * 使用者註冊
@@ -50,20 +53,31 @@ public class AuthController {
   /**
    * 發送信箱驗證碼
    *
-   * @param payload 包含 email 的 Map
-   * @return
-   * @throws ApplicationException <-- 必須加上這個
    */
   @PostMapping("/send-email-code")
   @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
-  public ResponseEntity<Outbound> sendEmailCode(@RequestBody java.util.Map<String, String> payload)
+  public ResponseEntity<Outbound> sendEmailCode(@RequestBody SendEmailCodeReq req)
       throws ApplicationException {
 
-    // 從 Payload 取得前端傳來的 email
-    String email = payload.get("email");
-
     // 呼叫 AuthService 的 sendSmsCode 方法傳送驗證碼並回傳結果
-    Outbound response = authService.sendEmailCode(email);
+    Outbound response = authService.sendEmailCode(req.getEmail(), req.getType());
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
+  /**
+   * 驗證信箱驗證碼
+   *
+   */
+  @PostMapping("/verify-email-code")
+  @Operation(summary = "驗證信箱驗證碼", description = "驗證使用者輸入的信箱驗證碼")
+  public ResponseEntity<Outbound> verifyEmailCode(
+      @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
+
+    Outbound response = authService.verifyEmailCode(
+        req.getEmail(),
+        req.getCode(),
+        req.getType());
+
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
