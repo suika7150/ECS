@@ -15,31 +15,31 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("!prod") // 除了生產環境外才載入
 public class SwaggerConfig {
-  private static final String TITLE = "會員系統 API 文件";
-  private static final String DESCRIPTION = "RESTful API 文件說明，提供會員基本操作";
-  public static final String VERSION = "v.1.20240520.01";
+    private static final String TITLE = "電商系統 API 文件";
+    private static final String DESCRIPTION = "RESTful API 文件說明，提供會員基本操作";
+    public static final String VERSION = "v.1.20240520.01";
 
-  @Bean
-  OpenAPI customOpenAPI() {
+    @Bean
+    OpenAPI customOpenAPI() {
 
-    return new OpenAPI()
-        .info(
-            new Info()
-                .title(TITLE)
-                .description(DESCRIPTION)
-                .version(VERSION)
-                .contact(
-                    new Contact().name("開發者").email("dev@example.com").url("https://example.com"))
-                .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
-        .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-        .components(
-            new Components()
-                .addSecuritySchemes(
-                    "bearerAuth",
-                    new SecurityScheme()
-                        .name("Authorization")
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer")
-                        .bearerFormat("JWT")));
-  }
+        return new OpenAPI()
+                .info(
+                        new Info()
+                                .title(TITLE)
+                                .description(DESCRIPTION)
+                                .version(VERSION)
+                                .contact(
+                                        new Contact().name("開發者").email("dev@example.com").url("https://example.com"))
+                                .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(
+                        new Components()
+                                .addSecuritySchemes(
+                                        "bearerAuth",
+                                        new SecurityScheme()
+                                                .name("Authorization")
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")));
+    }
 }
