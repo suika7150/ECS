@@ -7,6 +7,7 @@ import com.gjun.ecs.dto.request.UpdateUserReq;
 import com.gjun.ecs.dto.response.LoginResp;
 import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.dto.response.UserResponse;
+import com.gjun.ecs.dto.request.VerifyLoginCodeReq;
 import com.gjun.ecs.entity.EmailOtp;
 import com.gjun.ecs.entity.UserInfo;
 import com.gjun.ecs.enums.ResultCode;
@@ -58,6 +59,10 @@ public class AuthService {
     // 規則檢查
     if (type == OtpType.REGISTER && exists) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
+    }
+
+    if (type == OtpType.LOGIN && !exists) {
+      throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
     if (type == OtpType.RESET && !exists) {
@@ -188,6 +193,27 @@ public class AuthService {
     if (!passwordEncoder.matches(req.getPassword(), userInfo.getPassword())) {
       throw new ApplicationException(ResultCode.PASSWORD_NOT_MATCH);
     }
+
+    sendEmailCode(userInfo.getEmail(), OtpType.LOGIN);
+
+    return Outbound.ok("登入驗證碼已寄出");
+  }
+
+  /**
+   * 2FA 驗證
+   *
+   * @param req
+   * @return
+   */
+
+  public Outbound verifyLoginCode(VerifyLoginCodeReq req) throws ApplicationException {
+    UserInfo userInfo = userService.findUserByUsername(req.getUsername());
+
+    if (userInfo == null) {
+      throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
+    }
+
+    verifyEmailCode(userInfo.getEmail(), req.getCode(), OtpType.LOGIN);
 
     // 生成 Token
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());

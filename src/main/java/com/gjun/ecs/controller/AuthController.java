@@ -8,6 +8,7 @@ import com.gjun.ecs.dto.request.UpdateUserReq;
 import com.gjun.ecs.dto.response.LoginResp;
 import com.gjun.ecs.dto.response.Outbound;
 import com.gjun.ecs.dto.request.VerifyEmailCodeReq;
+import com.gjun.ecs.dto.request.VerifyLoginCodeReq;
 import com.gjun.ecs.exception.ApplicationException;
 import com.gjun.ecs.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,7 +87,6 @@ public class AuthController {
    *
    * @param request
    * @return
-   * @throws ApplicationException
    */
   @Value("${jwt.normal-expiration}")
   private long jwtExpiration;
@@ -95,17 +95,32 @@ public class AuthController {
   private long jwtRememberMeExpiration;
 
   @PostMapping("/login")
-  @Operation(summary = "使用者登入", description = "成功後會自動寫入 HttpOnly Cookie")
+  @Operation(summary = "使用者登入", description = "帳密成功後寄出 Email OTP")
   public ResponseEntity<Outbound> login(
-      @Valid @RequestBody LoginReq request, HttpServletResponse response)
+      @Valid @RequestBody LoginReq request)
       throws ApplicationException {
     Outbound outbound = authService.login(request);
+    return ResponseEntity.status(HttpStatus.OK).body(outbound);
+  }
 
-    // 取出 LoginResp 物件
-    LoginResp loginData = (LoginResp) outbound.getResult();
+  /**
+   * 2FA 驗證登入，成功後寫入 HttpOnly Cookie
+   *
+   * @param request
+   * @return
+   * @throws ApplicationException
+   */
 
-    // 從物件中抽取出 token 字串，用來寫入 Cookie
-    String token = loginData.getToken();
+  @PostMapping("/login/verify-email-code")
+  @Operation(summary = "登入二階段驗證", description = "驗證 Email OTP，成功後寫入 HttpOnly Cookie")
+  public ResponseEntity<Outbound> verifyLoginCode(
+      @Valid @RequestBody VerifyLoginCodeReq request,
+      HttpServletResponse response)
+      throws ApplicationException {
+    Outbound outbound = authService.verifyLoginCode(request);
+
+    LoginResp loginData = (LoginResp) outbound.getResult(); // 取出 LoginResp 物件
+    String token = loginData.getToken(); // 從物件中抽取出 token 字串，用來寫入 Cookie
 
     // 建立 HttpOnly Cookie
     Cookie cookie = new Cookie("token", token);

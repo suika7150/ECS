@@ -42,6 +42,7 @@ public class SecurityConfig {
                                                                 // 白名單路徑
                                                                 .requestMatchers(
                                                                                 "/api/login",
+                                                                                "/api/login/verify-email-code",
                                                                                 "/api/logout",
                                                                                 "/api/register",
                                                                                 "/api/send-email-code",
