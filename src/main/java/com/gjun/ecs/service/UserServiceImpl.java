@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-  @Autowired private UserRepository userRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   /**
    * 根據 username 查找使用者
@@ -19,6 +20,18 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserInfo findUserByUsername(String username) {
     return userRepository.findByUsername(username).orElse(null);
+  }
+
+  /**
+   * 根據 username 或 email 查找使用者
+   *
+   * @param email
+   */
+  @Override
+  public UserInfo findUserByUsernameOrEmail(String identifier) {
+    return userRepository.findByUsername(identifier)
+        .or(() -> userRepository.findByEmail(identifier))
+        .orElse(null);
   }
 
   /**

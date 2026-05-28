@@ -9,6 +9,9 @@ public interface UserService {
   /** 根據 username 查找使用者 */
   public UserInfo findUserByUsername(String username);
 
+  /** 根據 username 或 email 查找使用者 */
+  public UserInfo findUserByUsernameOrEmail(String identifier);
+
   /**
    * 儲存使用者
    *

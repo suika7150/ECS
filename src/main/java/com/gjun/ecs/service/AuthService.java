@@ -184,7 +184,7 @@ public class AuthService {
    */
   public Outbound login(LoginReq req) throws ApplicationException {
 
-    UserInfo userInfo = userService.findUserByUsername(req.getUsername());
+    UserInfo userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -207,7 +207,8 @@ public class AuthService {
    */
 
   public Outbound verifyLoginCode(VerifyLoginCodeReq req) throws ApplicationException {
-    UserInfo userInfo = userService.findUserByUsername(req.getUsername());
+
+    UserInfo userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
