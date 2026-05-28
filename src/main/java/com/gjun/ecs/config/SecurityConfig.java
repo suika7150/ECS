@@ -48,6 +48,7 @@ public class SecurityConfig {
                                                                                 "/api/send-email-code",
                                                                                 "/api/verify-email-code",
                                                                                 "/api/products/**",
+                                                                                "/api/payment/callback",
                                                                                 "/swagger-ui/**",
                                                                                 "/v3/api-docs/**",
                                                                                 "/swagger-ui.html",

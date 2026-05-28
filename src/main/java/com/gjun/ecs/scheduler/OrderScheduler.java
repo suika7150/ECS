@@ -16,9 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class OrderScheduler {
 
-  @Autowired private OrderRepository orderRepository;
+  @Autowired
+  private OrderRepository orderRepository;
 
-  @Autowired private ProductRepository productRepository;
+  @Autowired
+  private ProductRepository productRepository;
 
   @Scheduled(fixedRate = 3600000) // 每小時執行一次
   @Transactional
@@ -29,8 +31,7 @@ public class OrderScheduler {
     // 定義逾時臨界點：現在時間減去 1 分鐘
     LocalDateTime threshold = LocalDateTime.now().minusMinutes(60);
 
-    List<Order> expiredOrders =
-        orderRepository.findByPaymentStatusAndCreatedAtBefore("pending", threshold);
+    List<Order> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore("pending", threshold);
 
     if (expiredOrders.isEmpty()) {
 
@@ -41,15 +42,14 @@ public class OrderScheduler {
 
     for (Order order : expiredOrders) {
       try {
-        // 1. 遍歷訂單明細，將庫存加回去
+        // 遍歷訂單明細，將庫存加回去
         for (OrderItem item : order.getItems()) {
           productRepository.updateStock(item.getProductId(), item.getQuantity());
           log.info(
               "訂單 {}：商品 ID {} 庫存已補回 {}", order.getId(), item.getProductId(), item.getQuantity());
         }
 
-        // 2. 將訂單狀態改為 "expired" 或 "cancelled"
-        order.setPaymentStatus("expired");
+        order.setPaymentStatus("cancelled");
         orderRepository.save(order);
 
       } catch (Exception e) {

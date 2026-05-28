@@ -4,6 +4,10 @@ import com.gjun.ecs.dto.response.EcpayParamsResp;
 import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.Payment;
 import com.gjun.ecs.repository.PaymentRepository;
+
+import jakarta.transaction.Transactional;
+
+import com.gjun.ecs.repository.OrderRepository;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -22,6 +26,9 @@ public class EcpayService {
   @Autowired
   private PaymentRepository paymentRepository;
 
+  @Autowired
+  private OrderRepository orderRepository;
+
   // 從 application-sit.properties 讀取設定
   @Value("${ecpay.merchant-id}")
   private String merchantId;
@@ -35,8 +42,11 @@ public class EcpayService {
   @Value("${ecpay.return-url}")
   private String returnUrl;
 
+  @Value("${ecpay.client-back-url}")
+  private String clientBackUrl;
+
   /** 這是給 OrderService 呼叫的入口 負責建立 Payment 紀錄並產生綠界參數 */
-  @org.springframework.transaction.annotation.Transactional
+  @Transactional
   public EcpayParamsResp createPayment(Order order) {
 
     // 建立一筆新的 Payment 紀錄
@@ -80,20 +90,25 @@ public class EcpayService {
     params.put("ReturnURL", returnUrl);
     params.put("ChoosePayment", "Credit");
     params.put("EncryptType", "1");
+    params.put("ClientBackURL", clientBackUrl);
 
     // 計算 CheckMacValue
     String checkMacValue = generateCheckMacValue(params);
 
     // 封裝進 DTO 回傳
     EcpayParamsResp resp = new EcpayParamsResp();
-    resp.setMerchantID(merchantId);
-    resp.setMerchantTradeNo(merchantTradeNo);
+    resp.setMerchantID(params.get("MerchantID"));
+    resp.setMerchantTradeNo(params.get("MerchantTradeNo"));
+    resp.setMerchantTradeDate(params.get("MerchantTradeDate"));
+    resp.setPaymentType(params.get("PaymentType"));
+    resp.setTotalAmount(params.get("TotalAmount"));
+    resp.setTradeDesc(params.get("TradeDesc"));
+    resp.setItemName(params.get("ItemName"));
+    resp.setReturnURL(params.get("ReturnURL"));
+    resp.setChoosePayment(params.get("ChoosePayment"));
+    resp.setEncryptType(params.get("EncryptType"));
+    resp.setClientBackURL(params.get("ClientBackURL"));
     resp.setCheckMacValue(checkMacValue);
-    resp.setTradeAmt(payment.getTotalAmount()); // 金額
-    resp.setRtnCode(payment.getRtnCode());
-
-    // 初始狀態 (前端需要知道現在是未付款)
-    resp.setRtnCode(payment.getRtnCode());
 
     return resp;
   }
@@ -132,5 +147,34 @@ public class EcpayService {
     } catch (Exception e) {
       throw new RuntimeException("加密失敗", e);
     }
+  }
+
+  @Transactional
+  public void handleCallback(Map<String, String> formData) {
+    String merchantTradeNo = formData.get("MerchantTradeNo");
+    String rtnCode = formData.get("RtnCode");
+    String rtnMsg = formData.get("RtnMsg");
+    String paymentDate = formData.get("PaymentDate");
+
+    Payment payment = paymentRepository.findByMerchantTradeNo(merchantTradeNo);
+    if (payment == null) {
+      throw new RuntimeException("找不到付款資料: " + merchantTradeNo);
+    }
+
+    payment.setRtnCode(rtnCode);
+    payment.setRtnMsg(rtnMsg);
+    payment.setPaymentDate(paymentDate);
+    paymentRepository.save(payment);
+
+    Order order = orderRepository.findById(payment.getOrderId())
+        .orElseThrow(() -> new RuntimeException("找不到訂單: " + payment.getOrderId()));
+
+    if ("1".equals(rtnCode)) {
+      order.setPaymentStatus("paid");
+    } else {
+      order.setPaymentStatus("cancelled");
+    }
+
+    orderRepository.save(order);
   }
 }
