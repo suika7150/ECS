@@ -90,7 +90,7 @@ public class EcpayService {
     params.put("ReturnURL", returnUrl);
     params.put("ChoosePayment", "Credit");
     params.put("EncryptType", "1");
-    params.put("ClientBackURL", clientBackUrl);
+    params.put("ClientBackURL", clientBackUrl + "/" + merchantTradeNo);
 
     // 計算 CheckMacValue
     String checkMacValue = generateCheckMacValue(params);
@@ -151,6 +151,7 @@ public class EcpayService {
 
   @Transactional
   public void handleCallback(Map<String, String> formData) {
+    System.out.println("收到綠界 Callback: " + formData);
     String merchantTradeNo = formData.get("MerchantTradeNo");
     String rtnCode = formData.get("RtnCode");
     String rtnMsg = formData.get("RtnMsg");

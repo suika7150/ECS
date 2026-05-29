@@ -1,20 +1,44 @@
 package com.gjun.ecs.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class EcpayParamsResp {
 
-  private String MerchantID;
-  private String MerchantTradeNo;
-  private String MerchantTradeDate;
-  private String PaymentType;
-  private String TotalAmount;
-  private String TradeDesc;
-  private String ItemName;
-  private String ReturnURL;
-  private String ChoosePayment;
-  private String EncryptType;
-  private String ClientBackURL;
-  private String CheckMacValue;
+  @JsonProperty("MerchantID")
+  private String merchantID;
+
+  @JsonProperty("MerchantTradeNo")
+  private String merchantTradeNo;
+
+  @JsonProperty("MerchantTradeDate")
+  private String merchantTradeDate;
+
+  @JsonProperty("PaymentType")
+  private String paymentType;
+
+  @JsonProperty("TotalAmount")
+  private String totalAmount;
+
+  @JsonProperty("TradeDesc")
+  private String tradeDesc;
+
+  @JsonProperty("ItemName")
+  private String itemName;
+
+  @JsonProperty("ReturnURL")
+  private String returnURL;
+
+  @JsonProperty("ChoosePayment")
+  private String choosePayment;
+
+  @JsonProperty("EncryptType")
+  private String encryptType;
+
+  @JsonProperty("ClientBackURL")
+  private String clientBackURL;
+
+  @JsonProperty("CheckMacValue")
+  private String checkMacValue;
 }
