@@ -3,6 +3,7 @@ package com.gjun.ecs.controller;
 import com.gjun.ecs.dto.request.OrderReq;
 import com.gjun.ecs.dto.response.OrderResp;
 import com.gjun.ecs.dto.response.Outbound;
+import com.gjun.ecs.enums.OrderStatus;
 import com.gjun.ecs.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Order", description = "訂單相關API")
 public class OrderController {
 
-  @Autowired private OrderService orderService;
+  @Autowired
+  private OrderService orderService;
 
   @PostMapping(path = "/orders", consumes = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "建立訂單")
@@ -32,9 +34,9 @@ public class OrderController {
     return ResponseEntity.ok(Outbound.ok(resp));
   }
 
-  @GetMapping("/orderList")
+  @GetMapping("/orders")
   @Operation(summary = "獲取目前登入使用者的訂單列表")
-  public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false) String status) {
+  public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false) OrderStatus status) {
     List<OrderResp> orders = orderService.getUserOrders(status);
     return ResponseEntity.ok(Outbound.ok(orders));
   }

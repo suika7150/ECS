@@ -2,6 +2,8 @@ package com.gjun.ecs.scheduler;
 
 import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.OrderItem;
+import com.gjun.ecs.enums.OrderStatus;
+import com.gjun.ecs.enums.PaymentStatus;
 import com.gjun.ecs.repository.OrderRepository;
 import com.gjun.ecs.repository.ProductRepository;
 import java.time.LocalDateTime;
@@ -22,16 +24,16 @@ public class OrderScheduler {
   @Autowired
   private ProductRepository productRepository;
 
-  @Scheduled(fixedRate = 3600000) // 每小時執行一次
+  @Scheduled(fixedRate = 10000) // 每小時執行一次
   @Transactional
   public void releaseUnpaidOrders() {
 
     // 排程:更改未付款訂單狀態為 "expired"
     // 回滾未付款訂單的庫存
     // 定義逾時臨界點：現在時間減去 1 分鐘
-    LocalDateTime threshold = LocalDateTime.now().minusMinutes(60);
+    LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
 
-    List<Order> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore("pending", threshold);
+    List<Order> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatus.UNPAID, threshold);
 
     if (expiredOrders.isEmpty()) {
 
@@ -49,7 +51,8 @@ public class OrderScheduler {
               "訂單 {}：商品 ID {} 庫存已補回 {}", order.getId(), item.getProductId(), item.getQuantity());
         }
 
-        order.setPaymentStatus("cancelled");
+        order.setPaymentStatus(PaymentStatus.FAILED);
+        order.setOrderStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
 
       } catch (Exception e) {

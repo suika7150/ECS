@@ -2,6 +2,12 @@ package com.gjun.ecs.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import com.gjun.ecs.enums.OrderStatus;
+import com.gjun.ecs.enums.PaymentMethod;
+import com.gjun.ecs.enums.PaymentStatus;
+import com.gjun.ecs.enums.ShippingStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,8 +44,9 @@ public class Order {
   @Column(name = "notes", nullable = true)
   private String notes; // 備註
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "payment_method", nullable = false)
-  private String paymentMethod; // 付款方式
+  private PaymentMethod paymentMethod; // 付款方式
 
   @Column(name = "coupon_code", length = 50)
   private String couponCode; // 優惠券代碼
@@ -51,12 +58,20 @@ public class Order {
   @Column(name = "total", nullable = false)
   private Integer total; // 總金額
 
-  @Column(name = "card_last4", length = 4)
-  private String cardLast4; // 信用卡最後四碼
+  @Builder.Default
+  @Enumerated(EnumType.STRING)
+  @Column(name = "order_status", nullable = false)
+  private OrderStatus orderStatus = OrderStatus.PENDING_PAYMENT;
 
   @Builder.Default
+  @Enumerated(EnumType.STRING)
   @Column(name = "payment_status", nullable = false)
-  private String paymentStatus = "pending"; // 付款狀態
+  private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
+
+  @Builder.Default
+  @Enumerated(EnumType.STRING)
+  @Column(name = "shipping_status", nullable = false)
+  private ShippingStatus shippingStatus = ShippingStatus.NOT_SHIPPED;;
 
   @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME(0)")
   private java.time.LocalDateTime createdAt;
@@ -69,6 +84,6 @@ public class Order {
   @Column(name = "merchant_trade_no", length = 50)
   private String merchantTradeNo; // 交易編號
 
-  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<OrderItem> items; // 訂單明細
 }

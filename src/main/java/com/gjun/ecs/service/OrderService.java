@@ -8,6 +8,8 @@ import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.OrderItem;
 import com.gjun.ecs.entity.Product;
 import com.gjun.ecs.enums.OrderStatus;
+import com.gjun.ecs.enums.PaymentStatus;
+import com.gjun.ecs.enums.ShippingStatus;
 import com.gjun.ecs.repository.OrderRepository;
 import com.gjun.ecs.repository.ProductRepository;
 import com.gjun.ecs.utils.ImageUtils;
@@ -23,9 +25,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
 
-  @Autowired private OrderRepository orderRepository;
-  @Autowired private ProductRepository productRepository;
-  @Autowired private EcpayService ecpayService;
+  @Autowired
+  private OrderRepository orderRepository;
+  @Autowired
+  private ProductRepository productRepository;
+  @Autowired
+  private EcpayService ecpayService;
 
   private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
@@ -61,39 +66,39 @@ public class OrderService {
       log.info("庫存更新後：{} (剩餘 {}，訂購 {})", product.getName(), product.getStock(), item.getQuantity());
     }
 
-    Order orders =
-        Order.builder()
-            .name(req.getName())
-            .phone(req.getPhone())
-            .address(req.getAddress())
-            .shippingMethod(req.getShippingMethod())
-            .shippingFee(req.getShippingFee() == null ? 0 : req.getShippingFee())
-            .notes(req.getNotes() == null || req.getNotes().isBlank() ? "None" : req.getNotes())
-            .paymentMethod(req.getPaymentMethod())
-            .couponCode(req.getCouponCode())
-            .discount(req.getDiscount() == null ? 0 : req.getDiscount())
-            .total(req.getTotal())
-            .cardLast4(req.getCardLast4())
-            .paymentStatus(OrderStatus.PENDING.name().toLowerCase())
-            .build();
+    Order orders = Order.builder()
+        .name(req.getName())
+        .phone(req.getPhone())
+        .address(req.getAddress())
+        .shippingMethod(req.getShippingMethod())
+        .shippingFee(req.getShippingFee() == null ? 0 : req.getShippingFee())
+        .notes(req.getNotes() == null || req.getNotes().isBlank() ? "None" : req.getNotes())
+        .paymentMethod(req.getPaymentMethod())
+        .couponCode(req.getCouponCode())
+        .discount(req.getDiscount() == null ? 0 : req.getDiscount())
+        .total(req.getTotal())
+        .orderStatus(OrderStatus.PENDING_PAYMENT)
+        .paymentStatus(PaymentStatus.UNPAID)
+        .shippingStatus(ShippingStatus.NOT_SHIPPED)
+        .build();
 
     List<OrderItem> itemList = new ArrayList<>();
 
     for (OrderReq.Item itemReq : req.getItems()) {
-      Product product = productRepository.findById(itemReq.getProductId()).orElse(null);
+      Product product = productRepository.findById(itemReq.getProductId())
+          .orElseThrow(() -> new RuntimeException("商品不存在"));
 
-      OrderItem orderItem =
-          OrderItem.builder()
-              .order(orders)
-              .productId(itemReq.getProductId())
-              .productName(product != null ? product.getName() : "未知商品")
-              .price(product != null ? product.getPrice() : 0)
-              .quantity(itemReq.getQuantity())
-              .productImage(
-                  product != null
-                      ? ImageUtils.toBase64Src(product.getImageData(), product.getImageType())
-                      : "")
-              .build();
+      OrderItem orderItem = OrderItem.builder()
+          .order(orders)
+          .productId(itemReq.getProductId())
+          .productName(product != null ? product.getName() : "未知商品")
+          .price(product != null ? product.getPrice() : 0)
+          .quantity(itemReq.getQuantity())
+          .productImage(
+              product != null
+                  ? ImageUtils.toBase64Src(product.getImageData(), product.getImageType())
+                  : "")
+          .build();
 
       itemList.add(orderItem);
     }
@@ -121,21 +126,19 @@ public class OrderService {
   /**
    * 獲取使用者訂單列表
    *
-   * @param status 篩選狀態 (UNPAID, PAID, SHIPPED, COMPLETED 等)
+   * @param
    */
-  public List<OrderResp> getUserOrders(String status) {
-    log.info("收到訂單篩選請求，原始狀態參數: [{}]", status);
+  public List<OrderResp> getUserOrders(OrderStatus orderStatus) {
+    log.info("收到訂單查詢，status={}", orderStatus);
     List<Order> orders;
 
     // 判斷是否需要篩選狀態
-    if (status == null || status.trim().isEmpty() || status.equalsIgnoreCase("all")) {
-      // 如果 status 是 null、空字串或 "all"，則切換為查詢所有訂單
+    if (orderStatus == null) {
+      // 如果 orderStatus 是 null、空字串或 "all"，則切換為查詢所有訂單
       orders = orderRepository.findAllByOrderByIdDesc();
     } else {
-      String normalizedStatus = status.toLowerCase();
-      log.info("執行條件查詢，標準化狀態碼: [{}]", normalizedStatus);
 
-      orders = orderRepository.findByPaymentStatusOrderByIdDesc(normalizedStatus);
+      orders = orderRepository.findByOrderStatusWithItemsOrderByIdDesc(orderStatus);
     }
 
     log.info("查詢完成，結果筆數: {}", orders.size());
@@ -146,49 +149,71 @@ public class OrderService {
   /** 獲取單筆訂單詳情 */
   public OrderResp getOrderDetail(String orderId) {
 
-    Order order =
-        orderRepository
-            .findById(Long.parseLong(orderId))
-            .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
+    Order order = orderRepository
+        .findByIdWithItems(Long.parseLong(orderId))
+        .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
 
     return convertToOrderResp(order);
   }
 
   private OrderResp convertToOrderResp(Order order) {
 
-    OrderResp resp =
-        OrderResp.builder()
-            .id(order.getId())
-            .name(order.getName())
-            .phone(order.getPhone())
-            .address(order.getAddress())
-            .shippingMethod(order.getShippingMethod())
-            .notes(order.getNotes())
-            .paymentMethod(order.getPaymentMethod())
-            .createdAt(order.getCreatedAt())
-            .discount(order.getDiscount())
-            .total(order.getTotal())
-            .paymentStatus(order.getPaymentStatus())
-            .merchantTradeNo(order.getMerchantTradeNo())
-            .build();
+    OrderResp resp = OrderResp.builder()
+        .id(order.getId())
+        .name(order.getName())
+        .phone(order.getPhone())
+        .address(order.getAddress())
+        .shippingMethod(order.getShippingMethod())
+        .shippingFee(order.getShippingFee())
+        .notes(order.getNotes())
+        .paymentMethod(order.getPaymentMethod())
+        .createdAt(order.getCreatedAt())
+        .discount(order.getDiscount())
+        .total(order.getTotal())
+        .orderStatus(order.getOrderStatus())
+        .paymentStatus(order.getPaymentStatus())
+        .shippingStatus(order.getShippingStatus())
+        .merchantTradeNo(order.getMerchantTradeNo())
+        .build();
 
     if (order.getItems() != null) {
 
-      List<OrderItemResp> itemResps =
-          order.getItems().stream()
-              .map(
-                  item ->
-                      OrderItemResp.builder()
-                          .name(item.getProductName())
-                          .price(item.getPrice())
-                          .quantity(item.getQuantity())
-                          .productImage(item.getProductImage())
-                          .build())
-              .toList();
+      List<OrderItemResp> itemResps = order.getItems().stream()
+          .map(
+              item -> OrderItemResp.builder()
+                  .name(item.getProductName())
+                  .price(item.getPrice())
+                  .quantity(item.getQuantity())
+                  .productImage(item.getProductImage())
+                  .build())
+          .toList();
 
       resp.setItems(itemResps);
     }
 
     return resp;
+  }
+
+  @Transactional
+  public void updatePaymentResult(Long orderId, boolean success) {
+
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(() -> new RuntimeException("找不到訂單"));
+
+    // 防重複 callback
+    if (order.getPaymentStatus() == PaymentStatus.PAID) {
+      log.info("訂單已付款完成，略過重複 callback，orderId={}", orderId);
+      return;
+    }
+
+    if (success) {
+      order.setPaymentStatus(PaymentStatus.PAID);
+      order.setOrderStatus(OrderStatus.PROCESSING);
+    } else {
+      order.setPaymentStatus(PaymentStatus.FAILED);
+      order.setOrderStatus(OrderStatus.CANCELLED);
+    }
+
+    orderRepository.save(order);
   }
 }

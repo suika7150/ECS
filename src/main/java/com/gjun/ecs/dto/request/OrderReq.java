@@ -2,11 +2,18 @@ package com.gjun.ecs.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+
+import com.gjun.ecs.enums.PaymentMethod;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "新增訂單")
 public class OrderReq {
 
@@ -29,7 +36,7 @@ public class OrderReq {
   private String notes;
 
   @Schema(description = "付款方式")
-  private String paymentMethod;
+  private PaymentMethod paymentMethod;
 
   @Schema(description = "優惠券代碼")
   private String couponCode;
@@ -39,12 +46,6 @@ public class OrderReq {
 
   @Schema(description = "總金額")
   private Integer total;
-
-  @Schema(description = "信用卡最後四碼", example = "1111")
-  private String cardLast4;
-
-  @Schema(description = "付款狀態")
-  private String paymentStatus;
 
   @Schema(description = "訂單明細")
   private List<Item> items;

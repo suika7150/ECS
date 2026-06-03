@@ -4,10 +4,12 @@ import com.gjun.ecs.dto.response.EcpayParamsResp;
 import com.gjun.ecs.entity.Order;
 import com.gjun.ecs.entity.Payment;
 import com.gjun.ecs.repository.PaymentRepository;
+import com.gjun.ecs.repository.OrderRepository;
+import com.gjun.ecs.enums.OrderStatus;
+import com.gjun.ecs.enums.PaymentStatus;
 
 import jakarta.transaction.Transactional;
 
-import com.gjun.ecs.repository.OrderRepository;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -16,12 +18,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EcpayService {
+
+  private static final Logger log = LoggerFactory.getLogger(EcpayService.class);
 
   @Autowired
   private PaymentRepository paymentRepository;
@@ -151,29 +158,49 @@ public class EcpayService {
 
   @Transactional
   public void handleCallback(Map<String, String> formData) {
+
     System.out.println("收到綠界 Callback: " + formData);
+
     String merchantTradeNo = formData.get("MerchantTradeNo");
     String rtnCode = formData.get("RtnCode");
-    String rtnMsg = formData.get("RtnMsg");
-    String paymentDate = formData.get("PaymentDate");
+    // String rtnMsg = formData.get("RtnMsg");
+    // String paymentDate = formData.get("PaymentDate");
 
     Payment payment = paymentRepository.findByMerchantTradeNo(merchantTradeNo);
     if (payment == null) {
       throw new RuntimeException("找不到付款資料: " + merchantTradeNo);
     }
 
+    boolean success = "1".equals(rtnCode);
+
     payment.setRtnCode(rtnCode);
-    payment.setRtnMsg(rtnMsg);
-    payment.setPaymentDate(paymentDate);
+    payment.setRtnMsg(formData.get("RtnMsg"));
+    payment.setPaymentDate(formData.get("PaymentDate"));
     paymentRepository.save(payment);
 
-    Order order = orderRepository.findById(payment.getOrderId())
-        .orElseThrow(() -> new RuntimeException("找不到訂單: " + payment.getOrderId()));
+    Long orderId = payment.getOrderId();
 
-    if ("1".equals(rtnCode)) {
-      order.setPaymentStatus("paid");
+    log.info("Payment callback success={}, orderId={}", success, orderId);
+
+    Order order = orderRepository.findById(orderId)
+        .orElseThrow(() -> new RuntimeException("找不到訂單: " + orderId));
+
+    if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+      log.warn("訂單已取消，忽略付款 callback，orderId={}", orderId);
+      return;
+    }
+
+    if (order.getPaymentStatus() == PaymentStatus.PAID) {
+      log.info("訂單已付款完成，略過重複 callback，orderId={}", orderId);
+      return;
+    }
+
+    if (success) {
+      order.setPaymentStatus(PaymentStatus.PAID);
+      order.setOrderStatus(OrderStatus.PROCESSING);
     } else {
-      order.setPaymentStatus("cancelled");
+      order.setPaymentStatus(PaymentStatus.FAILED);
+      order.setOrderStatus(OrderStatus.CANCELLED);
     }
 
     orderRepository.save(order);

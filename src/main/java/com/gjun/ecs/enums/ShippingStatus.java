@@ -1,0 +1,9 @@
+package com.gjun.ecs.enums;
+
+public enum ShippingStatus {
+
+    NOT_SHIPPED, // 未出貨
+    PREPARING, // 出貨準備中
+    SHIPPED, // 已出貨
+    DELIVERED // 已送達
+}
