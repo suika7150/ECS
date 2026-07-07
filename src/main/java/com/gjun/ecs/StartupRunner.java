@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 @DependsOnDatabaseInitialization
 public class StartupRunner implements ApplicationRunner {
 
-  @Autowired private DataSource dataSource;
+  @Autowired
+  private DataSource dataSource;
 
   @Override
   public void run(ApplicationArguments args) throws Exception {
