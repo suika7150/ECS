@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
 public class SwaggerConfig {
     private static final String TITLE = "電商系統 API 文件";
     private static final String DESCRIPTION = "RESTful API 文件說明，提供會員基本操作";
-    public static final String VERSION = "v.1.20240520.01";
+    public static final String VERSION = "v.1.20260708.02";
 
     @Bean
     OpenAPI customOpenAPI() {
@@ -29,7 +29,7 @@ public class SwaggerConfig {
                                 .description(DESCRIPTION)
                                 .version(VERSION)
                                 .contact(
-                                        new Contact().name("開發者").email("dev@example.com").url("https://example.com"))
+                                        new Contact().name("Lucas").email("suika7150@gmail.com").url("https://suika7150.github.io/"))
                                 .license(new License().name("MIT").url("https://opensource.org/licenses/MIT")))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(

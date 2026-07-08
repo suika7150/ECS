@@ -9,8 +9,10 @@ import com.shop.ecs.dto.request.VerifyEmailCodeReq;
 import com.shop.ecs.dto.request.VerifyLoginCodeReq;
 import com.shop.ecs.dto.response.LoginResp;
 import com.shop.ecs.dto.response.Outbound;
+import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.exception.ApplicationException;
 import com.shop.ecs.service.AuthService;
+import com.shop.ecs.service.RecaptchaService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,6 +38,9 @@ public class AuthController {
 
   @Autowired
   private AuthService authService;
+
+  @Autowired
+  private RecaptchaService recaptchaService;
 
   /**
    * 使用者註冊
@@ -100,6 +105,12 @@ public class AuthController {
   public ResponseEntity<Outbound> login(
       @Valid @RequestBody LoginReq request)
       throws ApplicationException {
+
+    boolean isHuman = recaptchaService.verifyToken(request.getRecaptchaToken());
+    if (!isHuman) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Outbound.error(ResultCode.VALIDATION_ERROR));
+    }
+
     Outbound outbound = authService.login(request);
     return ResponseEntity.status(HttpStatus.OK).body(outbound);
   }

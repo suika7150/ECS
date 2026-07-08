@@ -93,6 +93,7 @@ public class AuthService {
     System.out.println("EMAIL = " + email);
     System.out.println("TYPE = " + type);
     mailSender.send(message);
+    System.out.println("🔥 【測試後門提示】本次生成的登入驗證碼是： " + code);
 
     return Outbound.ok("驗證碼已寄出");
   }

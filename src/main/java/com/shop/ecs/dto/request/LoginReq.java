@@ -23,4 +23,7 @@ public class LoginReq {
 
   @Schema(description = "保持登入", example = "true")
   private boolean rememberMe;
+
+  @Schema(description = "Google reCAPTCHA 驗證憑證")
+  private String recaptchaToken;
 }
