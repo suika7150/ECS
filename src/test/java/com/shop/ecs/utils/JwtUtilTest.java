@@ -1,0 +1,37 @@
+package com.shop.ecs.utils;
+
+import com.shop.ecs.entity.UserInfo;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+@TestPropertySource(locations = "file:.env")
+class JwtUtilTest {
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Test
+    @DisplayName("驗證 JWT Token 生成、解析與有效性驗證")
+    void testJwtFullLifecycle() {
+        // Arrange：準備測試資料
+        UserInfo mockUser = new UserInfo();
+        mockUser.setUsername("test-user@example.com"); 
+
+        // Act：執行目標方法
+        String token = jwtUtil.generateToken(mockUser, false);
+        String extractedUsername = jwtUtil.getUsernameFromToken(token);
+        boolean isValid = jwtUtil.validateToken(token, mockUser);
+
+        // Assert：驗證結果是否正確
+        assertNotNull(token, "產生的 JWT Token 不應為空");
+        assertTrue(token.startsWith("ey"), "JWT Token 格式不正確（應以 ey 開頭）");
+        assertEquals("test-user@example.com", extractedUsername, "解析出的使用者名稱與預期不符");
+        assertTrue(isValid, "合法的 Token 驗證結果應為 true");
+    }
+}
