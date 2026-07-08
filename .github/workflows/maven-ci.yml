@@ -1,0 +1,29 @@
+name: ECS Shop CI
+
+on:
+  push:
+    branches: ["dev_Lucas"] # 平常開發分支 push 時，立刻做檢查
+  pull_request:
+    branches: ["main"] # Merge時，自動觸發檢查
+
+jobs:
+  build:
+    # 使用 GitHub 提供的最新版 Ubuntu 虛擬機
+    runs-on: ubuntu-latest
+
+    steps:
+      # 複製 Git 程式碼到虛擬機中
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 安裝 Java 環境
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven # 啟用快取，下次跑 CI 時會變快
+
+      # 執行 Maven 編譯與測試
+      - name: Build with Maven
+        run: mvn clean package
