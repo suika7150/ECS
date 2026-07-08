@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @TestPropertySource(properties = {
     // 資料庫配置
-    "spring.datasource.url=jdbc:mysql://localhost:3306/ecs_sit?useSSL=false&serverTimezone=UTC",
+    "spring.datasource.url=jdbc:mysql://localhost:3306/ecs_sit?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
     "spring.datasource.username=root",
     "spring.datasource.password=1234",
     "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver",
