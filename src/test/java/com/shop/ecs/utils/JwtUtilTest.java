@@ -10,7 +10,10 @@ import org.springframework.test.context.TestPropertySource;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@TestPropertySource(locations = "file:.env")
+@TestPropertySource(locations = "file:.env", 
+    properties = {
+        "JWT_SECRET=mock-jwt-secret-key-must-be-very-long-for-hmac-sha-otherwise-it-will-throw-exception-123456"
+    })
 class JwtUtilTest {
 
     @Autowired
