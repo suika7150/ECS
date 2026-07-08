@@ -38,4 +38,12 @@ jobs:
 
       # 執行 Maven 編譯與測試
       - name: Build with Maven
+
+        # 從 GitHub 內建環境變數讀取真實變數
+        env:
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: mvn clean package
