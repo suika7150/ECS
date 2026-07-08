@@ -10,14 +10,21 @@ import org.springframework.test.context.TestPropertySource;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@TestPropertySource(locations = "file:.env", 
-    properties = {
-        "JWT_SECRET=mock-jwt-secret-key-must-be-very-long-for-hmac-sha-otherwise-it-will-throw-exception-123456",
-        "RECAPTCHA_SITE_KEY=mock-site-key",
-        "RECAPTCHA_SECRET_KEY=mock-secret-key",
-        "MAIL_USERNAME=mock-mail@example.com",
-        "MAIL_PASSWORD=mock-password"
-    })
+@TestPropertySource(properties = {
+    // 資料庫配置
+    "spring.datasource.url=jdbc:mysql://localhost:3306/ecs_sit?useSSL=false&serverTimezone=UTC",
+    "spring.datasource.username=root",
+    "spring.datasource.password=1234",
+    "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver",
+    "spring.jpa.hibernate.ddl-auto=update",
+    
+    // 其他元件啟動所需的假環境變數
+    "JWT_SECRET=mock-jwt-secret-key-must-be-very-long-for-hmac-sha-otherwise-it-will-throw-exception-123456",
+    "RECAPTCHA_SITE_KEY=mock-site-key",
+    "RECAPTCHA_SECRET_KEY=mock-secret-key",
+    "MAIL_USERNAME=mock-mail@example.com",
+    "MAIL_PASSWORD=mock-password"
+})
 class JwtUtilTest {
 
     @Autowired
