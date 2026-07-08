@@ -12,7 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @TestPropertySource(locations = "file:.env", 
     properties = {
-        "JWT_SECRET=mock-jwt-secret-key-must-be-very-long-for-hmac-sha-otherwise-it-will-throw-exception-123456"
+        "JWT_SECRET=mock-jwt-secret-key-must-be-very-long-for-hmac-sha-otherwise-it-will-throw-exception-123456",
+        "RECAPTCHA_SITE_KEY=mock-site-key",
+        "RECAPTCHA_SECRET_KEY=mock-secret-key",
+        "MAIL_USERNAME=mock-mail@example.com",
+        "MAIL_PASSWORD=mock-password"
     })
 class JwtUtilTest {
 
