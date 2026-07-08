@@ -1,0 +1,232 @@
+package com.shop.ecs.service;
+
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.shop.ecs.dto.request.ProductUploadReq;
+import com.shop.ecs.dto.response.Outbound;
+import com.shop.ecs.dto.response.ProductResp;
+import com.shop.ecs.dto.response.ProductShow;
+import com.shop.ecs.entity.Product;
+import com.shop.ecs.enums.ProductStatus;
+import com.shop.ecs.repository.ProductRepository;
+import com.shop.ecs.utils.ImageUtils;
+
+@Service
+public class ProductService {
+
+  @Autowired
+  private ProductRepository productRepository;
+
+  public Outbound searchProducts(String keyword) {
+    List<Product> products;
+
+    // 如果關鍵字是空的，就抓全部；否則才執行模糊搜尋
+    if (keyword == null || keyword.trim().isEmpty()) {
+      products = productRepository.findAll();
+    } else {
+      // 對傳入的關鍵字做 trim()，避免空白字元影響結果
+      products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
+    }
+    List<ProductShow> result = products.stream()
+        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
+        .map(
+            product -> {
+              return ProductShow.builder()
+                  .id(product.getId())
+                  .name(product.getName())
+                  .price(product.getPrice())
+                  .description(product.getDescription())
+                  .category(product.getCategory())
+                  .rating(null)
+                  .imageBase64(
+                      ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
+                  .build();
+            })
+        .collect(Collectors.toList());
+
+    return Outbound.ok(result);
+  }
+
+  public Outbound saveProduct(ProductUploadReq req) {
+    ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
+
+    Product product = Product.builder()
+        .name(req.getName())
+        .category(req.getCategory())
+        .price(req.getPrice())
+        .stock(req.getStock())
+        .description(req.getDescription())
+        .status(req.getStatus())
+        .imageData(imageInfo.imageData)
+        .imageType(imageInfo.imageType)
+        .build();
+
+    Product newProduct = productRepository.save(product);
+
+    return Outbound.ok(newProduct);
+  }
+
+  public Outbound getProductById(Integer id) {
+    Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+
+    ProductResp response = ProductResp.builder()
+        .id(product.getId())
+        .name(product.getName())
+        .price(product.getPrice())
+        .stock(product.getStock())
+        .status(product.getStatus())
+        .description(product.getDescription())
+        .category(product.getCategory())
+        .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
+        .build();
+
+    return Outbound.ok(response);
+  }
+
+  public Outbound getAllProducts() {
+    List<ProductShow> result = productRepository.findAll().stream()
+        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
+        .map(
+            product -> {
+              return ProductShow.builder()
+                  .id(product.getId())
+                  .name(product.getName())
+                  .price(product.getPrice())
+                  .description(product.getDescription())
+                  .category(product.getCategory())
+                  .rating(null)
+                  .imageBase64(
+                      ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
+                  .build();
+            })
+        .collect(Collectors.toList());
+
+    return Outbound.ok(result);
+  }
+
+  public Outbound updateProduct(Integer id, ProductUploadReq req) {
+    Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+
+    ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
+
+    Product updateProduct = Product.builder()
+        .id(product.getId())
+        .name(req.getName())
+        .category(req.getCategory())
+        .stock(req.getStock())
+        .price(req.getPrice())
+        .status(req.getStatus())
+        .description(req.getDescription())
+        .imageData(imageInfo.imageData)
+        .imageType(imageInfo.imageType)
+        .build();
+
+    productRepository.save(updateProduct);
+
+    return Outbound.ok("Product updated successfully");
+  }
+
+  public Outbound productList() {
+
+    List<ProductResp> result = productRepository.findAll().stream()
+        .map(
+            product -> {
+              return ProductResp.builder()
+                  .id(product.getId())
+                  .name(product.getName())
+                  .price(product.getPrice())
+                  .stock(product.getStock())
+                  .description(product.getDescription())
+                  .category(product.getCategory())
+                  .imageBase64(
+                      ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
+                  .status(ProductStatus.getDesc(product.getStatus()))
+                  .build();
+            })
+        .collect(Collectors.toList());
+
+    return Outbound.ok(result);
+  }
+
+  public Outbound deleteProduct(Integer id) {
+
+    productRepository.updateProductStatus(id, ProductStatus.DELETED.getCode());
+    Product product = productRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("Product not found after update"));
+
+    ProductResp response = ProductResp.builder()
+        .id(product.getId())
+        .name(product.getName())
+        .price(product.getPrice())
+        .stock(product.getStock())
+        .description(product.getDescription())
+        .category(product.getCategory())
+        .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
+        .status(ProductStatus.getDesc(product.getStatus()))
+        .build();
+
+    return Outbound.ok(response);
+  }
+
+  /**
+   * 篩選商品
+   *
+   * @return
+   */
+  public Outbound getCategories() {
+    List<String> categories = productRepository.findDistinctCategories();
+    return Outbound.ok(categories);
+  }
+
+  /** 用來傳遞圖片處理結果的 record。 Record 是 Java 14+ 的特性，適合用來傳遞不可變的資料物件。 */
+  private record ImageInfo(byte[] imageData, String imageType) {
+  }
+
+  /**
+   * 處理 Base64 圖片字串，解析出圖片二進制資料和類型。
+   *
+   * @param base64String      Base64 編碼的圖片字串，可包含 Data URI 前綴。
+   * @param existingImageType 已知或預設的圖片類型。
+   * @return 包含圖片資料和類型的 ImageInfo 物件。
+   */
+  private ImageInfo processBase64Image(String base64String, String existingImageType) {
+    if (base64String == null || base64String.isBlank()) {
+      return new ImageInfo(null, null); // 沒有圖片，返回空值
+    }
+
+    String imageType = existingImageType;
+    String base64Content = base64String;
+
+    // 移除 Data URI scheme 前綴並嘗試解析圖片類型
+    if (base64String.startsWith("data:")) {
+      int commaIndex = base64String.indexOf(',');
+      if (commaIndex != -1) {
+        String dataUri = base64String.substring(0, commaIndex);
+        if (dataUri.contains(";base64")) {
+          imageType = dataUri.substring(dataUri.indexOf(':') + 1, dataUri.indexOf(';'));
+        }
+        base64Content = base64String.substring(commaIndex + 1);
+      }
+    }
+
+    try {
+      byte[] imageBytes = Base64.getDecoder().decode(base64Content);
+      return new ImageInfo(imageBytes, imageType);
+    } catch (IllegalArgumentException e) {
+      throw new RuntimeException("無效的 Base64 圖片格式", e);
+    }
+  }
+
+  // 取得商品圖片
+  public Product getProductEntityById(Integer id) {
+    return productRepository
+        .findById(id)
+        .orElseThrow(() -> new RuntimeException("找不到編號為 " + id + " 的商品"));
+  }
+}
