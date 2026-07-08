@@ -9,7 +9,19 @@ on:
 jobs:
   build:
     # 使用 GitHub 提供的最新版 Ubuntu 虛擬機
-    runs-on: ubuntu-latest
+    runs-on:
+      ubuntu-latest
+
+      # 在雲端機器啟動一個臨時的 MySQL
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: 1234
+          MYSQL_DATABASE: ecs_shop
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       # 複製 Git 程式碼到虛擬機中
