@@ -1,5 +1,5 @@
 # Log 輸出檔案設定
-logging.file.name=C:/Users/S25038/Documents/ecs.log
+logging.file.name=C:/Users/weft7/Documents/ecs.log
 
 # Log 輸出等級設定
 logging.level.root=INFO
