@@ -4,6 +4,7 @@ import com.shop.ecs.dto.request.AddOptionReq;
 import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.service.CategoriesService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -25,34 +26,34 @@ public class OptionsController {
   @Autowired private CategoriesService categoriesService;
 
   @PostMapping("/add")
-  public ResponseEntity<Outbound> AddOption(@RequestBody AddOptionReq req) throws Exception {
-    Outbound resp = categoriesService.addCategorie(req);
-    return ResponseEntity.ok(resp);
+  @Operation(summary = "新增商品類別")
+  public ResponseEntity<Outbound> addOption(@RequestBody AddOptionReq req) throws Exception {
+    return ResponseEntity.ok(categoriesService.addCategorie(req));
   }
 
   @GetMapping("/list")
+  @Operation(summary = "取得所有商品類別")
   public ResponseEntity<Outbound> allOptions() throws Exception {
-    Outbound resp = categoriesService.allCategories();
-    return ResponseEntity.ok(resp);
+    return ResponseEntity.ok(categoriesService.allCategories());
   }
 
   @DeleteMapping("/delete/{id}")
+  @Operation(summary = "刪除商品類別")
   public ResponseEntity<Outbound> deleteOption(@PathVariable Integer id) throws Exception {
-    Outbound resp = categoriesService.deleteCategorie(id);
-    return ResponseEntity.ok(resp);
+    return ResponseEntity.ok(categoriesService.deleteCategorie(id));
   }
 
   @PutMapping("/update/{id}")
+  @Operation(summary = "更新商品類別")
   public ResponseEntity<Outbound> updateOption(
       @PathVariable Integer id, @RequestBody AddOptionReq req) throws Exception {
-    Outbound resp = categoriesService.updateCategorie(id, req);
-    return ResponseEntity.ok(resp);
+    return ResponseEntity.ok(categoriesService.updateCategorie(id, req));
   }
 
   @GetMapping("/getByListName")
+  @Operation(summary = "根據列表名稱取得商品類別")
   public ResponseEntity<Outbound> getCategoriesByListName(@Param("listName") String listName)
       throws Exception {
-    Outbound resp = categoriesService.getCategoriesByListName(listName);
-    return ResponseEntity.ok(resp);
+    return ResponseEntity.ok(categoriesService.getCategoriesByListName(listName));
   }
 }

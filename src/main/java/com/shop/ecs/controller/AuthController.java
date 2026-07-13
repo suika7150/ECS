@@ -42,63 +42,32 @@ public class AuthController {
   @Autowired
   private RecaptchaService recaptchaService;
 
-  /**
-   * 使用者註冊
-   *
-   * @param req
-   * @return
-   * @throws ApplicationException
-   */
-  @PostMapping("/register")
-  @Operation(summary = "使用者註冊", description = "建立新使用者帳號")
-  public ResponseEntity<Outbound> register(@Valid @RequestBody RegisterReq req)
-      throws ApplicationException {
-    Outbound response = authService.register(req);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-
-  /**
-   * 發送信箱驗證碼
-   *
-   */
-  @PostMapping("/send-email-code")
-  @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
-  public ResponseEntity<Outbound> sendEmailCode(@RequestBody SendEmailCodeReq req)
-      throws ApplicationException {
-
-    // 呼叫 AuthService 的 sendSmsCode 方法傳送驗證碼並回傳結果
-    Outbound response = authService.sendEmailCode(req.getEmail(), req.getType());
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-
-  /**
-   * 驗證信箱驗證碼
-   *
-   */
-  @PostMapping("/verify-email-code")
-  @Operation(summary = "驗證信箱驗證碼", description = "驗證使用者輸入的信箱驗證碼")
-  public ResponseEntity<Outbound> verifyEmailCode(
-      @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
-
-    Outbound response = authService.verifyEmailCode(
-        req.getEmail(),
-        req.getCode(),
-        req.getType());
-
-    return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-
-  /**
-   * 使用者登入
-   *
-   * @param request
-   * @return
-   */
   @Value("${jwt.normal-expiration}")
   private long jwtExpiration;
 
   @Value("${jwt.remember-me-expiration}")
   private long jwtRememberMeExpiration;
+
+  @PostMapping("/register")
+  @Operation(summary = "使用者註冊", description = "建立新使用者帳號")
+  public ResponseEntity<Outbound> register(@Valid @RequestBody RegisterReq req)
+      throws ApplicationException {
+    return ResponseEntity.ok(authService.register(req));
+  }
+
+  @PostMapping("/send-email-code")
+  @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
+  public ResponseEntity<Outbound> sendEmailCode(@RequestBody SendEmailCodeReq req)
+      throws ApplicationException {
+    return ResponseEntity.ok(authService.sendEmailCode(req.getEmail(), req.getType()));
+  }
+
+  @PostMapping("/verify-email-code")
+  @Operation(summary = "驗證信箱驗證碼", description = "驗證使用者輸入的信箱驗證碼")
+  public ResponseEntity<Outbound> verifyEmailCode(
+      @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
+    return ResponseEntity.ok(authService.verifyEmailCode(req.getEmail(), req.getCode(), req.getType()));
+  }
 
   @PostMapping("/login")
   @Operation(summary = "使用者登入", description = "帳密成功後寄出 Email OTP")
@@ -110,18 +79,8 @@ public class AuthController {
     if (!isHuman) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Outbound.error(ResultCode.VALIDATION_ERROR));
     }
-
-    Outbound outbound = authService.login(request);
-    return ResponseEntity.status(HttpStatus.OK).body(outbound);
+    return ResponseEntity.ok(authService.login(request));
   }
-
-  /**
-   * 2FA 驗證登入，成功後寫入 HttpOnly Cookie
-   *
-   * @param request
-   * @return
-   * @throws ApplicationException
-   */
 
   @PostMapping("/login/verify-email-code")
   @Operation(summary = "登入二階段驗證", description = "驗證 Email OTP，成功後寫入 HttpOnly Cookie")
@@ -129,6 +88,7 @@ public class AuthController {
       @Valid @RequestBody VerifyLoginCodeReq request,
       HttpServletResponse response)
       throws ApplicationException {
+
     Outbound outbound = authService.verifyLoginCode(request);
 
     LoginResp loginData = (LoginResp) outbound.getResult(); // 取出 LoginResp 物件
@@ -147,66 +107,35 @@ public class AuthController {
     cookie.setMaxAge(finalMaxAge);
     response.addCookie(cookie);
 
-    return ResponseEntity.status(HttpStatus.OK).body(outbound);
+    return ResponseEntity.ok(outbound);
   }
 
-  /**
-   * 取得使用者資料
-   *
-   * @param Bearertoken
-   * @return
-   * @throws ApplicationException
-   */
   @GetMapping("/finduser")
   public ResponseEntity<Outbound> getUser() throws ApplicationException {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    Outbound response = authService.findUserByUsername(username);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.ok(authService.findUserByUsername(username));
   }
 
-  /**
-   * 更新使用者資料
-   *
-   * @param request
-   * @return
-   * @throws Exception
-   */
   @PutMapping("/profile")
   @Operation(summary = "更新使用者資料")
   public ResponseEntity<Outbound> updateUserProfile(@Valid @RequestBody UpdateUserReq request)
       throws Exception {
-    Outbound response = authService.updateUserProfile(request.getUsername(), request);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.ok(authService.updateUserProfile(request.getUsername(), request));
   }
 
-  /**
-   * 取得目前使用者資料
-   *
-   * @return
-   */
   @GetMapping("/user")
   @Operation(summary = "取得目前使用者資料")
   public ResponseEntity<Outbound> getCurrentUser() {
-    Outbound response = authService.getCurrentUser();
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.ok(authService.getCurrentUser());
   }
 
-  /**
-   * 修改密碼
-   *
-   * @param request
-   * @return
-   * @throws Exception
-   */
   @PostMapping("/change-password")
   @Operation(summary = "修改密碼")
   public ResponseEntity<Outbound> changePassword(@Valid @RequestBody ChangePswReq request)
       throws Exception {
-    Outbound response = authService.updatePassword(request);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+     return ResponseEntity.ok(authService.updatePassword(request));
   }
 
-  /** 登出使用者 */
   @PostMapping("/logout")
   @Operation(summary = "使用者登出", description = "手動清除瀏覽器端的 Cookie")
   public ResponseEntity<Outbound> logout(HttpServletResponse response) {
@@ -216,10 +145,8 @@ public class AuthController {
     cookie.setPath("/");
     cookie.setHttpOnly(true);
     cookie.setMaxAge(0);
-
     response.addCookie(cookie);
 
-    Outbound resp = authService.logout();
-    return ResponseEntity.status(HttpStatus.OK).body(resp);
+    return ResponseEntity.ok(authService.logout());
   }
 }
