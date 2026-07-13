@@ -1,6 +1,5 @@
 package com.shop.ecs.controller;
 
-import com.shop.ecs.dto.response.EcpayParamsResp;
 import com.shop.ecs.service.EcpayService;
 
 import io.swagger.v3.oas.annotations.Operation;
