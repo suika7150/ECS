@@ -46,13 +46,11 @@ jobs:
           RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
           RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        run: |
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests
+        run: mvn clean package
 
-          # =================  Docker =================
+        # =================  Docker =================
 
-          # 登入到 Docker Hub
+        # 登入到 Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -69,7 +67,6 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          # push: true 代表要推送到倉庫
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ecs-backend:${{ github.sha }}
