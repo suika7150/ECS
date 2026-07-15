@@ -48,6 +48,12 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: mvn clean package
 
+      - name: Check Cloud Files (Debug)
+        run: |
+          echo "=== 目前根目錄下的所有檔案與資料夾 ==="
+          ls -la
+          echo "=== 檢查 target 資料夾內部的產物 ==="
+          ls -la target/ || echo "警告：找不到 target 資料夾！"
         # =================  Docker =================
 
         # 登入到 Docker Hub
