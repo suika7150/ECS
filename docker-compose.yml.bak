@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # 自動下載並啟動 MySQL 資料庫
+  mysqldb:
+    image: mysql:8.0
+    container_name: shop-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 自動 pull Docker Hub 映像檔
+  backend:
+    image: weft71500/ecs-backend:dev
+    build: .
+    container_name: shop-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    environment:
+      - SPRING_PROFILES_ACTIVE=sit
+      - DB_HOST=mysqldb
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+
+# 建立持久化硬碟卷，確保資料庫重啟時資料不會不見
+volumes:
+  mysql_data:
