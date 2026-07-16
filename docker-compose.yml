@@ -5,8 +5,6 @@ services:
   mysqldb:
     image: mysql:8.0
     container_name: shop-mysql
-    # ports:
-    #   - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
@@ -32,6 +30,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
 # 建立持久化硬碟卷，確保資料庫重啟時資料不會不見
 volumes:
