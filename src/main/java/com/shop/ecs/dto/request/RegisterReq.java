@@ -26,7 +26,7 @@ public class RegisterReq {
 
   @NotBlank
   @Schema(description = "信箱驗證碼", example = "123456")
-  public String smsCode;
+  public String emailCode;
 
   @NotBlank
   @Schema(description = "使用者密碼", example = "P@ssw0rd123")

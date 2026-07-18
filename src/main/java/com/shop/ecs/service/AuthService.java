@@ -156,12 +156,6 @@ public class AuthService {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
 
-    // OTP 驗證
-    verifyEmailCode(
-        req.getEmail(),
-        req.getSmsCode(),
-        OtpType.REGISTER);
-
     UserInfo userInfo = UserInfo.builder()
         .username(req.getUsername())
         .password(passwordEncoder.encode(req.getPassword()))

@@ -22,6 +22,7 @@ public class UserInfo extends BaseEntity {
   /** 使用者 ID */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
   private Long id;
 
   /** 使用者帳號 */

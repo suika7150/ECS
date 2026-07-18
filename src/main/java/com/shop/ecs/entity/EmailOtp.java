@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.shop.ecs.enums.OtpType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,19 +22,27 @@ public class EmailOtp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "code")
     private String code;
 
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private OtpType type;
 
+    @Column(name = "expire_time")
     private LocalDateTime expireTime;
 
+    @Column(name = "used")
     private Boolean used = false;
 
+    @Column(name = "create_at")
     private LocalDateTime createAt;
 
     @PrePersist

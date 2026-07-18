@@ -28,6 +28,7 @@ public class Payment {
   private Long orderId;
 
   // 必須跟綠界的 TotalAmount 對應 (整數)
+  @Column(name = "total_amount")
   private Integer totalAmount;
 
   // 綠界的特店交易編號
