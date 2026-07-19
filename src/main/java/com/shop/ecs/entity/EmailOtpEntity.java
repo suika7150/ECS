@@ -18,7 +18,7 @@ import lombok.Data;
 @Entity
 @Table(name = "email_otp")
 @Data
-public class EmailOtp {
+public class EmailOtpEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

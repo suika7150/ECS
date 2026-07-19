@@ -11,7 +11,7 @@ import com.shop.ecs.dto.request.ProductUploadReq;
 import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.ProductResp;
 import com.shop.ecs.dto.response.ProductShow;
-import com.shop.ecs.entity.Product;
+import com.shop.ecs.entity.ProductEntity;
 import com.shop.ecs.enums.ProductStatus;
 import com.shop.ecs.repository.ProductRepository;
 import com.shop.ecs.utils.ImageUtils;
@@ -23,7 +23,7 @@ public class ProductService {
   private ProductRepository productRepository;
 
   public Outbound searchProducts(String keyword) {
-    List<Product> products;
+    List<ProductEntity> products;
 
     // 如果關鍵字是空的，就抓全部；否則才執行模糊搜尋
     if (keyword == null || keyword.trim().isEmpty()) {
@@ -55,7 +55,7 @@ public class ProductService {
   public Outbound saveProduct(ProductUploadReq req) {
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
-    Product product = Product.builder()
+    ProductEntity product = ProductEntity.builder()
         .name(req.getName())
         .category(req.getCategory())
         .price(req.getPrice())
@@ -66,13 +66,13 @@ public class ProductService {
         .imageType(imageInfo.imageType)
         .build();
 
-    Product newProduct = productRepository.save(product);
+    ProductEntity newProduct = productRepository.save(product);
 
     return Outbound.ok(newProduct);
   }
 
   public Outbound getProductById(Integer id) {
-    Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+    ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
 
     ProductResp response = ProductResp.builder()
         .id(product.getId())
@@ -110,11 +110,11 @@ public class ProductService {
   }
 
   public Outbound updateProduct(Integer id, ProductUploadReq req) {
-    Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+    ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
 
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
-    Product updateProduct = Product.builder()
+    ProductEntity updateProduct = ProductEntity.builder()
         .id(product.getId())
         .name(req.getName())
         .category(req.getCategory())
@@ -128,7 +128,7 @@ public class ProductService {
 
     productRepository.save(updateProduct);
 
-    return Outbound.ok("Product updated successfully");
+    return Outbound.ok("ProductEntity updated successfully");
   }
 
   public Outbound productList() {
@@ -156,9 +156,9 @@ public class ProductService {
   public Outbound deleteProduct(Integer id) {
 
     productRepository.updateProductStatus(id, ProductStatus.DELETED.getCode());
-    Product product = productRepository
+    ProductEntity product = productRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Product not found after update"));
+        .orElseThrow(() -> new RuntimeException("ProductEntity not found after update"));
 
     ProductResp response = ProductResp.builder()
         .id(product.getId())
@@ -224,7 +224,7 @@ public class ProductService {
   }
 
   // 取得商品圖片
-  public Product getProductEntityById(Integer id) {
+  public ProductEntity getProductEntityById(Integer id) {
     return productRepository
         .findById(id)
         .orElseThrow(() -> new RuntimeException("找不到編號為 " + id + " 的商品"));

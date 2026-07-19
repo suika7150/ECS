@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "orders")
-public class Order {
+public class OrderEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,5 +85,5 @@ public class Order {
   private String merchantTradeNo; // 交易編號
 
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<OrderItem> items; // 訂單明細
+  private List<OrderItemEntity> items; // 訂單明細
 }

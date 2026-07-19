@@ -1,6 +1,6 @@
 package com.shop.ecs.filter;
 
-import com.shop.ecs.entity.UserInfo;
+import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.service.UserService;
 import com.shop.ecs.utils.JwtUtil;
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-          UserInfo userInfo = userService.findUserByUsername(username);
+          UserEntity userInfo = userService.findUserByUsername(username);
 
           if (jwtUtil.validateToken(token, userInfo)) {
             // 建立認證物件

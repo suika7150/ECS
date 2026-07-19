@@ -1,8 +1,8 @@
 package com.shop.ecs.service;
 
 import com.shop.ecs.dto.response.EcpayParamsResp;
-import com.shop.ecs.entity.Order;
-import com.shop.ecs.entity.Payment;
+import com.shop.ecs.entity.OrderEntity;
+import com.shop.ecs.entity.PaymentEntity;
 import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.repository.OrderRepository;
@@ -52,18 +52,18 @@ public class EcpayService {
   @Value("${ecpay.client-back-url}")
   private String clientBackUrl;
 
-  /** 這是給 OrderService 呼叫的入口 負責建立 Payment 紀錄並產生綠界參數 */
+  /** 這是給 OrderService 呼叫的入口 負責建立 PaymentEntity 紀錄並產生綠界參數 */
   @Transactional
-  public EcpayParamsResp createPayment(Order order) {
+  public EcpayParamsResp createPayment(OrderEntity order) {
 
-    // 建立一筆新的 Payment 紀錄
-    Payment payment = new Payment();
+    // 建立一筆新的 PaymentEntity 紀錄
+    PaymentEntity payment = new PaymentEntity();
     payment.setOrderId(order.getId()); // 關聯訂單 ID
     payment.setTotalAmount(order.getTotal()); // 同步金額
     payment.setRtnCode("0"); // 初始狀態設為 0 (代表未付款)
 
     // 存入資料庫以取得 paymentId
-    Payment savedPayment = paymentRepository.save(payment);
+    PaymentEntity savedPayment = paymentRepository.save(payment);
 
     // 呼叫原本就寫好的參數產生邏輯
     // 這樣就能重複利用寫好的加密 (CheckMacValue) 邏輯
@@ -73,7 +73,7 @@ public class EcpayService {
   public EcpayParamsResp generatePaymentParams(Long paymentId) {
 
     // 取得資料庫中的支付紀錄
-    Payment payment = paymentRepository
+    PaymentEntity payment = paymentRepository
         .findById(paymentId)
         .orElseThrow(() -> new RuntimeException("找不到訂單: " + paymentId));
 
@@ -166,7 +166,7 @@ public class EcpayService {
     // String rtnMsg = formData.get("RtnMsg");
     // String paymentDate = formData.get("PaymentDate");
 
-    Payment payment = paymentRepository.findByMerchantTradeNo(merchantTradeNo);
+    PaymentEntity payment = paymentRepository.findByMerchantTradeNo(merchantTradeNo);
     if (payment == null) {
       throw new RuntimeException("找不到付款資料: " + merchantTradeNo);
     }
@@ -180,9 +180,9 @@ public class EcpayService {
 
     Long orderId = payment.getOrderId();
 
-    log.info("Payment callback success={}, orderId={}", success, orderId);
+    log.info("PaymentEntity callback success={}, orderId={}", success, orderId);
 
-    Order order = orderRepository.findById(orderId)
+    OrderEntity order = orderRepository.findById(orderId)
         .orElseThrow(() -> new RuntimeException("找不到訂單: " + orderId));
 
     if (order.getOrderStatus() == OrderStatus.CANCELLED) {

@@ -17,7 +17,7 @@ import lombok.*;
 @Data
 @Builder
 @Table(name = "order_item")
-public class OrderItem {
+public class OrderItemEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class OrderItem {
   @JoinColumn(name = "order_id")
   @ToString.Exclude
   @com.fasterxml.jackson.annotation.JsonIgnore
-  private Order order;
+  private OrderEntity order;
 
   @Column(name = "product_id")
   private Integer productId;

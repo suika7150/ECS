@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Product", description = "商品相關 API")
+@Tag(name = "ProductEntity", description = "商品相關 API")
 public class ProductController {
 
   @Autowired
@@ -84,7 +84,7 @@ public class ProductController {
   @GetMapping("/products/{id}/image")
   @Operation(summary = "取得商品圖片流 (用於訂單詳情或列表)")
   public ResponseEntity<byte[]> getProductImage(@PathVariable Integer id) throws Exception {
-    com.shop.ecs.entity.Product product = productService.getProductEntityById(id);
+    com.shop.ecs.entity.ProductEntity product = productService.getProductEntityById(id);
 
     if (product != null && product.getImageData() != null) {
 

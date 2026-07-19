@@ -1,6 +1,6 @@
 package com.shop.ecs.repository;
 
-import com.shop.ecs.entity.Order;
+import com.shop.ecs.entity.OrderEntity;
 import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.enums.ShippingStatus;
@@ -12,25 +12,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
   // 排程器查詢，找出逾期未付款訂單
   // SELECT * FROM orders WHERE payment_status = ? AND created_at < ?
-  List<Order> findByPaymentStatusAndCreatedAtBefore(PaymentStatus status, LocalDateTime time);
+  List<OrderEntity> findByPaymentStatusAndCreatedAtBefore(PaymentStatus status, LocalDateTime time);
 
   // 獲取所有訂單並依照 ID 倒序排列
-  @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items ORDER BY o.id DESC") // 防止 N+1 問題
-  List<Order> findAllByOrderByIdDesc();
+  @Query("SELECT DISTINCT o FROM OrderEntity o LEFT JOIN FETCH o.items ORDER BY o.id DESC") // 防止 N+1 問題
+  List<OrderEntity> findAllByOrderByIdDesc();
 
-  List<Order> findByPaymentStatusOrderByIdDesc(PaymentStatus paymentStatus);
+  List<OrderEntity> findByPaymentStatusOrderByIdDesc(PaymentStatus paymentStatus);
 
-  List<Order> findByOrderStatusOrderByIdDesc(OrderStatus orderStatus);
+  List<OrderEntity> findByOrderStatusOrderByIdDesc(OrderStatus orderStatus);
 
-  List<Order> findByShippingStatusOrderByIdDesc(ShippingStatus shippingStatus);
+  List<OrderEntity> findByShippingStatusOrderByIdDesc(ShippingStatus shippingStatus);
 
-  @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.items WHERE o.orderStatus = :orderStatus ORDER BY o.id DESC")
-  List<Order> findByOrderStatusWithItemsOrderByIdDesc(@Param("orderStatus") OrderStatus orderStatus);
+  @Query("SELECT DISTINCT o FROM OrderEntity o LEFT JOIN FETCH o.items WHERE o.orderStatus = :orderStatus ORDER BY o.id DESC")
+  List<OrderEntity> findByOrderStatusWithItemsOrderByIdDesc(@Param("orderStatus") OrderStatus orderStatus);
 
-  @Query("SELECT o FROM Order o LEFT JOIN FETCH o.items WHERE o.id = :id")
-  Optional<Order> findByIdWithItems(@Param("id") Long id);
+  @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.items WHERE o.id = :id")
+  Optional<OrderEntity> findByIdWithItems(@Param("id") Long id);
 }

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "product")
-public class Product extends BaseEntity {
+public class ProductEntity extends BaseEntity {
   /** 商品編號 */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

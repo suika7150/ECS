@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserInfo extends BaseEntity {
+public class UserEntity extends BaseEntity {
 
   /** 使用者 ID */
   @Id

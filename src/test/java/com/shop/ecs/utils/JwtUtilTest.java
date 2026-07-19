@@ -1,6 +1,6 @@
 package com.shop.ecs.utils;
 
-import com.shop.ecs.entity.UserInfo;
+import com.shop.ecs.entity.UserEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ class JwtUtilTest {
     @DisplayName("驗證 JWT Token 生成、解析與有效性驗證")
     void testJwtFullLifecycle() {
         // Arrange：準備測試資料
-        UserInfo mockUser = new UserInfo();
+        UserEntity mockUser = new UserEntity();
         mockUser.setUsername("test-user@example.com"); 
 
         // Act：執行目標方法

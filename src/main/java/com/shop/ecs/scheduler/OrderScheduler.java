@@ -1,7 +1,7 @@
 package com.shop.ecs.scheduler;
 
-import com.shop.ecs.entity.Order;
-import com.shop.ecs.entity.OrderItem;
+import com.shop.ecs.entity.OrderEntity;
+import com.shop.ecs.entity.OrderItemEntity;
 import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.repository.OrderRepository;
@@ -34,7 +34,7 @@ public class OrderScheduler {
     // 定義逾時臨界點：現在時間減去 1 分鐘
     LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
 
-    List<Order> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatus.UNPAID, threshold);
+    List<OrderEntity> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatus.UNPAID, threshold);
 
     if (expiredOrders.isEmpty()) {
 
@@ -43,10 +43,10 @@ public class OrderScheduler {
 
     log.info("發現 {} 筆逾時未付款訂單，準備執行庫存回滾...", expiredOrders.size());
 
-    for (Order order : expiredOrders) {
+    for (OrderEntity order : expiredOrders) {
       try {
         // 遍歷訂單明細，將庫存加回去
-        for (OrderItem item : order.getItems()) {
+        for (OrderItemEntity item : order.getItems()) {
           productRepository.updateStock(item.getProductId(), item.getQuantity());
           log.info(
               "訂單 {}：商品 ID {} 庫存已補回 {}", order.getId(), item.getProductId(), item.getQuantity());

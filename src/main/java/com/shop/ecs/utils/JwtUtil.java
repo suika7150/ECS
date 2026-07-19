@@ -1,7 +1,7 @@
 package com.shop.ecs.utils;
 
 import com.shop.ecs.config.JwtProperties;
-import com.shop.ecs.entity.UserInfo;
+import com.shop.ecs.entity.UserEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,7 +25,7 @@ public class JwtUtil {
    * @param userInfo 用戶資訊
    * @return JWT 字串
    */
-  public String generateToken(UserInfo userInfo, boolean rememberMe) {
+  public String generateToken(UserEntity userInfo, boolean rememberMe) {
 
     long expiration =
         rememberMe ? jwtProperties.getRememberMeExpiration() : jwtProperties.getNormalExpiration();
@@ -66,7 +66,7 @@ public class JwtUtil {
    * @param userInfo 驗證用使用者物件
    * @return 是否有效
    */
-  public boolean validateToken(String token, UserInfo userInfo) {
+  public boolean validateToken(String token, UserEntity userInfo) {
     try {
       final String username = getUsernameFromToken(token);
       return username.equals(userInfo.getUsername()) && !isTokenExpired(token);

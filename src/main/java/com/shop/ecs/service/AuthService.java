@@ -8,8 +8,8 @@ import com.shop.ecs.dto.request.VerifyLoginCodeReq;
 import com.shop.ecs.dto.response.LoginResp;
 import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.UserResponse;
-import com.shop.ecs.entity.EmailOtp;
-import com.shop.ecs.entity.UserInfo;
+import com.shop.ecs.entity.EmailOtpEntity;
+import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.enums.OtpType;
 import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.exception.ApplicationException;
@@ -75,7 +75,7 @@ public class AuthService {
     // 過期時間（5分鐘）
     LocalDateTime expireTime = LocalDateTime.now().plusMinutes(5);
 
-    EmailOtp otp = new EmailOtp();
+    EmailOtpEntity otp = new EmailOtpEntity();
     otp.setEmail(email);
     otp.setCode(code);
     otp.setType(type);
@@ -109,7 +109,7 @@ public class AuthService {
 
     LocalDateTime now = LocalDateTime.now();
 
-    EmailOtp otp = emailOtpRepository
+    EmailOtpEntity otp = emailOtpRepository
         .findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
             email, type, now)
         .orElseThrow(() -> new ApplicationException(ResultCode.OTP_NOT_FOUND));
@@ -156,7 +156,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
 
-    UserInfo userInfo = UserInfo.builder()
+    UserEntity userInfo = UserEntity.builder()
         .username(req.getUsername())
         .password(passwordEncoder.encode(req.getPassword()))
         .email(req.getEmail())
@@ -179,7 +179,7 @@ public class AuthService {
    */
   public Outbound login(LoginReq req) throws ApplicationException {
 
-    UserInfo userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
+    UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -203,7 +203,7 @@ public class AuthService {
 
   public Outbound verifyLoginCode(VerifyLoginCodeReq req) throws ApplicationException {
 
-    UserInfo userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
+    UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -234,7 +234,7 @@ public class AuthService {
    */
   public Outbound findUserByUsername(String username) throws ApplicationException {
 
-    UserInfo userInfo = userService.findUserByUsername(username);
+    UserEntity userInfo = userService.findUserByUsername(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -263,7 +263,7 @@ public class AuthService {
    * @return
    */
   public Outbound updateUserProfile(String username, UpdateUserReq request) throws Exception {
-    UserInfo userInfo = userService.findUserByUsername(username);
+    UserEntity userInfo = userService.findUserByUsername(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -280,7 +280,7 @@ public class AuthService {
     userInfo.setGender(request.getGender());
     userInfo.setBirthday(request.getBirthday());
 
-    UserInfo upUserInfo = userService.save(userInfo);
+    UserEntity upUserInfo = userService.save(userInfo);
 
     UserResponse resp = UserResponse.builder()
         .id(upUserInfo.getId())
@@ -304,7 +304,7 @@ public class AuthService {
    * @return
    */
   public Outbound getCurrentUser() {
-    List<UserInfo> users = userService.findAll();
+    List<UserEntity> users = userService.findAll();
     List<UserResponse> userResponses = users.stream()
         .map(
             userInfo -> UserResponse.builder()
@@ -328,7 +328,7 @@ public class AuthService {
    */
   public Outbound updatePassword(ChangePswReq request) throws ApplicationException {
 
-    UserInfo userInfo = userService.findUserByUsername(request.getUsername());
+    UserEntity userInfo = userService.findUserByUsername(request.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);

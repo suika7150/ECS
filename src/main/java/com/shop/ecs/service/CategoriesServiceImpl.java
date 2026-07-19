@@ -4,7 +4,7 @@ import com.shop.ecs.dto.request.AddOptionReq;
 import com.shop.ecs.dto.response.OptionResp;
 import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.SelectOptions;
-import com.shop.ecs.entity.Categories;
+import com.shop.ecs.entity.CategoryEntity;
 import com.shop.ecs.repository.CategoriesRepository;
 
 import java.util.Comparator;
@@ -21,8 +21,8 @@ public class CategoriesServiceImpl implements CategoriesService {
   @Override
   public Outbound addCategorie(AddOptionReq req) throws Exception {
 
-    Categories categories =
-        Categories.builder()
+    CategoryEntity categories =
+        CategoryEntity.builder()
             .listName(req.getListName())
             .name(req.getName())
             .value(req.getValue())
@@ -44,8 +44,8 @@ public class CategoriesServiceImpl implements CategoriesService {
     List<OptionResp> result =
         categoriesRepository.findAll().stream()
             .sorted(
-                Comparator.comparing(Categories::getListName)
-                    .thenComparing(Categories::getSortOrder))
+                Comparator.comparing(CategoryEntity::getListName)
+                    .thenComparing(CategoryEntity::getSortOrder))
             .map(
                 Categories -> {
                   return OptionResp.builder()
@@ -71,13 +71,13 @@ public class CategoriesServiceImpl implements CategoriesService {
 
   @Override
   public Outbound updateCategorie(Integer id, AddOptionReq req) throws Exception {
-    Categories categorie =
+    CategoryEntity categorie =
         categoriesRepository
             .findById(id)
             .orElseThrow(() -> new RuntimeException("Category not found"));
 
-    Categories updateCategories =
-        Categories.builder()
+    CategoryEntity updateCategories =
+        CategoryEntity.builder()
             .id(categorie.getId())
             .listName(req.getListName())
             .name(req.getName())
@@ -94,11 +94,11 @@ public class CategoriesServiceImpl implements CategoriesService {
 
   @Override
   public Outbound getCategoriesByListName(String listName) throws Exception {
-    List<Categories> categories =
+    List<CategoryEntity> categories =
         categoriesRepository.findByListNameAndIsActiveTrueOrderBySortOrderAsc(listName);
 
     if (categories.isEmpty()) {
-      throw new RuntimeException("Categories not found");
+      throw new RuntimeException("CategoryEntity not found");
     }
 
     List<SelectOptions> result =

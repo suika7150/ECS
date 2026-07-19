@@ -1,6 +1,6 @@
 package com.shop.ecs.repository;
 
-import com.shop.ecs.entity.EmailOtp;
+import com.shop.ecs.entity.EmailOtpEntity;
 import com.shop.ecs.enums.OtpType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface EmailOtpRepository extends JpaRepository<EmailOtp, Long> {
+public interface EmailOtpRepository extends JpaRepository<EmailOtpEntity, Long> {
 
-    Optional<EmailOtp> findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
+    Optional<EmailOtpEntity> findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
             String email,
             OtpType type,
             LocalDateTime now);
@@ -21,7 +21,7 @@ public interface EmailOtpRepository extends JpaRepository<EmailOtp, Long> {
     @Modifying
     @Transactional
     @Query("""
-                DELETE FROM EmailOtp e
+                DELETE FROM EmailOtpEntity e
                 WHERE e.used = true
                    OR e.expireTime < CURRENT_TIMESTAMP
             """)

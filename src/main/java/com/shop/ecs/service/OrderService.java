@@ -4,9 +4,9 @@ import com.shop.ecs.dto.request.OrderReq;
 import com.shop.ecs.dto.response.EcpayParamsResp;
 import com.shop.ecs.dto.response.OrderItemResp;
 import com.shop.ecs.dto.response.OrderResp;
-import com.shop.ecs.entity.Order;
-import com.shop.ecs.entity.OrderItem;
-import com.shop.ecs.entity.Product;
+import com.shop.ecs.entity.OrderEntity;
+import com.shop.ecs.entity.OrderItemEntity;
+import com.shop.ecs.entity.ProductEntity;
 import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.enums.ShippingStatus;
@@ -42,7 +42,7 @@ public class OrderService {
 
     // 檢查商品庫存並更新庫存
     for (OrderReq.Item item : req.getItems()) {
-      Product product = productRepository.findByIdForUpdate(item.getProductId());
+      ProductEntity product = productRepository.findByIdForUpdate(item.getProductId());
 
       if (product == null) {
         log.warn("商品不存在 ID: {}", item.getProductId());
@@ -67,7 +67,7 @@ public class OrderService {
       log.info("庫存更新後：{} (剩餘 {}，訂購 {})", product.getName(), product.getStock(), item.getQuantity());
     }
 
-    Order orders = Order.builder()
+    OrderEntity orders = OrderEntity.builder()
         .name(req.getName())
         .phone(req.getPhone())
         .address(req.getAddress())
@@ -83,13 +83,13 @@ public class OrderService {
         .shippingStatus(ShippingStatus.NOT_SHIPPED)
         .build();
 
-    List<OrderItem> itemList = new ArrayList<>();
+    List<OrderItemEntity> itemList = new ArrayList<>();
 
     for (OrderReq.Item itemReq : req.getItems()) {
-      Product product = productRepository.findById(itemReq.getProductId())
+      ProductEntity product = productRepository.findById(itemReq.getProductId())
           .orElseThrow(() -> new RuntimeException("商品不存在"));
 
-      OrderItem orderItem = OrderItem.builder()
+      OrderItemEntity orderItem = OrderItemEntity.builder()
           .order(orders)
           .productId(itemReq.getProductId())
           .productName(product != null ? product.getName() : "未知商品")
@@ -104,10 +104,10 @@ public class OrderService {
       itemList.add(orderItem);
     }
 
-    // 存 Order 的同時會自動存 OrderItem
+    // 存 OrderEntity 的同時會自動存 OrderItemEntity
     orders.setItems(itemList);
 
-    Order newOrder = orderRepository.save(orders);
+    OrderEntity newOrder = orderRepository.save(orders);
 
     log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
 
@@ -131,7 +131,7 @@ public class OrderService {
    */
   public List<OrderResp> getUserOrders(OrderStatus orderStatus) {
     log.info("收到訂單查詢，status={}", orderStatus);
-    List<Order> orders;
+    List<OrderEntity> orders;
 
     // 判斷是否需要篩選狀態
     if (orderStatus == null) {
@@ -150,14 +150,14 @@ public class OrderService {
   /** 獲取單筆訂單詳情 */
   public OrderResp getOrderDetail(String orderId) {
 
-    Order order = orderRepository
+    OrderEntity order = orderRepository
         .findByIdWithItems(Long.parseLong(orderId))
         .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
 
     return convertToOrderResp(order);
   }
 
-  private OrderResp convertToOrderResp(Order order) {
+  private OrderResp convertToOrderResp(OrderEntity order) {
 
     OrderResp resp = OrderResp.builder()
         .id(order.getId())
@@ -198,7 +198,7 @@ public class OrderService {
   @Transactional
   public void updatePaymentResult(Long orderId, boolean success) {
 
-    Order order = orderRepository.findById(orderId)
+    OrderEntity order = orderRepository.findById(orderId)
         .orElseThrow(() -> new RuntimeException("找不到訂單"));
 
     // 防重複 callback

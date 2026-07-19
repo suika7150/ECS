@@ -1,6 +1,6 @@
 package com.shop.ecs.service;
 
-import com.shop.ecs.entity.UserInfo;
+import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.repository.UserRepository;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
    * @param username
    */
   @Override
-  public UserInfo findUserByUsername(String username) {
+  public UserEntity findUserByUsername(String username) {
     return userRepository.findByUsername(username).orElse(null);
   }
 
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
    * @param email
    */
   @Override
-  public UserInfo findUserByUsernameOrEmail(String identifier) {
+  public UserEntity findUserByUsernameOrEmail(String identifier) {
     return userRepository.findByUsername(identifier)
         .or(() -> userRepository.findByEmail(identifier))
         .orElse(null);
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
    * @param userInfo
    */
   @Override
-  public UserInfo save(UserInfo userInfo) {
+  public UserEntity save(UserEntity userInfo) {
     return userRepository.save(userInfo);
   }
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
   /** 取得所有使用者 */
   @Override
-  public List<UserInfo> findAll() {
+  public List<UserEntity> findAll() {
     return userRepository.findAll();
   }
 }

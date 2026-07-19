@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "generic_options")
-public class Categories extends BaseEntity {
+public class CategoryEntity extends BaseEntity {
   /** id */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
