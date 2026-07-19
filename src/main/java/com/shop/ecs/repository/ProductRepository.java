@@ -23,7 +23,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
   @Query("UPDATE ProductEntity p SET p.status = :status WHERE p.id = :id")
   void updateProductStatus(@Param("id") Integer id, @Param("status") String status);
 
-  // 新增 查商品時加悲觀鎖
+  // 查商品時加悲觀鎖
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("SELECT p FROM ProductEntity p WHERE p.id = :id")
   ProductEntity findByIdForUpdate(@Param("id") Integer id);

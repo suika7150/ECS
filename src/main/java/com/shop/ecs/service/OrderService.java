@@ -37,35 +37,8 @@ public class OrderService {
 
   @Transactional
   public OrderResp createOrder(OrderReq req) {
-
     log.info("建立訂單請求 : {}", req);
 
-    // 檢查商品庫存並更新庫存
-    for (OrderReq.Item item : req.getItems()) {
-      ProductEntity product = productRepository.findByIdForUpdate(item.getProductId());
-
-      if (product == null) {
-        log.warn("商品不存在 ID: {}", item.getProductId());
-        throw new RuntimeException("商品不存在" + item.getProductId());
-      }
-
-      log.info(
-          "商品名稱={} | ID={} | 原庫存={} | 訂購數量={}",
-          product.getName(),
-          product.getId(),
-          product.getStock(),
-          item.getQuantity());
-
-      if (product.getStock() < item.getQuantity()) {
-        log.warn(
-            "庫存不足：{} (剩餘 {}，訂購 {})", product.getName(), product.getStock(), item.getQuantity());
-        throw new RuntimeException("商品庫存不足: " + product.getName());
-      }
-      product.setStock(product.getStock() - item.getQuantity());
-      productRepository.save(product);
-
-      log.info("庫存更新後：{} (剩餘 {}，訂購 {})", product.getName(), product.getStock(), item.getQuantity());
-    }
 
     OrderEntity orders = OrderEntity.builder()
         .name(req.getName())
@@ -85,30 +58,36 @@ public class OrderService {
 
     List<OrderItemEntity> itemList = new ArrayList<>();
 
-    for (OrderReq.Item itemReq : req.getItems()) {
-      ProductEntity product = productRepository.findById(itemReq.getProductId())
-          .orElseThrow(() -> new RuntimeException("商品不存在"));
+    for (OrderReq.Item item : req.getItems()) {
+      // 悲觀鎖查詢
+      ProductEntity product = productRepository.findByIdForUpdate(item.getProductId());
+
+      if (product == null) {
+        throw new RuntimeException("商品不存在" + item.getProductId());
+      }
+
+      // 檢查並扣庫存
+      if (product.getStock() < item.getQuantity()) {
+        throw new RuntimeException("商品庫存不足: " + product.getName());
+      }
+
+      product.setStock(product.getStock() - item.getQuantity());
+      productRepository.save(product); // 更新庫存
 
       OrderItemEntity orderItem = OrderItemEntity.builder()
           .order(orders)
-          .productId(itemReq.getProductId())
-          .productName(product != null ? product.getName() : "未知商品")
-          .price(product != null ? product.getPrice() : 0)
-          .quantity(itemReq.getQuantity())
-          .productImage(
-              product != null
-                  ? ImageUtils.toBase64Src(product.getImageData(), product.getImageType())
-                  : "")
+          .productId(item.getProductId())
+          .productName(product.getName())
+          .price(product.getPrice())
+          .quantity(item.getQuantity())
+          .productImage(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
           .build();
 
       itemList.add(orderItem);
     }
 
-    // 存 OrderEntity 的同時會自動存 OrderItemEntity
     orders.setItems(itemList);
-
     OrderEntity newOrder = orderRepository.save(orders);
-
     log.info("訂單建立成功: ID={}，姓名={}", newOrder.getId(), newOrder.getName());
 
     // 呼叫 PaymentService 產生綠界參數
@@ -124,21 +103,14 @@ public class OrderService {
     return resp;
   }
 
-  /**
-   * 獲取使用者訂單列表
-   *
-   * @param
-   */
+  // 查詢使用者訂單列表
   public List<OrderResp> getUserOrders(OrderStatusEnum orderStatus) {
     log.info("收到訂單查詢，status={}", orderStatus);
     List<OrderEntity> orders;
 
-    // 判斷是否需要篩選狀態
     if (orderStatus == null) {
-      // 如果 orderStatus 是 null、空字串或 "all"，則切換為查詢所有訂單
       orders = orderRepository.findAllByOrderByIdDesc();
     } else {
-
       orders = orderRepository.findByOrderStatusWithItemsOrderByIdDesc(orderStatus);
     }
 
@@ -147,7 +119,7 @@ public class OrderService {
     return orders.stream().map(this::convertToOrderResp).toList();
   }
 
-  /** 獲取單筆訂單詳情 */
+  // 查詢訂單明細
   public OrderResp getOrderDetail(String orderId) {
 
     OrderEntity order = orderRepository
@@ -196,7 +168,7 @@ public class OrderService {
   }
 
   @Transactional
-  public void updatePaymentResult(Long orderId, boolean success) {
+  public void updatePaymentResult(long orderId, boolean success) {
 
     OrderEntity order = orderRepository.findById(orderId)
         .orElseThrow(() -> new RuntimeException("找不到訂單"));
