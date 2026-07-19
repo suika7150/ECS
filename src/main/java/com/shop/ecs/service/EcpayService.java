@@ -1,10 +1,10 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.constant.OrderStatusEnum;
+import com.shop.ecs.constant.PaymentStatusEnum;
 import com.shop.ecs.dto.response.EcpayParamsResp;
 import com.shop.ecs.entity.OrderEntity;
 import com.shop.ecs.entity.PaymentEntity;
-import com.shop.ecs.enums.OrderStatus;
-import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.repository.OrderRepository;
 import com.shop.ecs.repository.PaymentRepository;
 
@@ -185,22 +185,22 @@ public class EcpayService {
     OrderEntity order = orderRepository.findById(orderId)
         .orElseThrow(() -> new RuntimeException("找不到訂單: " + orderId));
 
-    if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+    if (order.getOrderStatus() == OrderStatusEnum.CANCELLED) {
       log.warn("訂單已取消，忽略付款 callback，orderId={}", orderId);
       return;
     }
 
-    if (order.getPaymentStatus() == PaymentStatus.PAID) {
+    if (order.getPaymentStatus() == PaymentStatusEnum.PAID) {
       log.info("訂單已付款完成，略過重複 callback，orderId={}", orderId);
       return;
     }
 
     if (success) {
-      order.setPaymentStatus(PaymentStatus.PAID);
-      order.setOrderStatus(OrderStatus.PROCESSING);
+      order.setPaymentStatus(PaymentStatusEnum.PAID);
+      order.setOrderStatus(OrderStatusEnum.PROCESSING);
     } else {
-      order.setPaymentStatus(PaymentStatus.FAILED);
-      order.setOrderStatus(OrderStatus.CANCELLED);
+      order.setPaymentStatus(PaymentStatusEnum.FAILED);
+      order.setOrderStatus(OrderStatusEnum.CANCELLED);
     }
 
     orderRepository.save(order);

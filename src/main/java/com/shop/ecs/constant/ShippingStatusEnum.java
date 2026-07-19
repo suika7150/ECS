@@ -1,6 +1,6 @@
-package com.shop.ecs.enums;
+package com.shop.ecs.constant;
 
-public enum ShippingStatus {
+public enum ShippingStatusEnum {
 
     NOT_SHIPPED, // 未出貨
     PREPARING, // 出貨準備中

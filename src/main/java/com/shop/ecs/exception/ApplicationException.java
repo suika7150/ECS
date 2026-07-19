@@ -1,6 +1,6 @@
 package com.shop.ecs.exception;
 
-import com.shop.ecs.enums.ResultCode;
+import com.shop.ecs.constant.ResultCode;
 
 import lombok.Data;
 

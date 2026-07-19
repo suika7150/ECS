@@ -1,7 +1,7 @@
 package com.shop.ecs.repository;
 
+import com.shop.ecs.constant.OtpTypeEnum;
 import com.shop.ecs.entity.EmailOtpEntity;
-import com.shop.ecs.enums.OtpType;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,7 +15,7 @@ public interface EmailOtpRepository extends JpaRepository<EmailOtpEntity, Long> 
 
     Optional<EmailOtpEntity> findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
             String email,
-            OtpType type,
+            OtpTypeEnum type,
             LocalDateTime now);
 
     @Modifying

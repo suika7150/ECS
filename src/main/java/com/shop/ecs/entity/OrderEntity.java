@@ -1,13 +1,23 @@
 package com.shop.ecs.entity;
 
-import jakarta.persistence.*;
 import java.util.List;
 
-import com.shop.ecs.enums.OrderStatus;
-import com.shop.ecs.enums.PaymentMethod;
-import com.shop.ecs.enums.PaymentStatus;
-import com.shop.ecs.enums.ShippingStatus;
+import com.shop.ecs.constant.OrderStatusEnum;
+import com.shop.ecs.constant.PaymentMethodEnum;
+import com.shop.ecs.constant.PaymentStatusEnum;
+import com.shop.ecs.constant.ShippingStatusEnum;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,7 +56,7 @@ public class OrderEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "payment_method", nullable = false)
-  private PaymentMethod paymentMethod; // 付款方式
+  private PaymentMethodEnum paymentMethod; // 付款方式
 
   @Column(name = "coupon_code", length = 50)
   private String couponCode; // 優惠券代碼
@@ -61,17 +71,17 @@ public class OrderEntity {
   @Builder.Default
   @Enumerated(EnumType.STRING)
   @Column(name = "order_status", nullable = false)
-  private OrderStatus orderStatus = OrderStatus.PENDING_PAYMENT;
+  private OrderStatusEnum orderStatus = OrderStatusEnum.PENDING_PAYMENT;
 
   @Builder.Default
   @Enumerated(EnumType.STRING)
   @Column(name = "payment_status", nullable = false)
-  private PaymentStatus paymentStatus = PaymentStatus.UNPAID;
+  private PaymentStatusEnum paymentStatus = PaymentStatusEnum.UNPAID;
 
   @Builder.Default
   @Enumerated(EnumType.STRING)
   @Column(name = "shipping_status", nullable = false)
-  private ShippingStatus shippingStatus = ShippingStatus.NOT_SHIPPED;;
+  private ShippingStatusEnum shippingStatus = ShippingStatusEnum.NOT_SHIPPED;;
 
   @Column(name = "created_at", updatable = false, columnDefinition = "DATETIME(0)")
   private java.time.LocalDateTime createdAt;

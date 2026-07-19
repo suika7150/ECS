@@ -3,7 +3,7 @@ package com.shop.ecs.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
-import com.shop.ecs.enums.PaymentMethod;
+import com.shop.ecs.constant.PaymentMethodEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class OrderReq {
   private String notes;
 
   @Schema(description = "付款方式")
-  private PaymentMethod paymentMethod;
+  private PaymentMethodEnum paymentMethod;
 
   @Schema(description = "優惠券代碼")
   private String couponCode;

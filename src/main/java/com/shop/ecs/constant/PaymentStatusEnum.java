@@ -1,6 +1,6 @@
-package com.shop.ecs.enums;
+package com.shop.ecs.constant;
 
-public enum PaymentStatus {
+public enum PaymentStatusEnum {
     UNPAID, // 未付款
     PAID, // 已付款
     REFUNDED, // 已退款

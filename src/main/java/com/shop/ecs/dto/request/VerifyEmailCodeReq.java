@@ -1,6 +1,6 @@
 package com.shop.ecs.dto.request;
 
-import com.shop.ecs.enums.OtpType;
+import com.shop.ecs.constant.OtpTypeEnum;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -10,5 +10,5 @@ import lombok.Data;
 public class VerifyEmailCodeReq {
     private String email;
     private String code;
-    private OtpType type;
+    private OtpTypeEnum type;
 }

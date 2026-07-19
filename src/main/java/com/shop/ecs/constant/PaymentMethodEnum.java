@@ -1,6 +1,6 @@
-package com.shop.ecs.enums;
+package com.shop.ecs.constant;
 
-public enum PaymentMethod {
+public enum PaymentMethodEnum {
 
     CREDIT_CARD, // 信用卡
     ATM, // ATM

@@ -1,9 +1,4 @@
-/**
- * 根據代碼字串（code）回傳對應的 ResultCode 物件
- * @return 對應的 ResultCode 枚舉項
- * @throws IllegalArgumentException 當傳入的代碼不在定義清單中時拋出異常
- */
-package com.shop.ecs.enums;
+package com.shop.ecs.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,19 +37,15 @@ public enum ResultCode {
   private final String msg;
 
   public static ResultCode fromCode(String code) {
-    // values() 是 Enum 內建方法，會回傳此 Enum 的所有項目（SUCCESS, FAIL等）
+    
     for (ResultCode value : values()) {
 
-      // 取得目前跑到的 Enum 項目的 code（例如 "0000"）
-      // 並與傳入的參數 code 進行字串內容比對
       if (value.getCode().equals(code)) {
 
-        // 如果比對成功，就回傳這個 Enum 實例，包含 code 與 msg
         return value;
       }
     }
 
-    // 若沒有找到匹配的代碼，則拋出異常
     throw new IllegalArgumentException("Unknown code: " + code);
   }
 }

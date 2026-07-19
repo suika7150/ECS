@@ -1,10 +1,10 @@
 package com.shop.ecs.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.shop.ecs.enums.OrderStatus;
-import com.shop.ecs.enums.PaymentMethod;
-import com.shop.ecs.enums.PaymentStatus;
-import com.shop.ecs.enums.ShippingStatus;
+import com.shop.ecs.constant.OrderStatusEnum;
+import com.shop.ecs.constant.PaymentMethodEnum;
+import com.shop.ecs.constant.PaymentStatusEnum;
+import com.shop.ecs.constant.ShippingStatusEnum;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -43,7 +43,7 @@ public class OrderResp {
   private String notes;
 
   @Schema(description = "付款方式")
-  private PaymentMethod paymentMethod;
+  private PaymentMethodEnum paymentMethod;
 
   @Schema(description = "優惠券折扣金額")
   private Integer discount;
@@ -52,13 +52,13 @@ public class OrderResp {
   private Integer total;
 
   @Schema(description = "付款狀態")
-  private PaymentStatus paymentStatus;
+  private PaymentStatusEnum paymentStatus;
 
   @Schema(description = "訂單狀態")
-  private OrderStatus orderStatus;
+  private OrderStatusEnum orderStatus;
 
   @Schema(description = "運送狀態")
-  private ShippingStatus shippingStatus;
+  private ShippingStatusEnum shippingStatus;
 
   @Schema(description = "綠界參數")
   private EcpayParamsResp ecpayParams;

@@ -1,7 +1,7 @@
 package com.shop.ecs.filter;
 
+import com.shop.ecs.constant.ResultCode;
 import com.shop.ecs.entity.UserEntity;
-import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.service.UserService;
 import com.shop.ecs.utils.JwtUtil;
 

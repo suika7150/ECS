@@ -2,7 +2,7 @@ package com.shop.ecs.entity;
 
 import java.time.LocalDateTime;
 
-import com.shop.ecs.enums.OtpType;
+import com.shop.ecs.constant.OtpTypeEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +34,7 @@ public class EmailOtpEntity {
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
-    private OtpType type;
+    private OtpTypeEnum type;
 
     @Column(name = "expire_time")
     private LocalDateTime expireTime;

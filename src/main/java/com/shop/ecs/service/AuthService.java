@@ -1,6 +1,8 @@
 package com.shop.ecs.service;
 
 import com.shop.ecs.common.result.Outbound;
+import com.shop.ecs.constant.OtpTypeEnum;
+import com.shop.ecs.constant.ResultCode;
 import com.shop.ecs.dto.request.ChangePswReq;
 import com.shop.ecs.dto.request.LoginReq;
 import com.shop.ecs.dto.request.RegisterReq;
@@ -10,8 +12,6 @@ import com.shop.ecs.dto.response.LoginResp;
 import com.shop.ecs.dto.response.UserResp;
 import com.shop.ecs.entity.EmailOtpEntity;
 import com.shop.ecs.entity.UserEntity;
-import com.shop.ecs.enums.OtpType;
-import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.exception.ApplicationException;
 import com.shop.ecs.repository.EmailOtpRepository;
 import com.shop.ecs.utils.JwtUtil;
@@ -48,7 +48,7 @@ public class AuthService {
    * @param req
    * @return
    */
-  public Outbound sendEmailCode(String email, OtpType type) throws ApplicationException {
+  public Outbound sendEmailCode(String email, OtpTypeEnum type) throws ApplicationException {
 
     if (email == null || email.isBlank()) {
       throw new ApplicationException(ResultCode.EMAIL_EMPTY);
@@ -57,15 +57,15 @@ public class AuthService {
     boolean exists = userService.existsByEmail(email);
 
     // 規則檢查
-    if (type == OtpType.REGISTER && exists) {
+    if (type == OtpTypeEnum.REGISTER && exists) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
 
-    if (type == OtpType.LOGIN && !exists) {
+    if (type == OtpTypeEnum.LOGIN && !exists) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
-    if (type == OtpType.RESET && !exists) {
+    if (type == OtpTypeEnum.RESET && !exists) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
@@ -104,7 +104,7 @@ public class AuthService {
    * @param req
    * @return
    */
-  public Outbound verifyEmailCode(String email, String code, OtpType type)
+  public Outbound verifyEmailCode(String email, String code, OtpTypeEnum type)
       throws ApplicationException {
 
     LocalDateTime now = LocalDateTime.now();
@@ -189,7 +189,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.PASSWORD_NOT_MATCH);
     }
 
-    sendEmailCode(userInfo.getEmail(), OtpType.LOGIN);
+    sendEmailCode(userInfo.getEmail(), OtpTypeEnum.LOGIN);
 
     return Outbound.ok("登入驗證碼已寄出");
   }
@@ -209,7 +209,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
-    verifyEmailCode(userInfo.getEmail(), req.getCode(), OtpType.LOGIN);
+    verifyEmailCode(userInfo.getEmail(), req.getCode(), OtpTypeEnum.LOGIN);
 
     // 生成 Token
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());

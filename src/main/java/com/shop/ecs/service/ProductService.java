@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shop.ecs.common.result.Outbound;
+import com.shop.ecs.constant.ProductStatusEnum;
 import com.shop.ecs.dto.request.ProductUploadReq;
 import com.shop.ecs.dto.response.ProductResp;
 import com.shop.ecs.dto.response.ProductDetailResp;
 import com.shop.ecs.entity.ProductEntity;
-import com.shop.ecs.enums.ProductStatus;
 import com.shop.ecs.repository.ProductRepository;
 import com.shop.ecs.utils.ImageUtils;
 
@@ -33,7 +33,7 @@ public class ProductService {
       products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
     }
     List<ProductDetailResp> result = products.stream()
-        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
+        .filter(product -> ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus()))
         .map(
             product -> {
               return ProductDetailResp.builder()
@@ -90,7 +90,7 @@ public class ProductService {
 
   public Outbound getAllProducts() {
     List<ProductDetailResp> result = productRepository.findAll().stream()
-        .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
+        .filter(product -> ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus()))
         .map(
             product -> {
               return ProductDetailResp.builder()
@@ -145,7 +145,7 @@ public class ProductService {
                   .category(product.getCategory())
                   .imageBase64(
                       ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-                  .status(ProductStatus.getDesc(product.getStatus()))
+                  .status(ProductStatusEnum.getDesc(product.getStatus()))
                   .build();
             })
         .collect(Collectors.toList());
@@ -155,7 +155,7 @@ public class ProductService {
 
   public Outbound deleteProduct(Integer id) {
 
-    productRepository.updateProductStatus(id, ProductStatus.DELETED.getCode());
+    productRepository.updateProductStatus(id, ProductStatusEnum.DELETED.getCode());
     ProductEntity product = productRepository
         .findById(id)
         .orElseThrow(() -> new RuntimeException("ProductEntity not found after update"));
@@ -168,7 +168,7 @@ public class ProductService {
         .description(product.getDescription())
         .category(product.getCategory())
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-        .status(ProductStatus.getDesc(product.getStatus()))
+        .status(ProductStatusEnum.getDesc(product.getStatus()))
         .build();
 
     return Outbound.ok(response);

@@ -1,9 +1,9 @@
 package com.shop.ecs.scheduler;
 
+import com.shop.ecs.constant.OrderStatusEnum;
+import com.shop.ecs.constant.PaymentStatusEnum;
 import com.shop.ecs.entity.OrderEntity;
 import com.shop.ecs.entity.OrderItemEntity;
-import com.shop.ecs.enums.OrderStatus;
-import com.shop.ecs.enums.PaymentStatus;
 import com.shop.ecs.repository.OrderRepository;
 import com.shop.ecs.repository.ProductRepository;
 
@@ -34,7 +34,7 @@ public class OrderScheduler {
     // 定義逾時臨界點：現在時間減去 1 分鐘
     LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
 
-    List<OrderEntity> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatus.UNPAID, threshold);
+    List<OrderEntity> expiredOrders = orderRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatusEnum.UNPAID, threshold);
 
     if (expiredOrders.isEmpty()) {
 
@@ -52,8 +52,8 @@ public class OrderScheduler {
               "訂單 {}：商品 ID {} 庫存已補回 {}", order.getId(), item.getProductId(), item.getQuantity());
         }
 
-        order.setPaymentStatus(PaymentStatus.FAILED);
-        order.setOrderStatus(OrderStatus.CANCELLED);
+        order.setPaymentStatus(PaymentStatusEnum.FAILED);
+        order.setOrderStatus(OrderStatusEnum.CANCELLED);
         orderRepository.save(order);
 
       } catch (Exception e) {

@@ -1,6 +1,6 @@
 package com.shop.ecs.common.result;
 
-import com.shop.ecs.enums.ResultCode;
+import com.shop.ecs.constant.ResultCode;
 
 import lombok.Builder;
 import lombok.Data;

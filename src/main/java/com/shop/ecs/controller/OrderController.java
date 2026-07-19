@@ -1,8 +1,8 @@
 package com.shop.ecs.controller;
 
 import com.shop.ecs.common.result.Outbound;
+import com.shop.ecs.constant.OrderStatusEnum;
 import com.shop.ecs.dto.request.OrderReq;
-import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.service.OrderService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class OrderController {
 
   @GetMapping("/orders")
   @Operation(summary = "獲取目前登入使用者的訂單列表")
-  public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false) OrderStatus status) {
+  public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false) OrderStatusEnum status) {
     return ResponseEntity.ok(Outbound.ok(orderService.getUserOrders(status)));
   }
 

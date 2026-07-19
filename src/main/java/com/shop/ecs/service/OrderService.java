@@ -1,5 +1,8 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.constant.OrderStatusEnum;
+import com.shop.ecs.constant.PaymentStatusEnum;
+import com.shop.ecs.constant.ShippingStatusEnum;
 import com.shop.ecs.dto.request.OrderReq;
 import com.shop.ecs.dto.response.EcpayParamsResp;
 import com.shop.ecs.dto.response.OrderItemResp;
@@ -7,9 +10,6 @@ import com.shop.ecs.dto.response.OrderResp;
 import com.shop.ecs.entity.OrderEntity;
 import com.shop.ecs.entity.OrderItemEntity;
 import com.shop.ecs.entity.ProductEntity;
-import com.shop.ecs.enums.OrderStatus;
-import com.shop.ecs.enums.PaymentStatus;
-import com.shop.ecs.enums.ShippingStatus;
 import com.shop.ecs.repository.OrderRepository;
 import com.shop.ecs.repository.ProductRepository;
 import com.shop.ecs.utils.ImageUtils;
@@ -78,9 +78,9 @@ public class OrderService {
         .couponCode(req.getCouponCode())
         .discount(req.getDiscount() == null ? 0 : req.getDiscount())
         .total(req.getTotal())
-        .orderStatus(OrderStatus.PENDING_PAYMENT)
-        .paymentStatus(PaymentStatus.UNPAID)
-        .shippingStatus(ShippingStatus.NOT_SHIPPED)
+        .orderStatus(OrderStatusEnum.PENDING_PAYMENT)
+        .paymentStatus(PaymentStatusEnum.UNPAID)
+        .shippingStatus(ShippingStatusEnum.NOT_SHIPPED)
         .build();
 
     List<OrderItemEntity> itemList = new ArrayList<>();
@@ -129,7 +129,7 @@ public class OrderService {
    *
    * @param
    */
-  public List<OrderResp> getUserOrders(OrderStatus orderStatus) {
+  public List<OrderResp> getUserOrders(OrderStatusEnum orderStatus) {
     log.info("收到訂單查詢，status={}", orderStatus);
     List<OrderEntity> orders;
 
@@ -202,17 +202,17 @@ public class OrderService {
         .orElseThrow(() -> new RuntimeException("找不到訂單"));
 
     // 防重複 callback
-    if (order.getPaymentStatus() == PaymentStatus.PAID) {
+    if (order.getPaymentStatus() == PaymentStatusEnum.PAID) {
       log.info("訂單已付款完成，略過重複 callback，orderId={}", orderId);
       return;
     }
 
     if (success) {
-      order.setPaymentStatus(PaymentStatus.PAID);
-      order.setOrderStatus(OrderStatus.PROCESSING);
+      order.setPaymentStatus(PaymentStatusEnum.PAID);
+      order.setOrderStatus(OrderStatusEnum.PROCESSING);
     } else {
-      order.setPaymentStatus(PaymentStatus.FAILED);
-      order.setOrderStatus(OrderStatus.CANCELLED);
+      order.setPaymentStatus(PaymentStatusEnum.FAILED);
+      order.setOrderStatus(OrderStatusEnum.CANCELLED);
     }
 
     orderRepository.save(order);

@@ -1,6 +1,7 @@
 package com.shop.ecs.controller;
 
 import com.shop.ecs.common.result.Outbound;
+import com.shop.ecs.constant.ResultCode;
 import com.shop.ecs.dto.request.ChangePswReq;
 import com.shop.ecs.dto.request.LoginReq;
 import com.shop.ecs.dto.request.RegisterReq;
@@ -9,7 +10,6 @@ import com.shop.ecs.dto.request.UpdateUserReq;
 import com.shop.ecs.dto.request.VerifyEmailCodeReq;
 import com.shop.ecs.dto.request.VerifyLoginCodeReq;
 import com.shop.ecs.dto.response.LoginResp;
-import com.shop.ecs.enums.ResultCode;
 import com.shop.ecs.exception.ApplicationException;
 import com.shop.ecs.service.AuthService;
 import com.shop.ecs.service.RecaptchaService;
