@@ -3,7 +3,7 @@ package com.shop.ecs.service;
 import com.shop.ecs.dto.request.AddOptionReq;
 import com.shop.ecs.dto.response.OptionResp;
 import com.shop.ecs.dto.response.Outbound;
-import com.shop.ecs.dto.response.SelectOptions;
+import com.shop.ecs.dto.response.SelectOptionResp;
 import com.shop.ecs.entity.CategoryEntity;
 import com.shop.ecs.repository.CategoriesRepository;
 
@@ -101,11 +101,11 @@ public class CategoriesServiceImpl implements CategoriesService {
       throw new RuntimeException("CategoryEntity not found");
     }
 
-    List<SelectOptions> result =
+    List<SelectOptionResp> result =
         categories.stream()
             .map(
                 categorie -> {
-                  return SelectOptions.builder()
+                  return SelectOptionResp.builder()
                       .label(categorie.getName())
                       .value(categorie.getValue())
                       .sortOrder(categorie.getSortOrder())

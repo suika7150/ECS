@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "使用者資料回應")
-public class UserResponse {
+public class UserResp {
   @Schema(description = "使用者ID", example = "1")
   private Long id;
 

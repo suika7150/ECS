@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SelectOptions {
+public class SelectOptionResp {
 
   private String label;
   private String value;

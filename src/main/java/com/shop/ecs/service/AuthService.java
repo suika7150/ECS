@@ -7,7 +7,7 @@ import com.shop.ecs.dto.request.UpdateUserReq;
 import com.shop.ecs.dto.request.VerifyLoginCodeReq;
 import com.shop.ecs.dto.response.LoginResp;
 import com.shop.ecs.dto.response.Outbound;
-import com.shop.ecs.dto.response.UserResponse;
+import com.shop.ecs.dto.response.UserResp;
 import com.shop.ecs.entity.EmailOtpEntity;
 import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.enums.OtpType;
@@ -240,7 +240,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
-    UserResponse userResponse = UserResponse.builder()
+    UserResp userResponse = UserResp.builder()
         .id(userInfo.getId())
         .username(userInfo.getUsername())
         .email(userInfo.getEmail())
@@ -282,7 +282,7 @@ public class AuthService {
 
     UserEntity upUserInfo = userService.save(userInfo);
 
-    UserResponse resp = UserResponse.builder()
+    UserResp resp = UserResp.builder()
         .id(upUserInfo.getId())
         .username(upUserInfo.getUsername())
         .email(upUserInfo.getEmail())
@@ -305,9 +305,9 @@ public class AuthService {
    */
   public Outbound getCurrentUser() {
     List<UserEntity> users = userService.findAll();
-    List<UserResponse> userResponses = users.stream()
+    List<UserResp> userResponses = users.stream()
         .map(
-            userInfo -> UserResponse.builder()
+            userInfo -> UserResp.builder()
                 .id(userInfo.getId())
                 .username(userInfo.getUsername())
                 .email(userInfo.getEmail())

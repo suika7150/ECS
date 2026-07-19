@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.shop.ecs.dto.request.ProductUploadReq;
 import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.ProductResp;
-import com.shop.ecs.dto.response.ProductShow;
+import com.shop.ecs.dto.response.ProductDetailResp;
 import com.shop.ecs.entity.ProductEntity;
 import com.shop.ecs.enums.ProductStatus;
 import com.shop.ecs.repository.ProductRepository;
@@ -32,11 +32,11 @@ public class ProductService {
       // 對傳入的關鍵字做 trim()，避免空白字元影響結果
       products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
     }
-    List<ProductShow> result = products.stream()
+    List<ProductDetailResp> result = products.stream()
         .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
         .map(
             product -> {
-              return ProductShow.builder()
+              return ProductDetailResp.builder()
                   .id(product.getId())
                   .name(product.getName())
                   .price(product.getPrice())
@@ -89,11 +89,11 @@ public class ProductService {
   }
 
   public Outbound getAllProducts() {
-    List<ProductShow> result = productRepository.findAll().stream()
+    List<ProductDetailResp> result = productRepository.findAll().stream()
         .filter(product -> ProductStatus.ON_SALE.getCode().equals(product.getStatus()))
         .map(
             product -> {
-              return ProductShow.builder()
+              return ProductDetailResp.builder()
                   .id(product.getId())
                   .name(product.getName())
                   .price(product.getPrice())
