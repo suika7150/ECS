@@ -22,7 +22,6 @@ public class EmailOtpEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
     @Column(name = "id")
     private Long id;
 

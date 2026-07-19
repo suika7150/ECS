@@ -33,14 +33,14 @@ public class OrderItemEntity {
   private Integer productId;
 
   @Column(name = "product_name")
-  private String productName; // 商品名稱
+  private String productName;
 
   @Column(name = "quantity", nullable = false)
-  private Integer quantity; // 購買數量
+  private Integer quantity;
 
   @Column(name = "price", nullable = false)
-  private Integer price; // 單價
+  private Integer price;
 
   @Column(name = "product_image", columnDefinition = "LONGTEXT")
-  private String productImage; // 商品圖片
+  private String productImage;
 }

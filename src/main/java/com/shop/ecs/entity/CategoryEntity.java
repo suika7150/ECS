@@ -18,33 +18,33 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "generic_options")
 public class CategoryEntity extends BaseEntity {
-  /** id */
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Integer id;
 
-  /** 選項分類 */
+  // 選項分類
   @Column(name = "list_name", nullable = false)
   private String listName;
 
-  /** 選項顯示名稱 */
+  // 選項顯示名稱
   @Column(name = "name", nullable = false)
   private String name;
 
-  /** 選項的唯一值 */
+  // 選項的唯一值
   @Column(name = "value", nullable = false)
   private String value;
 
-  /** 排序順序 */
+  // 排序順序
   @Column(name = "sort_order")
   private Integer sortOrder;
 
-  /** 是否啟用 */
+  // 是否啟用
   @Column(name = "is_active")
   private Boolean isActive;
 
-  /** 選項描述 */
+  // 選項描述
   @Column(name = "description")
   private String description;
 }

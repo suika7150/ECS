@@ -37,36 +37,39 @@ public class OrderEntity {
   private Long id;
 
   @Column(name = "name", nullable = false)
-  private String name; // 姓名
+  private String name;
 
   @Column(name = "phone", nullable = false)
-  private String phone; // 電話
+  private String phone;
 
   @Column(name = "address", nullable = false)
-  private String address; // 地址
+  private String address;
 
   @Column(name = "shipping_method", nullable = false)
-  private String shippingMethod; // 運送方式
+  private String shippingMethod;
 
   @Column(name = "shipping_fee", nullable = false)
-  private Integer shippingFee; // 運費
+  private Integer shippingFee;
 
   @Column(name = "notes", nullable = true)
-  private String notes; // 備註
+  private String notes;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "payment_method", nullable = false)
-  private PaymentMethodEnum paymentMethod; // 付款方式
+  private PaymentMethodEnum paymentMethod;
 
+  // 優惠券代碼
   @Column(name = "coupon_code", length = 50)
-  private String couponCode; // 優惠券代碼
+  private String couponCode;
 
+  // 優惠券折扣金額
   @Builder.Default
   @Column(name = "discount", nullable = false)
-  private Integer discount = 0; // 優惠券折扣金額
+  private Integer discount = 0;
 
+  // 總金額
   @Column(name = "total", nullable = false)
-  private Integer total; // 總金額
+  private Integer total;
 
   @Builder.Default
   @Enumerated(EnumType.STRING)
@@ -91,9 +94,11 @@ public class OrderEntity {
     createdAt = java.time.LocalDateTime.now();
   }
 
+  // 交易編號
   @Column(name = "merchant_trade_no", length = 50)
-  private String merchantTradeNo; // 交易編號
+  private String merchantTradeNo;
 
+  // 訂單明細
   @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<OrderItemEntity> items; // 訂單明細
+  private List<OrderItemEntity> items;
 }
