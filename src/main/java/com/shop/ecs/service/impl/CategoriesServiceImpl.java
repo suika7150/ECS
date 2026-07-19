@@ -1,4 +1,4 @@
-package com.shop.ecs.service;
+package com.shop.ecs.service.impl;
 
 import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.AddOptionReq;
@@ -6,6 +6,7 @@ import com.shop.ecs.dto.response.OptionResp;
 import com.shop.ecs.dto.response.SelectOptionResp;
 import com.shop.ecs.entity.CategoryEntity;
 import com.shop.ecs.repository.CategoriesRepository;
+import com.shop.ecs.service.CategoriesService;
 
 import java.util.Comparator;
 import java.util.List;

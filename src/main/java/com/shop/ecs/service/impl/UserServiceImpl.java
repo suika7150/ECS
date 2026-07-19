@@ -1,7 +1,8 @@
-package com.shop.ecs.service;
+package com.shop.ecs.service.impl;
 
 import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.repository.UserRepository;
+import com.shop.ecs.service.UserService;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
