@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.ProductUploadReq;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.ProductResp;
 import com.shop.ecs.dto.response.ProductDetailResp;
 import com.shop.ecs.entity.ProductEntity;

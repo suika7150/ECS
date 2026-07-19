@@ -3,7 +3,7 @@ package com.shop.ecs.service;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
-import com.shop.ecs.dto.response.Outbound;
+import com.shop.ecs.common.result.Outbound;
 
 @Service
 public class CouponService {

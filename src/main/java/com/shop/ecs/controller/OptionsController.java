@@ -1,7 +1,7 @@
 package com.shop.ecs.controller;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.AddOptionReq;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.service.CategoriesService;
 
 import io.swagger.v3.oas.annotations.Operation;

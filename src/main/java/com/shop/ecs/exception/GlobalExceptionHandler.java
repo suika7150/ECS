@@ -1,6 +1,6 @@
 package com.shop.ecs.exception;
 
-import com.shop.ecs.dto.response.Outbound;
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.enums.ResultCode;
 
 import org.springframework.http.HttpStatus;

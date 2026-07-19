@@ -1,7 +1,7 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.AddOptionReq;
-import com.shop.ecs.dto.response.Outbound;
 
 public interface CategoriesService {
 

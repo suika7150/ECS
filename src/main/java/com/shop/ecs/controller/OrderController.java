@@ -1,7 +1,7 @@
 package com.shop.ecs.controller;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.OrderReq;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.enums.OrderStatus;
 import com.shop.ecs.service.OrderService;
 

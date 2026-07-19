@@ -1,8 +1,8 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.AddOptionReq;
 import com.shop.ecs.dto.response.OptionResp;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.SelectOptionResp;
 import com.shop.ecs.entity.CategoryEntity;
 import com.shop.ecs.repository.CategoriesRepository;

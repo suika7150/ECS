@@ -1,4 +1,4 @@
-package com.shop.ecs.dto.response;
+package com.shop.ecs.common.result;
 
 import com.shop.ecs.enums.ResultCode;
 

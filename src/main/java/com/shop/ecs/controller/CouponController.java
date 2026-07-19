@@ -1,6 +1,6 @@
 package com.shop.ecs.controller;
 
-import com.shop.ecs.dto.response.Outbound;
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.service.CouponService;
 
 import io.swagger.v3.oas.annotations.Operation;

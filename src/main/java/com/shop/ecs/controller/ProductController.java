@@ -1,7 +1,7 @@
 package com.shop.ecs.controller;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.ProductUploadReq;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;

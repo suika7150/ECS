@@ -1,12 +1,12 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.ChangePswReq;
 import com.shop.ecs.dto.request.LoginReq;
 import com.shop.ecs.dto.request.RegisterReq;
 import com.shop.ecs.dto.request.UpdateUserReq;
 import com.shop.ecs.dto.request.VerifyLoginCodeReq;
 import com.shop.ecs.dto.response.LoginResp;
-import com.shop.ecs.dto.response.Outbound;
 import com.shop.ecs.dto.response.UserResp;
 import com.shop.ecs.entity.EmailOtpEntity;
 import com.shop.ecs.entity.UserEntity;
