@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "jwt") // 自動找 jwt.secret
+@ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
   private String secret;
   private long normalExpiration; // 一般登入

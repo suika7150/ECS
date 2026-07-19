@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@EnableJpaAuditing // 啟用 auditing 功能
+@EnableJpaAuditing
 @SpringBootApplication
 public class EcsBackEndServiceApplication {
 
