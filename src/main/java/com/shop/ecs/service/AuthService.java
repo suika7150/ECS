@@ -42,12 +42,7 @@ public class AuthService {
   @Autowired
   private JavaMailSender mailSender;
 
-  /**
-   * 發送 OTP
-   *
-   * @param req
-   * @return
-   */
+  // 發送 OTP
   public Outbound sendEmailCode(String email, OtpTypeEnum type) throws ApplicationException {
 
     if (email == null || email.isBlank()) {
@@ -56,7 +51,6 @@ public class AuthService {
 
     boolean exists = userService.existsByEmail(email);
 
-    // 規則檢查
     if (type == OtpTypeEnum.REGISTER && exists) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
@@ -74,14 +68,12 @@ public class AuthService {
 
     // 過期時間（5分鐘）
     LocalDateTime expireTime = LocalDateTime.now().plusMinutes(5);
-
     EmailOtpEntity otp = new EmailOtpEntity();
     otp.setEmail(email);
     otp.setCode(code);
     otp.setType(type);
     otp.setExpireTime(expireTime);
     otp.setUsed(false);
-
     emailOtpRepository.save(otp);
 
     // 寄信
@@ -89,21 +81,12 @@ public class AuthService {
     message.setTo(email);
     message.setSubject("ECS 驗證碼");
     message.setText("你的驗證碼是：" + code + "（5分鐘內有效）");
-
-    System.out.println("EMAIL = " + email);
-    System.out.println("TYPE = " + type);
     mailSender.send(message);
-    System.out.println("🔥 【測試後門提示】本次生成的登入驗證碼是： " + code);
 
     return Outbound.ok("驗證碼已寄出");
   }
 
-  /**
-   * 驗證 OTP
-   *
-   * @param req
-   * @return
-   */
+  // 驗證 OTP
   public Outbound verifyEmailCode(String email, String code, OtpTypeEnum type)
       throws ApplicationException {
 
@@ -113,10 +96,6 @@ public class AuthService {
         .findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
             email, type, now)
         .orElseThrow(() -> new ApplicationException(ResultCode.OTP_NOT_FOUND));
-
-    System.out.println("OTP ID = " + otp.getId());
-    System.out.println("OTP CODE = " + otp.getCode());
-    System.out.println("TYPE = " + type);
 
     // 是否已使用
     if (Boolean.TRUE.equals(otp.getUsed())) {
@@ -140,12 +119,7 @@ public class AuthService {
     return Outbound.ok("驗證成功");
   }
 
-  /**
-   * 使用者註冊
-   *
-   * @param req
-   * @return
-   */
+  // 使用者註冊
   public Outbound register(RegisterReq req) throws ApplicationException {
     // 帳號與 Email 重複檢查
     if (userService.existsByUsername(req.getUsername())) {
@@ -171,12 +145,7 @@ public class AuthService {
     return Outbound.ok("註冊成功");
   }
 
-  /**
-   * 使用者登入
-   *
-   * @param req
-   * @return
-   */
+  // 使用者登入
   public Outbound login(LoginReq req) throws ApplicationException {
 
     UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
@@ -194,13 +163,7 @@ public class AuthService {
     return Outbound.ok("登入驗證碼已寄出");
   }
 
-  /**
-   * 2FA 驗證
-   *
-   * @param req
-   * @return
-   */
-
+  // 2FA 驗證
   public Outbound verifyLoginCode(VerifyLoginCodeReq req) throws ApplicationException {
 
     UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
@@ -213,8 +176,6 @@ public class AuthService {
 
     // 生成 Token
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());
-
-    // 回傳給 Controller 的 DTO，Controller 從這裡拿 token 寫入 Cookie
     LoginResp loginResp = LoginResp.builder()
         .token(token)
         .role(userInfo.getRole())
@@ -226,12 +187,7 @@ public class AuthService {
     return Outbound.ok(loginResp);
   }
 
-  /**
-   * 取得使用者資料
-   *
-   * @param token
-   * @return
-   */
+  // 取得使用者資料
   public Outbound findUserByUsername(String username) throws ApplicationException {
 
     UserEntity userInfo = userService.findUserByUsername(username);
@@ -255,13 +211,7 @@ public class AuthService {
     return Outbound.ok(userResponse);
   }
 
-  /**
-   * 更新使用者資料
-   *
-   * @param username
-   * @param request
-   * @return
-   */
+  // 更新使用者資料
   public Outbound updateUserProfile(String username, UpdateUserReq request) throws Exception {
     UserEntity userInfo = userService.findUserByUsername(username);
 
@@ -298,11 +248,7 @@ public class AuthService {
 
   }
 
-  /**
-   * 取得所有使用者資料
-   *
-   * @return
-   */
+  // 取得所有使用者資料
   public Outbound getCurrentUser() {
     List<UserEntity> users = userService.findAll();
     List<UserResp> userResponses = users.stream()
@@ -320,12 +266,7 @@ public class AuthService {
     return Outbound.ok(userResponses);
   }
 
-  /**
-   * 更新密碼
-   *
-   * @param request
-   * @return
-   */
+  // 更新密碼
   public Outbound updatePassword(ChangePswReq request) throws ApplicationException {
 
     UserEntity userInfo = userService.findUserByUsername(request.getUsername());
@@ -337,14 +278,5 @@ public class AuthService {
     userInfo.setPassword(passwordEncoder.encode(request.getNewPassword()));
     userService.save(userInfo);
     return Outbound.ok("密碼更新成功");
-  }
-
-  /**
-   * 登出使用者
-   *
-   * @return
-   */
-  public Outbound logout() {
-    return Outbound.ok("登出成功");
   }
 }

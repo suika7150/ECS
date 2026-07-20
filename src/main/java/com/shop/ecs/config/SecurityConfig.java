@@ -38,7 +38,6 @@ public class SecurityConfig {
                                                                 org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(
                                                 auth -> auth
-
                                                                 // 白名單路徑
                                                                 .requestMatchers(
                                                                                 "/api/login",
@@ -59,13 +58,24 @@ public class SecurityConfig {
                                 .exceptionHandling(
                                                 exception -> exception.authenticationEntryPoint(
                                                                 (request, response, authException) -> {
-                                                                        response.setStatus(
-                                                                                        jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);  
-                                                                        response.setContentType(
-                                                                                        "application/json;charset=UTF-8");
-                                                                        response.getWriter().write(
-                                                                                        "{\"code\": \"401\", \"msg\": \"尚未登入或登入已逾時\"}");
+                                                                        response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);  
+                                                                        response.setContentType("application/json;charset=UTF-8");
+                                                                        response.getWriter().write("{\"code\": \"401\", \"msg\": \"尚未登入或登入已逾時\"}");
                                                                 }))
+                                .logout(
+                                                logout -> logout
+                                                                .logoutUrl("/api/logout")// 監聽登出路徑
+                                                                .deleteCookies("token")// 自動刪除 Cookie
+                                                                .clearAuthentication(true)// 自動清除 SecurityContext 身分暫存
+                                                                .invalidateHttpSession(true)// 自動讓 Session 失效
+                                                                .logoutSuccessHandler((request, response, authentication) -> {
+                                                                        com.fasterxml.jackson.databind.ObjectMapper objectMapper = 
+                                                                                new com.fasterxml.jackson.databind.ObjectMapper();// Spring 內建的 JSON 轉換器
+                                                                        com.shop.ecs.common.result.Outbound outbound = 
+                                                                                com.shop.ecs.common.result.Outbound.ok("登出成功");        
+                                                                        response.setContentType("application/json;charset=UTF-8");
+                                                                        response.getWriter().write(objectMapper.writeValueAsString(outbound));
+                                                                }))                                
                                 .addFilterBefore(
                                                 jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();

@@ -22,6 +22,7 @@ public class ProductService {
   @Autowired
   private ProductRepository productRepository;
 
+  // 查詢商品
   public Outbound searchProducts(String keyword) {
     List<ProductEntity> products;
 
@@ -29,7 +30,6 @@ public class ProductService {
     if (keyword == null || keyword.trim().isEmpty()) {
       products = productRepository.findAll();
     } else {
-      // 對傳入的關鍵字做 trim()，避免空白字元影響結果
       products = productRepository.findByNameContainingIgnoreCase(keyword.trim());
     }
     List<ProductDetailResp> result = products.stream()
@@ -110,12 +110,17 @@ public class ProductService {
   }
 
   public Outbound updateProduct(Integer id, ProductUploadReq req) {
-    ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
+    if (id == null) {
+      throw new IllegalArgumentException("更新商品的ID不能為空");
+    }
+    
+    productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("找不到欲更新的商品: " + id));
 
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
     ProductEntity updateProduct = ProductEntity.builder()
-        .id(product.getId())
+        .id(id)
         .name(req.getName())
         .category(req.getCategory())
         .stock(req.getStock())
@@ -127,8 +132,7 @@ public class ProductService {
         .build();
 
     productRepository.save(updateProduct);
-
-    return Outbound.ok("ProductEntity updated successfully");
+    return Outbound.ok("商品更新成功");
   }
 
   public Outbound productList() {
@@ -154,11 +158,14 @@ public class ProductService {
   }
 
   public Outbound deleteProduct(Integer id) {
+    if (id == null) {
+          throw new IllegalArgumentException("刪除商品的ID不能為空");
+    }
 
     productRepository.updateProductStatus(id, ProductStatusEnum.DELETED.getCode());
-    ProductEntity product = productRepository
-        .findById(id)
-        .orElseThrow(() -> new RuntimeException("ProductEntity not found after update"));
+
+    ProductEntity product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("修改狀態後找不到該商品: " + id));
 
     ProductResp response = ProductResp.builder()
         .id(product.getId())
@@ -174,27 +181,17 @@ public class ProductService {
     return Outbound.ok(response);
   }
 
-  /**
-   * 篩選商品
-   *
-   * @return
-   */
+  // 取得商品類別 
   public Outbound getCategories() {
     List<String> categories = productRepository.findDistinctCategories();
     return Outbound.ok(categories);
   }
 
-  /** 用來傳遞圖片處理結果的 record。 Record 是 Java 14+ 的特性，適合用來傳遞不可變的資料物件。 */
+  // 用來傳遞圖片處理結果的 record。 Record 是 Java 14+ 的特性，適合用來傳遞不可變的資料物件
   private record ImageInfo(byte[] imageData, String imageType) {
   }
 
-  /**
-   * 處理 Base64 圖片字串，解析出圖片二進制資料和類型。
-   *
-   * @param base64String      Base64 編碼的圖片字串，可包含 Data URI 前綴。
-   * @param existingImageType 已知或預設的圖片類型。
-   * @return 包含圖片資料和類型的 ImageInfo 物件。
-   */
+  // 處理 Base64 圖片字串，解析出圖片二進制資料和類型。
   private ImageInfo processBase64Image(String base64String, String existingImageType) {
     if (base64String == null || base64String.isBlank()) {
       return new ImageInfo(null, null); // 沒有圖片，返回空值

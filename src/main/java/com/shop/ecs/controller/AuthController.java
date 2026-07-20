@@ -13,6 +13,7 @@ import com.shop.ecs.dto.response.LoginResp;
 import com.shop.ecs.exception.ApplicationException;
 import com.shop.ecs.service.AuthService;
 import com.shop.ecs.service.RecaptchaService;
+import com.shop.ecs.utils.CookieUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +36,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @Tag(name = "Authentication", description = "使用者認證相關 API")
 public class AuthController {
+
+  @Autowired
+  private CookieUtil cookieUtil;
 
   @Autowired
   private AuthService authService;
@@ -90,22 +94,14 @@ public class AuthController {
       throws ApplicationException {
 
     Outbound outbound = authService.verifyLoginCode(request);
-
-    LoginResp loginData = (LoginResp) outbound.getResult(); // 取出 LoginResp 物件
-    String token = loginData.getToken(); // 從物件中抽取出 token 字串，用來寫入 Cookie
-
-    // 建立 HttpOnly Cookie
-    Cookie cookie = new Cookie("token", token);
-    cookie.setHttpOnly(true); // 防止 JS 讀取 (防 XSS)
-    cookie.setSecure(false); // 開發環境 http 設 false，生產環境 https 設 true
-    cookie.setPath("/"); // 全站路徑可用
+    LoginResp loginData = (LoginResp) outbound.getResult();
+    String token = loginData.getToken();
 
     // 根據是否勾選保持登入來設定 Cookie 的壽命
     long finalMs = loginData.isRememberMe() ? jwtRememberMeExpiration : jwtExpiration;
     int finalMaxAge = (int) (finalMs / 1000);
 
-    cookie.setMaxAge(finalMaxAge);
-    response.addCookie(cookie);
+    cookieUtil.setJwtCookie(response, token, finalMaxAge);
 
     return ResponseEntity.ok(outbound);
   }
@@ -134,19 +130,5 @@ public class AuthController {
   public ResponseEntity<Outbound> changePassword(@Valid @RequestBody ChangePswReq request)
       throws Exception {
      return ResponseEntity.ok(authService.updatePassword(request));
-  }
-
-  @PostMapping("/logout")
-  @Operation(summary = "使用者登出", description = "手動清除瀏覽器端的 Cookie")
-  public ResponseEntity<Outbound> logout(HttpServletResponse response) {
-
-    // 建立同名且立即過期的 Cookie
-    Cookie cookie = new Cookie("token", null);
-    cookie.setPath("/");
-    cookie.setHttpOnly(true);
-    cookie.setMaxAge(0);
-    response.addCookie(cookie);
-
-    return ResponseEntity.ok(authService.logout());
   }
 }

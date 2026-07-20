@@ -3,6 +3,7 @@ package com.shop.ecs.filter;
 import com.shop.ecs.constant.ResultCode;
 import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.service.UserService;
+import com.shop.ecs.utils.CookieUtil;
 import com.shop.ecs.utils.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -23,6 +24,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Autowired
   private JwtUtil jwtUtil;
+
+  @Autowired
+  private CookieUtil cookieUtil;
 
   @Autowired
   private UserService userService;
@@ -77,11 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        // 瀏覽器刪除 token cookie
-        Cookie cookie = new Cookie("token", null);
-        cookie.setPath("/");
-        cookie.setMaxAge(10); // 設為 0 代表立刻刪除
-        response.addCookie(cookie);
+        cookieUtil.clearJwtCookie(response);
 
         response
             .getWriter()

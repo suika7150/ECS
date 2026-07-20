@@ -74,6 +74,9 @@ public class OrderService {
       product.setStock(product.getStock() - item.getQuantity());
       productRepository.save(product); // 更新庫存
 
+      log.debug("[庫存變更] 商品ID: {}, 原庫存: {}, 扣減數: {}, 剩餘: {}", 
+                product.getId(), product.getStock() + item.getQuantity(), item.getQuantity(), product.getStock());
+
       OrderItemEntity orderItem = OrderItemEntity.builder()
           .order(orders)
           .productId(item.getProductId())
