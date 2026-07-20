@@ -47,6 +47,7 @@ public class SecurityConfig {
                                                                                 "/api/send-email-code",
                                                                                 "/api/verify-email-code",
                                                                                 "/api/products/**",
+                                                                                "/api/user", 
                                                                                 "/api/payment/callback",
                                                                                 "/swagger-ui/**",
                                                                                 "/v3/api-docs/**",
@@ -86,7 +87,7 @@ public class SecurityConfig {
                 CorsConfiguration config = new CorsConfiguration();
                 // 跨域允許清單，指定區網前端 URL
                 config.setAllowedOriginPatterns(
-                                List.of(
+                                List.of(        "http://localhost", // Nginx
                                                 "http://localhost:5173", // 本地
                                                 "http://192.168.1.152:5173", // 本地
                                                 "https://palladous-upmost-margaretta.ngrok-free.dev" // ngrok
