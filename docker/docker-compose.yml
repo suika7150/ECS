@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # 自動下載並啟動 MySQL 資料庫
   mysqldb:
@@ -34,14 +32,10 @@ services:
 
   # 前端服務
   frontend:
-    image: node:20-alpine
+    image: weft71500/ecs-frontend:dev
     container_name: shop-frontend
-    working_dir: /app
-    volumes:
-      - C:/Users/weft7/Documents/Vue3_Topic_Example:/app
     ports:
-      - "5173:5173"
-    command: sh -c "npm install && npm run dev:sit"
+      - "80:80"
     depends_on:
       - backend
 

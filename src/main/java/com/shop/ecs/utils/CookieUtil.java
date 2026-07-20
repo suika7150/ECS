@@ -14,11 +14,11 @@ public class CookieUtil {
     // 設定 JWT Cookie
     public void setJwtCookie(HttpServletResponse response, String token, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, token)
-                .httpOnly(true)       // 防禦 XSS 攻擊
-                .secure(secure)       // 是否開啟 HTTPS 傳輸
-                .sameSite("Lax")      // 防禦 CSRF 攻擊
-                .path("/")            // 全站路徑可用
-                .maxAge(maxAge)       // 存活時間
+                .httpOnly(true)// 防禦 XSS 攻擊
+                .secure(secure)// 是否開啟 HTTPS 傳輸
+                .sameSite("Lax")// 防禦 CSRF 攻擊
+                .path("/")// 全站路徑可用
+                .maxAge(maxAge)// 存活時間
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -30,7 +30,7 @@ public class CookieUtil {
         ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, null)
                 .httpOnly(true)
                 .secure(secure)
-                .sameSite("Lax")      // 屬性必須一致，瀏覽器才會刪除
+                .sameSite("Lax")// 屬性必須一致，瀏覽器才會刪除
                 .path("/")
                 .maxAge(0)            
                 .build();
