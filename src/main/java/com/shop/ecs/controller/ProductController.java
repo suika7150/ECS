@@ -36,12 +36,8 @@ public class ProductController {
   @GetMapping("/products")
   @Operation(summary = "取得所有商品資料 & 搜尋商品資料")
   public ResponseEntity<Outbound> getProducts(
-      @RequestParam(value = "keyword", required = false) String keyword) throws Exception {
-     
-        if (keyword != null && !keyword.isEmpty()) {
-      return ResponseEntity.ok(productService.searchProducts(keyword));
-    }
-    return ResponseEntity.ok(productService.getAllProducts());
+      @RequestParam(required = false) String keyword) throws Exception {
+    return ResponseEntity.ok(productService.searchProducts(keyword));
   }
 
   @GetMapping("/products/{id}")

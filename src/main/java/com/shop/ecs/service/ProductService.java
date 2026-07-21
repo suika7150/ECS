@@ -88,27 +88,6 @@ public class ProductService {
     return Outbound.ok(response);
   }
 
-  public Outbound getAllProducts() {
-    List<ProductDetailResp> result = productRepository.findAll().stream()
-        .filter(product -> ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus()))
-        .map(
-            product -> {
-              return ProductDetailResp.builder()
-                  .id(product.getId())
-                  .name(product.getName())
-                  .price(product.getPrice())
-                  .description(product.getDescription())
-                  .category(product.getCategory())
-                  .rating(null)
-                  .imageBase64(
-                      ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-                  .build();
-            })
-        .collect(Collectors.toList());
-
-    return Outbound.ok(result);
-  }
-
   public Outbound updateProduct(Integer id, ProductUploadReq req) {
     if (id == null) {
       throw new IllegalArgumentException("更新商品的ID不能為空");
