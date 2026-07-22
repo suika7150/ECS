@@ -28,18 +28,18 @@ public class OrderController {
   @PostMapping("/orders")
   @Operation(summary = "建立訂單")
   public ResponseEntity<Outbound> createOrder(@RequestBody OrderReq orderReq) {
-    return ResponseEntity.ok(Outbound.ok(orderService.createOrder(orderReq)));
+    return ResponseEntity.ok(orderService.createOrder(orderReq));
   }
 
   @GetMapping("/orders")
   @Operation(summary = "獲取目前登入使用者的訂單列表")
   public ResponseEntity<Outbound> getOrderList(@RequestParam(required = false) OrderStatusEnum status) {
-    return ResponseEntity.ok(Outbound.ok(orderService.getUserOrders(status)));
+    return ResponseEntity.ok(orderService.getUserOrders(status));
   }
 
   @GetMapping("/orders/{orderId}")
   @Operation(summary = "獲取訂單詳情")
   public ResponseEntity<Outbound> getOrderDetail(@PathVariable String orderId) {
-    return ResponseEntity.ok(Outbound.ok(orderService.getOrderDetail(orderId)));
+    return ResponseEntity.ok(orderService.getOrderDetail(orderId));
   }
 }

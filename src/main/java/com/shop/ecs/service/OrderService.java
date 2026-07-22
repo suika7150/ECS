@@ -1,5 +1,6 @@
 package com.shop.ecs.service;
 
+import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.constant.OrderStatusEnum;
 import com.shop.ecs.constant.PaymentStatusEnum;
 import com.shop.ecs.constant.ShippingStatusEnum;
@@ -36,7 +37,7 @@ public class OrderService {
   private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
   @Transactional
-  public OrderResp createOrder(OrderReq req) {
+  public Outbound createOrder(OrderReq req) {
     log.info("建立訂單請求 : {}", req);
 
 
@@ -103,11 +104,11 @@ public class OrderService {
     // 將綠界參數回傳
     OrderResp resp = convertToOrderResp(newOrder);
     resp.setEcpayParams(ecpayParams);
-    return resp;
+    return Outbound.ok(resp);
   }
 
   // 查詢使用者訂單列表
-  public List<OrderResp> getUserOrders(OrderStatusEnum orderStatus) {
+  public Outbound  getUserOrders(OrderStatusEnum orderStatus) {
     log.info("收到訂單查詢，status={}", orderStatus);
     List<OrderEntity> orders;
 
@@ -119,17 +120,22 @@ public class OrderService {
 
     log.info("查詢完成，結果筆數: {}", orders.size());
 
-    return orders.stream().map(this::convertToOrderResp).toList();
+    List<OrderResp> resp = orders.stream()
+        .map(order -> this.convertToOrderResp(order))
+        .toList();
+    
+    return Outbound.ok(resp);
   }
 
   // 查詢訂單明細
-  public OrderResp getOrderDetail(String orderId) {
+  public Outbound getOrderDetail(String orderId) {
 
     OrderEntity order = orderRepository
         .findByIdWithItems(Long.parseLong(orderId))
         .orElseThrow(() -> new RuntimeException("找不到該筆訂單"));
 
-    return convertToOrderResp(order);
+    OrderResp resp = convertToOrderResp(order);  
+    return Outbound.ok(resp);
   }
 
   private OrderResp convertToOrderResp(OrderEntity order) {
