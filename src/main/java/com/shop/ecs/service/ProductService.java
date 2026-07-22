@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.constant.ProductStatusEnum;
@@ -23,6 +24,7 @@ public class ProductService {
   private ProductRepository productRepository;
 
   // 查詢商品
+  @Transactional(readOnly = true)
   public Outbound searchProducts(String keyword) {
     List<ProductEntity> products;
 
@@ -52,6 +54,7 @@ public class ProductService {
     return Outbound.ok(result);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public Outbound saveProduct(ProductUploadReq req) {
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
@@ -82,6 +85,7 @@ public class ProductService {
     return Outbound.ok(resp);
   }
 
+  @Transactional(readOnly = true)
   public Outbound getProductById(Integer id) {
     ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
 
@@ -99,6 +103,7 @@ public class ProductService {
     return Outbound.ok(resp);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public Outbound updateProduct(Integer id, ProductUploadReq req) {
     if (id == null) {
       throw new IllegalArgumentException("更新商品的ID不能為空");
@@ -125,6 +130,7 @@ public class ProductService {
     return Outbound.ok("商品更新成功");
   }
 
+  @Transactional(readOnly = true)
   public Outbound productList() {
 
     List<ProductResp> result = productRepository.findAll().stream()
@@ -147,6 +153,7 @@ public class ProductService {
     return Outbound.ok(result);
   }
 
+  @Transactional(rollbackFor = Exception.class)
   public Outbound deleteProduct(Integer id) {
     if (id == null) {
           throw new IllegalArgumentException("刪除商品的ID不能為空");
@@ -172,6 +179,7 @@ public class ProductService {
   }
 
   // 取得商品類別 
+  @Transactional(readOnly = true)
   public Outbound getCategories() {
     List<String> categories = productRepository.findDistinctCategories();
     return Outbound.ok(categories);

@@ -14,12 +14,10 @@ import com.shop.ecs.entity.ProductEntity;
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer> {
 
   @Modifying
-  @Transactional
   @Query("UPDATE ProductEntity p SET p.stock = p.stock + :quantity WHERE p.id = :id")
   void updateStock(@Param("id") Integer id, @Param("quantity") Integer quantity);
 
   @Modifying
-  @Transactional
   @Query("UPDATE ProductEntity p SET p.status = :status WHERE p.id = :id")
   void updateProductStatus(@Param("id") Integer id, @Param("status") String status);
 
