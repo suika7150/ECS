@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoriesServiceImpl implements CategoriesService {
 
-  @Autowired private CategoriesRepository categoriesRepository;
+  @Autowired 
+  private CategoriesRepository categoriesRepository;
 
   @Override
   public Outbound addCategorie(AddOptionReq req) throws Exception {
@@ -31,12 +32,8 @@ public class CategoriesServiceImpl implements CategoriesService {
             .isActive(req.getIsActive())
             .description(req.getDescription())
             .build();
-    try {
-      categoriesRepository.save(categories);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
 
+      categoriesRepository.save(categories);
     return Outbound.ok("Category added successfully");
   }
 

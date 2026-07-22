@@ -122,13 +122,6 @@ public class AuthController {
     return ResponseEntity.ok(authService.updateUserProfile(request.getUsername(), request));
   }
 
-  // @GetMapping("/user")/finduser
-  // @Operation(summary = "取得目前登入的使用者資料")
-  // public ResponseEntity<Outbound> getCurrentUser(Principal principal) throws ApplicationException {
-  //   String username = principal.getName(); 
-  //   return ResponseEntity.ok(authService.getCurrentUser(username));
-  // }
-
   @PostMapping("/change-password")
   @Operation(summary = "修改密碼")
   public ResponseEntity<Outbound> changePassword(@Valid @RequestBody ChangePswReq request)
