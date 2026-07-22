@@ -68,7 +68,7 @@ public class ProductService {
 
     ProductEntity newProduct = productRepository.save(product);
 
-    ProductResp response = ProductResp.builder()
+    ProductResp resp = ProductResp.builder()
         .id(newProduct.getId())
         .name(newProduct.getName())
         .price(newProduct.getPrice())
@@ -79,13 +79,13 @@ public class ProductService {
         .imageBase64(ImageUtils.toBase64Src(newProduct.getImageData(), newProduct.getImageType()))
         .build();
 
-    return Outbound.ok(response);
+    return Outbound.ok(resp);
   }
 
   public Outbound getProductById(Integer id) {
     ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
 
-    ProductResp response = ProductResp.builder()
+    ProductResp resp = ProductResp.builder()
         .id(product.getId())
         .name(product.getName())
         .price(product.getPrice())
@@ -96,7 +96,7 @@ public class ProductService {
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
         .build();
 
-    return Outbound.ok(response);
+    return Outbound.ok(resp);
   }
 
   public Outbound updateProduct(Integer id, ProductUploadReq req) {
@@ -157,7 +157,7 @@ public class ProductService {
     ProductEntity product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("修改狀態後找不到該商品: " + id));
 
-    ProductResp response = ProductResp.builder()
+    ProductResp resp = ProductResp.builder()
         .id(product.getId())
         .name(product.getName())
         .price(product.getPrice())
@@ -168,7 +168,7 @@ public class ProductService {
         .status(ProductStatusEnum.getDesc(product.getStatus()))
         .build();
 
-    return Outbound.ok(response);
+    return Outbound.ok(resp);
   }
 
   // 取得商品類別 
