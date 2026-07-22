@@ -20,6 +20,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -106,10 +109,10 @@ public class AuthController {
     return ResponseEntity.ok(outbound);
   }
 
-  @GetMapping("/finduser")
+  @GetMapping("/user")
   public ResponseEntity<Outbound> getUser() throws ApplicationException {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
-    return ResponseEntity.ok(authService.findUserByUsername(username));
+    return ResponseEntity.ok(authService.getCurrentUser(username));
   }
 
   @PutMapping("/profile")
@@ -119,11 +122,12 @@ public class AuthController {
     return ResponseEntity.ok(authService.updateUserProfile(request.getUsername(), request));
   }
 
-  @GetMapping("/user")
-  @Operation(summary = "取得目前使用者資料")
-  public ResponseEntity<Outbound> getCurrentUser() {
-    return ResponseEntity.ok(authService.getCurrentUser());
-  }
+  // @GetMapping("/user")/finduser
+  // @Operation(summary = "取得目前登入的使用者資料")
+  // public ResponseEntity<Outbound> getCurrentUser(Principal principal) throws ApplicationException {
+  //   String username = principal.getName(); 
+  //   return ResponseEntity.ok(authService.getCurrentUser(username));
+  // }
 
   @PostMapping("/change-password")
   @Operation(summary = "修改密碼")

@@ -176,7 +176,7 @@ public class AuthService {
 
     // 生成 Token
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());
-    LoginResp loginResp = LoginResp.builder()
+    LoginResp resp = LoginResp.builder()
         .token(token)
         .role(userInfo.getRole())
         .username(userInfo.getUsername())
@@ -184,11 +184,11 @@ public class AuthService {
         .rememberMe(req.isRememberMe())
         .build();
 
-    return Outbound.ok(loginResp);
+    return Outbound.ok(resp);
   }
 
   // 取得使用者資料
-  public Outbound findUserByUsername(String username) throws ApplicationException {
+  public Outbound getCurrentUser(String username) throws ApplicationException {
 
     UserEntity userInfo = userService.findUserByUsername(username);
 
@@ -196,7 +196,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
-    UserResp userResponse = UserResp.builder()
+    UserResp resp = UserResp.builder()
         .id(userInfo.getId())
         .username(userInfo.getUsername())
         .email(userInfo.getEmail())
@@ -208,7 +208,7 @@ public class AuthService {
         .birthday(userInfo.getBirthday())
         .build();
 
-    return Outbound.ok(userResponse);
+    return Outbound.ok(resp);
   }
 
   // 更新使用者資料
@@ -246,24 +246,6 @@ public class AuthService {
 
     return Outbound.ok(resp);
 
-  }
-
-  // 取得所有使用者資料
-  public Outbound getCurrentUser() {
-    List<UserEntity> users = userService.findAll();
-    List<UserResp> userResponses = users.stream()
-        .map(
-            userInfo -> UserResp.builder()
-                .id(userInfo.getId())
-                .username(userInfo.getUsername())
-                .email(userInfo.getEmail())
-                .fullName(userInfo.getFullName())
-                .phone(userInfo.getPhone())
-                .role(userInfo.getRole())
-                .createdAt(userInfo.getCreatedAt())
-                .build())
-        .toList();
-    return Outbound.ok(userResponses);
   }
 
   // 更新密碼
