@@ -68,7 +68,18 @@ public class ProductService {
 
     ProductEntity newProduct = productRepository.save(product);
 
-    return Outbound.ok(newProduct);
+    ProductResp response = ProductResp.builder()
+        .id(newProduct.getId())
+        .name(newProduct.getName())
+        .price(newProduct.getPrice())
+        .stock(newProduct.getStock())
+        .status(newProduct.getStatus())
+        .description(newProduct.getDescription())
+        .category(newProduct.getCategory())
+        .imageBase64(ImageUtils.toBase64Src(newProduct.getImageData(), newProduct.getImageType()))
+        .build();
+
+    return Outbound.ok(response);
   }
 
   public Outbound getProductById(Integer id) {
