@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Schema(description = "產品列表")
 public class ProductResp {
+  
   @Schema(description = "產品ID")
   private Integer id;
 
@@ -31,7 +32,7 @@ public class ProductResp {
   private String category;
 
   @Schema(description = "產品圖片 Base64 字串")
-  private String imageBase64; // e.g., "data:image/jpeg;base64,..."
+  private String imageBase64;
 
   @Schema(description = "商品狀態")
   private String status;

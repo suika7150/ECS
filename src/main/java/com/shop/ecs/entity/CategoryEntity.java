@@ -32,7 +32,7 @@ public class CategoryEntity extends BaseEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
-  // 選項的唯一值
+  // 選項值
   @Column(name = "value", nullable = false)
   private String value;
 

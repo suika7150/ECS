@@ -1,13 +1,17 @@
 package com.shop.ecs.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Schema(description = "新增選項資料")
-public class AddOptionReq {
+public class OptionReq {
 
   @Schema(description = "分類選項名稱", example = "category")
   private String listName;

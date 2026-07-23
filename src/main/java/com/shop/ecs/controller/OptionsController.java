@@ -1,7 +1,7 @@
 package com.shop.ecs.controller;
 
 import com.shop.ecs.common.result.Outbound;
-import com.shop.ecs.dto.request.AddOptionReq;
+import com.shop.ecs.dto.request.OptionReq;
 import com.shop.ecs.service.CategoriesService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Options", description = "選單管理")
 public class OptionsController {
 
-  @Autowired private CategoriesService categoriesService;
+  @Autowired 
+  private CategoriesService categoriesService;
 
   @PostMapping("/add")
   @Operation(summary = "新增商品類別")
-  public ResponseEntity<Outbound> addOption(@RequestBody AddOptionReq req) throws Exception {
+  public ResponseEntity<Outbound> addOption(@RequestBody OptionReq req) throws Exception {
     return ResponseEntity.ok(categoriesService.addCategorie(req));
   }
 
@@ -46,7 +47,7 @@ public class OptionsController {
   @PutMapping("/update/{id}")
   @Operation(summary = "更新商品類別")
   public ResponseEntity<Outbound> updateOption(
-      @PathVariable Integer id, @RequestBody AddOptionReq req) throws Exception {
+      @PathVariable Integer id, @RequestBody OptionReq req) throws Exception {
     return ResponseEntity.ok(categoriesService.updateCategorie(id, req));
   }
 
@@ -54,6 +55,6 @@ public class OptionsController {
   @Operation(summary = "根據列表名稱取得商品類別")
   public ResponseEntity<Outbound> getCategoriesByListName(@Param("listName") String listName)
       throws Exception {
-    return ResponseEntity.ok(categoriesService.getCategoriesByListName(listName));
+    return ResponseEntity.ok(categoriesService.getCategoriesList(listName));
   }
 }
