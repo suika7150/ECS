@@ -49,7 +49,7 @@ public class AuthService {
       throw new ApplicationException(ResultCode.EMAIL_EMPTY);
     }
 
-    boolean exists = userService.existsByEmail(email);
+    boolean exists = userService.existsEmail(email);
 
     if (type == OtpTypeEnum.REGISTER && exists) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
@@ -122,11 +122,11 @@ public class AuthService {
   // 使用者註冊
   public Outbound register(RegisterReq req) throws ApplicationException {
     // 帳號與 Email 重複檢查
-    if (userService.existsByUsername(req.getUsername())) {
+    if (userService.existsUser(req.getUsername())) {
       throw new ApplicationException(ResultCode.ACCOUNT_IS_EXIST);
     }
 
-    if (userService.existsByEmail(req.getEmail())) {
+    if (userService.existsEmail(req.getEmail())) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
 
@@ -141,14 +141,14 @@ public class AuthService {
         .role("USER")
         .build();
 
-    userService.save(userInfo);
+    userService.saveUser(userInfo);
     return Outbound.ok("註冊成功");
   }
 
   // 使用者登入
   public Outbound login(LoginReq req) throws ApplicationException {
 
-    UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
+    UserEntity userInfo = userService.loginVerify(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -166,7 +166,7 @@ public class AuthService {
   // 2FA 驗證
   public Outbound verifyLoginCode(VerifyLoginCodeReq req) throws ApplicationException {
 
-    UserEntity userInfo = userService.findUserByUsernameOrEmail(req.getUsername());
+    UserEntity userInfo = userService.loginVerify(req.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -190,7 +190,7 @@ public class AuthService {
   // 取得使用者資料
   public Outbound getCurrentUser(String username) throws ApplicationException {
 
-    UserEntity userInfo = userService.findUserByUsername(username);
+    UserEntity userInfo = userService.getUser(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -213,7 +213,7 @@ public class AuthService {
 
   // 更新使用者資料
   public Outbound updateUserProfile(String username, UpdateUserReq request) throws Exception {
-    UserEntity userInfo = userService.findUserByUsername(username);
+    UserEntity userInfo = userService.getUser(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -223,14 +223,14 @@ public class AuthService {
     userInfo.setPhone(request.getPhone());
 
     if (!userInfo.getEmail().equals(request.getEmail())
-        && userService.existsByEmail(request.getEmail())) {
+        && userService.existsEmail(request.getEmail())) {
       throw new ApplicationException(ResultCode.EMAIL_IS_EXIST);
     }
     userInfo.setEmail(request.getEmail());
     userInfo.setGender(request.getGender());
     userInfo.setBirthday(request.getBirthday());
 
-    UserEntity upUserInfo = userService.save(userInfo);
+    UserEntity upUserInfo = userService.saveUser(userInfo);
 
     UserResp resp = UserResp.builder()
         .id(upUserInfo.getId())
@@ -251,14 +251,14 @@ public class AuthService {
   // 更新密碼
   public Outbound updatePassword(ChangePswReq request) throws ApplicationException {
 
-    UserEntity userInfo = userService.findUserByUsername(request.getUsername());
+    UserEntity userInfo = userService.getUser(request.getUsername());
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
     }
 
     userInfo.setPassword(passwordEncoder.encode(request.getNewPassword()));
-    userService.save(userInfo);
+    userService.saveUser(userInfo);
     return Outbound.ok("密碼更新成功");
   }
 }

@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsernameFromToken(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-          UserEntity userInfo = userService.findUserByUsername(username);
+          UserEntity userInfo = userService.getUser(username);
 
           if (jwtUtil.validateToken(token, userInfo)) {
             // 建立認證物件
