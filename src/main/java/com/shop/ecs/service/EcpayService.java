@@ -52,21 +52,16 @@ public class EcpayService {
   @Value("${ecpay.client-back-url}")
   private String clientBackUrl;
 
-  /** 這是給 OrderService 呼叫的入口 負責建立 PaymentEntity 紀錄並產生綠界參數 */
   @Transactional
   public EcpayParamsResp createPayment(OrderEntity order) {
 
-    // 建立一筆新的 PaymentEntity 紀錄
     PaymentEntity payment = new PaymentEntity();
     payment.setOrderId(order.getId()); // 關聯訂單 ID
     payment.setTotalAmount(order.getTotal()); // 同步金額
     payment.setRtnCode("0"); // 初始狀態設為 0 (代表未付款)
 
-    // 存入資料庫以取得 paymentId
     PaymentEntity savedPayment = paymentRepository.save(payment);
 
-    // 呼叫原本就寫好的參數產生邏輯
-    // 這樣就能重複利用寫好的加密 (CheckMacValue) 邏輯
     return generatePaymentParams(savedPayment.getId());
   }
 
@@ -77,8 +72,11 @@ public class EcpayService {
         .findById(paymentId)
         .orElseThrow(() -> new RuntimeException("找不到訂單: " + paymentId));
 
-    // 綠界的 API 要求每一筆交易都必須帶有一個 MerchantTradeNo（特店交易編號）不能重複。
-    String merchantTradeNo = "ECS" + paymentId + UUID.randomUUID().toString().substring(0, 5);
+    // 產生 MerchantTradeNo，因綠界的 API 要求每一筆交易都必須帶有一個 MerchantTradeNo（特店交易編號）不能重複。
+    String dateStr = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMMdd"));
+    String randomStr = UUID.randomUUID().toString().substring(0, 2).toUpperCase();
+    String idStr = String.format("%06d", paymentId);
+    String merchantTradeNo = "OD" + dateStr + randomStr + idStr;
 
     payment.setMerchantTradeNo(merchantTradeNo);
     paymentRepository.save(payment);
@@ -93,7 +91,7 @@ public class EcpayService {
     params.put("PaymentType", "aio");
     params.put("TotalAmount", String.valueOf(payment.getTotalAmount()));
     params.put("TradeDesc", "ECS_Store_Order");
-    params.put("ItemName", "ECS商品一批");
+    params.put("ItemName", "ECS電商平台商品一批");
     params.put("ReturnURL", returnUrl);
     params.put("ChoosePayment", "Credit");
     params.put("EncryptType", "1");
@@ -102,7 +100,7 @@ public class EcpayService {
     // 計算 CheckMacValue
     String checkMacValue = generateCheckMacValue(params);
 
-    // 封裝進 DTO 回傳
+    // 轉成 Resp 回傳
     EcpayParamsResp resp = new EcpayParamsResp();
     resp.setMerchantID(params.get("MerchantID"));
     resp.setMerchantTradeNo(params.get("MerchantTradeNo"));

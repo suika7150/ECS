@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.shop.ecs.entity.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+  
   // 根據 username 查找使用者（用於登入）
   Optional<UserEntity> findByUsername(String username);
 
