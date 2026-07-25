@@ -5,6 +5,7 @@ on:
     branches: ["dev_Lucas"] # 平常開發分支 push 時，立刻做檢查
   pull_request:
     branches: ["main"] # Merge時，自動觸發檢查
+  workflow_dispatch:
 
 jobs:
   build:
