@@ -73,6 +73,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/ecs-backend:${{ github.sha }}
             ${{ github.ref == 'refs/heads/main' && format('{0}/ecs-backend:latest', secrets.DOCKERHUB_USERNAME) || format('{0}/ecs-backend:dev', secrets.DOCKERHUB_USERNAME) }}
