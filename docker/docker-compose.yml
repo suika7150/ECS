@@ -21,7 +21,7 @@ services:
       - .env
     environment:
       - SPRING_PROFILES_ACTIVE=sit
-      - DB_HOST=mysqldb
+      - DB_HOST=host.docker.internal
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -30,7 +30,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
   # 前端服務
   frontend:
