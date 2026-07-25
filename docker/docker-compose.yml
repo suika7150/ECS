@@ -1,13 +1,13 @@
 services:
   # 自動下載並啟動 MySQL 資料庫
-  mysqldb:
-    image: mysql:8.0
-    container_name: shop-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
-    volumes:
-      - mysql_data:/var/lib/mysql
+  # mysqldb:
+  #   image: mysql:8.0
+  #   container_name: shop-mysql
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+  #     - MYSQL_DATABASE=${DB_NAME}
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
 
   # 自動 pull Docker Hub 映像檔
   backend:
@@ -15,8 +15,10 @@ services:
     container_name: shop-backend
     ports:
       - "8080:8080"
-    depends_on:
-      - mysqldb
+    # depends_on:
+    #   - mysqldb
+    env_file:
+      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=sit
       - DB_HOST=mysqldb
