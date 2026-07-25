@@ -192,7 +192,8 @@ public class AuthService {
     UserEntity userInfo = userService.getUser(username);
 
     if (userInfo == null) {
-      throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
+      UserResp guest = UserResp.builder().username("").fullName("訪客").build();
+      return Outbound.ok(guest);
     }
 
     UserResp resp = UserResp.builder()
