@@ -28,8 +28,9 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLOUD_PROJECT_ID=${GOOGLE_CLOUD_PROJECT_ID}
+      - GOOGLE_CLOUD_API_KEY=${GOOGLE_CLOUD_API_KEY}
       - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
-      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
       - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/${DB_NAME}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 
   # 前端服務

@@ -1,12 +1,13 @@
 package com.shop.ecs.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.shop.ecs.dto.response.RecaptchaVerifyResp;
@@ -14,11 +15,14 @@ import com.shop.ecs.dto.response.RecaptchaVerifyResp;
 @Service
 public class RecaptchaService {
 
-    @Value("${google.recaptcha.secret-key}")
-    private String recaptchaSecret;
+    @Value("${google.recaptcha.project-id}")
+    private String projectId;
 
-    private static final String GOOGLE_RECAPTCHA_VERIFY_URL = 
-    "https://www.google.com/recaptcha/api/siteverify";
+    @Value("${google.recaptcha.api-key}")
+    private String apiKey;
+
+    @Value("${google.recaptcha.site-key}")
+    private String siteKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -30,32 +34,45 @@ public class RecaptchaService {
 
         try {
 
+            String verifyUrl =
+                "https://recaptchaenterprise.googleapis.com/v1/projects/"
+                + projectId
+                + "/assessments?key="
+                + apiKey;
+
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-            MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-            body.add("secret", recaptchaSecret);
-            body.add("response", token);
+            Map<String, Object> event = new HashMap<>();
+            event.put("token", token);
+            event.put("siteKey", siteKey);
 
-            HttpEntity<MultiValueMap<String, String>> request =
-                    new HttpEntity<>(body, headers);
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("event", event);
 
-            RecaptchaVerifyResp response = restTemplate.postForObject(
-            GOOGLE_RECAPTCHA_VERIFY_URL,
+            HttpEntity<Map<String, Object>> request =
+                    new HttpEntity<>(requestBody, headers);
+
+            RecaptchaVerifyResp response = 
+            restTemplate.postForObject(
+            verifyUrl,
             request,
             RecaptchaVerifyResp.class
             );
 
             System.out.println("reCAPTCHA Google response: " + response);
 
-            if (response != null) {
-            System.out.println("reCAPTCHA Google response: " + response);
+            if (response == null) {
             // 驗證成功狀態與分數
-            return response.isSuccess() && response.getScore() >= 0.5;
+            return false;
             }
+
+            return response.getTokenProperties().isValid()
+                    && response.getRiskAnalysis().getScore() >= 0.5;
+
         } catch (Exception e) {
 
-            System.err.println("reCAPTCHA 驗證發生異常: " + e.getMessage());
+            System.err.println("reCAPTCHA Enterprise 驗證錯誤: " + e.getMessage());
         }
 
         return false;

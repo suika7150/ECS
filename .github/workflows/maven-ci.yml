@@ -47,8 +47,9 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          GOOGLE_CLOUD_PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+          GOOGLE_CLOUD_API_KEY: ${{ secrets.GOOGLE_CLOUD_API_KEY }}
           RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
-          RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: mvn clean package
 

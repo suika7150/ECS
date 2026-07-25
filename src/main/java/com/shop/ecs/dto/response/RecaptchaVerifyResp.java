@@ -1,7 +1,5 @@
 package com.shop.ecs.dto.response;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
@@ -9,17 +7,25 @@ import lombok.Data;
 @Data
 public class RecaptchaVerifyResp {
 
-    private boolean success;
+    @JsonProperty("tokenProperties")
+    private TokenProperties tokenProperties;
 
-    private float score;
+    @JsonProperty("riskAnalysis")
+    private RiskAnalysis riskAnalysis;
 
-    private String action;
 
-    @JsonProperty("challenge_ts")
-    private String challengeTs;
+    @Data
+    public static class TokenProperties {
 
-    private String hostname;
+        private boolean valid;
 
-    @JsonProperty("error-codes")
-    private List<String> errorCodes;
+        private String action;
+    }
+
+
+    @Data
+    public static class RiskAnalysis {
+
+        private float score;
+    }
 }
