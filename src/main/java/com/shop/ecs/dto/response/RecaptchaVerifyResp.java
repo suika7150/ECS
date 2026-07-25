@@ -11,6 +11,10 @@ public class RecaptchaVerifyResp {
 
     private boolean success;
 
+    private float score;
+
+    private String action;
+
     @JsonProperty("challenge_ts")
     private String challengeTs;
 

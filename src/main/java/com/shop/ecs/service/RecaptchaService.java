@@ -50,7 +50,8 @@ public class RecaptchaService {
 
             if (response != null) {
             System.out.println("reCAPTCHA Google response: " + response);
-            return response.isSuccess();
+            // 驗證成功狀態與分數
+            return response.isSuccess() && response.getScore() >= 0.5;
             }
         } catch (Exception e) {
 
