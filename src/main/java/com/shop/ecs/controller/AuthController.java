@@ -119,6 +119,13 @@ public class AuthController {
   @Operation(summary = "更新使用者資料")
   public ResponseEntity<Outbound> updateUserProfile(@Valid @RequestBody UpdateUserReq request)
       throws Exception {
+
+    String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+    
+    if (!currentUsername.equals(request.getUsername())) {
+        throw new ApplicationException(ResultCode.FORBIDDEN);
+    }    
+
     return ResponseEntity.ok(authService.updateUserProfile(request.getUsername(), request));
   }
 
