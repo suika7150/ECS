@@ -72,7 +72,7 @@ public class AuthController {
   @PostMapping("/verify-email-code")
   @Operation(summary = "驗證信箱驗證碼", description = "驗證使用者輸入的信箱驗證碼")
   public ResponseEntity<Outbound> verifyEmailCode(
-      @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
+      @Valid @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
     return ResponseEntity.ok(authService.verifyEmailCode(req.getEmail(), req.getCode(), req.getType()));
   }
 
