@@ -64,7 +64,7 @@ public class AuthController {
 
   @PostMapping("/send-email-code")
   @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
-  public ResponseEntity<Outbound> sendEmailCode(@RequestBody SendEmailCodeReq req)
+  public ResponseEntity<Outbound> sendEmailCode(@Valid@RequestBody SendEmailCodeReq req)
       throws ApplicationException {
     return ResponseEntity.ok(authService.sendEmailCode(req.getEmail(), req.getType()));
   }
