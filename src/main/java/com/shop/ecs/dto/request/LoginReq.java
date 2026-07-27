@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "登入請求")
 public class LoginReq {
+
   @NotBlank
   @Schema(description = "使用者帳號", example = "john_doe")
   private String username;
@@ -24,6 +25,7 @@ public class LoginReq {
   @Schema(description = "保持登入", example = "true")
   private boolean rememberMe;
 
+  @NotBlank
   @Schema(description = "Google reCAPTCHA 驗證憑證")
   private String recaptchaToken;
 }

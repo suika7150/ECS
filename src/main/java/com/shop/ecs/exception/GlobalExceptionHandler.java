@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // 攔截全專案的 @Valid 檢核
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Outbound> handleValidationError(MethodArgumentNotValidException ex) {
       Outbound outbound = Outbound.error(ResultCode.VALIDATION_ERROR);
