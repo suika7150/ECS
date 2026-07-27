@@ -5,11 +5,19 @@ import com.shop.ecs.constant.ResultCode;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  // 攔截全專案的 @Valid 檢核
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Outbound> handleValidationError(MethodArgumentNotValidException ex) {
+      Outbound outbound = Outbound.error(ResultCode.VALIDATION_ERROR);
+      return ResponseEntity.status(HttpStatus.OK).body(outbound);
+  }
 
   @ExceptionHandler(ApplicationException.class)
   public ResponseEntity<Outbound> handleApplication(ApplicationException ex) {
