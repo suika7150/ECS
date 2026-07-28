@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +59,11 @@ public class ProductService {
   public Outbound saveProduct(ProductUploadReq req) {
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
+    // 從 SecurityContext 直接拿目前登入者的 ID
+    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
     ProductEntity product = ProductEntity.builder()
+        .userId(currentUserId)
         .name(req.getName())
         .category(req.getCategory())
         .price(req.getPrice())
@@ -87,7 +92,12 @@ public class ProductService {
 
   @Transactional(readOnly = true)
   public Outbound getProductById(Integer id) {
-    ProductEntity product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductEntity not found"));
+    ProductEntity product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("ProductEntity not found"));
+
+    if(!ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus())){
+      throw new RuntimeException("商品已下架");
+    }
 
     ProductResp resp = ProductResp.builder()
         .id(product.getId())
@@ -109,31 +119,36 @@ public class ProductService {
       throw new IllegalArgumentException("更新商品的ID不能為空");
     }
     
-    productRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("找不到欲更新的商品: " + id));
+    ProductEntity productEntity = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("找不到更新的商品: " + id));
+
+    // 從記憶體拿當前登入者 ID，並與商品的擁有者比對
+    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!productEntity.getUserId().equals(currentUserId)) {
+        throw new RuntimeException("操作失敗");
+    }
 
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
-    ProductEntity updateProduct = ProductEntity.builder()
-        .id(id)
-        .name(req.getName())
-        .category(req.getCategory())
-        .stock(req.getStock())
-        .price(req.getPrice())
-        .status(req.getStatus())
-        .description(req.getDescription())
-        .imageData(imageInfo.imageData)
-        .imageType(imageInfo.imageType)
-        .build();
+    productEntity.setName(req.getName());
+    productEntity.setCategory(req.getCategory());
+    productEntity.setStock(req.getStock());
+    productEntity.setPrice(req.getPrice());
+    productEntity.setStatus(req.getStatus());
+    productEntity.setDescription(req.getDescription());
+    productEntity.setImageData(imageInfo.imageData);
+    productEntity.setImageType(imageInfo.imageType);
 
-    productRepository.save(updateProduct);
+    productRepository.save(productEntity);
     return Outbound.ok("商品更新成功");
   }
 
   @Transactional(readOnly = true)
   public Outbound productList() {
 
-    List<ProductResp> result = productRepository.findAll().stream()
+    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    List<ProductResp> result = productRepository.findByUserId(currentUserId).stream()
         .map(
             product -> {
               return ProductResp.builder()
@@ -159,10 +174,15 @@ public class ProductService {
           throw new IllegalArgumentException("刪除商品的ID不能為空");
     }
 
-    productRepository.updateProductStatus(id, ProductStatusEnum.DELETED.getCode());
-
     ProductEntity product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("修改狀態後找不到該商品: " + id));
+
+    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!product.getUserId().equals(currentUserId)) {
+        throw new RuntimeException("操作失敗");
+    }
+
+    productRepository.updateProductStatus(id, ProductStatusEnum.DELETED.getCode());
 
     ProductResp resp = ProductResp.builder()
         .id(product.getId())

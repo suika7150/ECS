@@ -6,6 +6,8 @@ import com.shop.ecs.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class ProductController {
 
   @PostMapping("/addProducts")
   @Operation(summary = "新增商品")
-  public ResponseEntity<Outbound> uploadProduct(@RequestBody ProductUploadReq req)
+  public ResponseEntity<Outbound> uploadProduct(@Valid @RequestBody ProductUploadReq req)
       throws Exception {
     return ResponseEntity.ok(productService.saveProduct(req));
   }
@@ -55,7 +57,7 @@ public class ProductController {
   @PutMapping("/updateProducts/{id}")
   @Operation(summary = "更新商品")
   public ResponseEntity<Outbound> updateProduct(
-      @PathVariable Integer id, @RequestBody ProductUploadReq req) throws Exception {
+      @PathVariable Integer id, @Valid @RequestBody ProductUploadReq req) throws Exception {
     return ResponseEntity.ok(productService.updateProduct(id, req));
   }
 

@@ -27,12 +27,17 @@ public class JwtUtil {
 
     return Jwts.builder()
         .setSubject(userInfo.getUsername()) // 設定主要身份資訊
+        .claim("id", userInfo.getId()) // 加入自定義資訊
         .claim("role", userInfo.getRole()) // 加入自定義資訊
         .claim("rm", rememberMe) // 加入保持登入的資訊
         .setIssuedAt(new Date()) // 簽發時間
         .setExpiration(expirationDate) // 過期時間
         .signWith(getSignKey(), SignatureAlgorithm.HS256) // HMAC SHA256 簽章
         .compact(); // 建立 JWT 字串
+  }
+
+  public Long getUserIdFromToken(String token) {
+    return extractAllClaims(token).get("id", Long.class);
   }
 
   public String getUsernameFromToken(String token) {
