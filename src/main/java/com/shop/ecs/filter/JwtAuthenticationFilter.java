@@ -65,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           if (jwtUtil.validateToken(token, userInfo)) {
             // 建立認證物件
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                userInfo.getId(),
+                userInfo.getUsername(),
                 null,
                 null // Role 可以塞進第三個參數
               );

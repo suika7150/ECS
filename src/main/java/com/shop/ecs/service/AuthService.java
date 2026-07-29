@@ -91,9 +91,7 @@ public class AuthService {
 
     LocalDateTime now = LocalDateTime.now();
 
-    EmailOtpEntity otp = emailOtpRepository
-        .findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
-            email, type, now)
+    EmailOtpEntity otp = emailOtpRepository.findLatestValidOtp(email, type, now)
         .orElseThrow(() -> new ApplicationException(ResultCode.OTP_NOT_FOUND));
 
     // 是否已使用
@@ -189,7 +187,7 @@ public class AuthService {
   // 取得使用者資料
   public Outbound getCurrentUser(String username) throws ApplicationException {
 
-    UserEntity userInfo = userService.getUser(username);
+    UserEntity userInfo = userService.loginVerify(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
@@ -212,7 +210,7 @@ public class AuthService {
 
   // 更新使用者資料
   public Outbound updateUserProfile(String username, UpdateUserReq request) throws Exception {
-    UserEntity userInfo = userService.getUser(username);
+    UserEntity userInfo = userService.loginVerify(username);
 
     if (userInfo == null) {
       throw new ApplicationException(ResultCode.USER_IS_NOT_EXIST);
