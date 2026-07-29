@@ -13,7 +13,16 @@ import java.util.Optional;
 
 public interface EmailOtpRepository extends JpaRepository<EmailOtpEntity, Long> {
 
-    Optional<EmailOtpEntity> findTopByEmailAndTypeAndUsedFalseAndExpireTimeAfterOrderByIdDesc(
+    @Query("""
+        SELECT e FROM EmailOtpEntity e
+        WHERE e.email = :email
+        AND e.type = :type
+        AND e.used = false
+        AND e.expireTime > :now
+        ORDER BY e.id DESC
+        LIMIT 1
+        """)
+    Optional<EmailOtpEntity> findLatestValidOtp(
             String email,
             OtpTypeEnum type,
             LocalDateTime now);
