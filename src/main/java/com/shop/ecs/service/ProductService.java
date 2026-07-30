@@ -15,11 +15,16 @@ import com.shop.ecs.dto.request.ProductUploadReq;
 import com.shop.ecs.dto.response.ProductResp;
 import com.shop.ecs.dto.response.ProductDetailResp;
 import com.shop.ecs.entity.ProductEntity;
+import com.shop.ecs.entity.UserEntity;
 import com.shop.ecs.repository.ProductRepository;
+import com.shop.ecs.repository.UserRepository;
 import com.shop.ecs.utils.ImageUtils;
 
 @Service
 public class ProductService {
+
+  @Autowired
+  private UserRepository userRepository;
 
   @Autowired
   private ProductRepository productRepository;
@@ -59,8 +64,11 @@ public class ProductService {
   public Outbound saveProduct(ProductUploadReq req) {
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
 
-    // 從 SecurityContext 直接拿目前登入者的 ID
-    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = String.valueOf(principal);
+    UserEntity user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
+    Long currentUserId = user.getId();
 
     ProductEntity product = ProductEntity.builder()
         .userId(currentUserId)
@@ -122,8 +130,12 @@ public class ProductService {
     ProductEntity productEntity = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("找不到更新的商品: " + id));
 
-    // 從記憶體拿當前登入者 ID，並與商品的擁有者比對
-    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = String.valueOf(principal);
+    UserEntity user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
+    Long currentUserId = user.getId();
+    
     if (!productEntity.getUserId().equals(currentUserId)) {
         throw new RuntimeException("操作失敗");
     }
@@ -146,7 +158,13 @@ public class ProductService {
   @Transactional(readOnly = true)
   public Outbound productList() {
 
-    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = String.valueOf(principal);
+
+    UserEntity user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
+    
+    Long currentUserId = user.getId();
 
     List<ProductResp> result = productRepository.findByUserId(currentUserId).stream()
         .map(
@@ -177,7 +195,12 @@ public class ProductService {
     ProductEntity product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("修改狀態後找不到該商品: " + id));
 
-    Long currentUserId = (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = String.valueOf(principal);
+    UserEntity user = userRepository.findByUsername(username)
+        .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
+    Long currentUserId = user.getId();
+    
     if (!product.getUserId().equals(currentUserId)) {
         throw new RuntimeException("操作失敗");
     }
