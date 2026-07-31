@@ -3,6 +3,7 @@ package com.shop.ecs.service;
 import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.constant.OtpTypeEnum;
 import com.shop.ecs.constant.ResultCode;
+import com.shop.ecs.constant.UserRoleEnum;
 import com.shop.ecs.dto.request.ChangePswReq;
 import com.shop.ecs.dto.request.LoginReq;
 import com.shop.ecs.dto.request.RegisterReq;
@@ -135,7 +136,7 @@ public class AuthService {
         .phone(req.getPhone())
         .gender(req.getGender())
         .birthday(req.getBirthday())
-        .role("USER")
+        .role(UserRoleEnum.USER)
         .build();
 
     userService.saveUser(userInfo);
@@ -175,7 +176,7 @@ public class AuthService {
     String token = jwtUtil.generateToken(userInfo, req.isRememberMe());
     LoginResp resp = LoginResp.builder()
         .token(token)
-        .role(userInfo.getRole())
+        .role(userInfo.getRole().name())
         .username(userInfo.getUsername())
         .fullName(userInfo.getFullName())
         .rememberMe(req.isRememberMe())
@@ -199,7 +200,7 @@ public class AuthService {
         .email(userInfo.getEmail())
         .fullName(userInfo.getFullName())
         .phone(userInfo.getPhone())
-        .role(userInfo.getRole())
+        .role(userInfo.getRole().name())
         .createdAt(userInfo.getCreatedAt())
         .gender(userInfo.getGender())
         .birthday(userInfo.getBirthday())
@@ -235,7 +236,7 @@ public class AuthService {
         .email(upUserInfo.getEmail())
         .fullName(upUserInfo.getFullName())
         .phone(upUserInfo.getPhone())
-        .role(upUserInfo.getRole())
+        .role(upUserInfo.getRole().name())
         .createdAt(upUserInfo.getCreatedAt())
         .gender(upUserInfo.getGender())
         .birthday(upUserInfo.getBirthday())

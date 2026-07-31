@@ -28,7 +28,7 @@ public class JwtUtil {
     return Jwts.builder()
         .setSubject(userInfo.getUsername()) // 設定主要身份資訊
         .claim("id", userInfo.getId()) // 加入自定義資訊
-        .claim("role", userInfo.getRole()) // 加入自定義資訊
+        .claim("role", userInfo.getRole().name()) // 加入自定義資訊
         .claim("rm", rememberMe) // 加入保持登入的資訊
         .setIssuedAt(new Date()) // 簽發時間
         .setExpiration(expirationDate) // 過期時間

@@ -12,8 +12,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -63,11 +66,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           UserEntity userInfo = userService.getUser(username);
 
           if (jwtUtil.validateToken(token, userInfo)) {
+            //將 UserRoleEnum 轉成 Spring Security 認識的權限字串
+            // Spring Security 預設的角色權限前綴通常是 "ROLE_"
+            String authorityName = "ROLE_" + userInfo.getRole().name();
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityName);
             // 建立認證物件
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 userInfo.getUsername(),
                 null,
-                null // Role 可以塞進第三個參數
+                Collections.singletonList(authority) // Role 可以塞進第三個參數
               );
 
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

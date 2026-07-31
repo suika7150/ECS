@@ -1,7 +1,11 @@
 package com.shop.ecs.entity;
 
+import com.shop.ecs.constant.UserRoleEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -46,8 +50,10 @@ public class UserEntity extends BaseEntity {
   private String birthday;
 
   /// 使用者角色
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role", nullable = false)
   @Builder.Default
-  private String role = "USER";
+  private UserRoleEnum role = UserRoleEnum.USER;
 
   // 使用者狀態
   @Builder.Default
