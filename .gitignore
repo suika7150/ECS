@@ -6,6 +6,7 @@ target/
 !**/src/test/**/target/
 .env
 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -33,3 +34,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### 自訂備份 ###
+*.bak
