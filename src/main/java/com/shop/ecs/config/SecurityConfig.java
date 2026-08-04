@@ -40,44 +40,52 @@ public class SecurityConfig {
                                                 auth -> auth
                                                                 // 白名單路徑
                                                                 .requestMatchers(
-                                                                                "/api/login",
-                                                                                "/api/login/verify-email-code",
-                                                                                "/api/logout",
-                                                                                "/api/register",
-                                                                                "/api/send-email-code",
-                                                                                "/api/verify-email-code",
-                                                                                "/api/products/**",
-                                                                                "/api/user",
-                                                                                "/api/options/**", 
-                                                                                "/api/payment/callback",
+                                                                                "/api/v1/auth/login",
+                                                                                "/api/v1/auth/2fa/verify",
+                                                                                "/api/v1/auth/logout",
+                                                                                "/api/v1/auth/register",
+                                                                                "/api/v1/auth/email-code/send",
+                                                                                "/api/v1/auth/email-code/verify",
+                                                                                "/api/v1/products/**",
+                                                                                "/api/v1/options/**",
+                                                                                "/api/v1/payments/ecpay/callback",
+                                                                                "/api/v1/payments/ecpay-params/**",
                                                                                 "/swagger-ui/**",
                                                                                 "/v3/api-docs/**",
-                                                                                "/swagger-ui.html",
-                                                                                "/api/payment/params/**")
+                                                                                "/swagger-ui.html")
                                                                 .permitAll()
                                                                 .anyRequest()
                                                                 .authenticated())
                                 .exceptionHandling(
                                                 exception -> exception.authenticationEntryPoint(
                                                                 (request, response, authException) -> {
-                                                                        response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);  
-                                                                        response.setContentType("application/json;charset=UTF-8");
-                                                                        response.getWriter().write("{\"code\": \"401\", \"msg\": \"尚未登入或登入已逾時\"}");
+                                                                        response.setStatus(
+                                                                                        jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                                                                        response.setContentType(
+                                                                                        "application/json;charset=UTF-8");
+                                                                        response.getWriter().write(
+                                                                                        "{\"code\": \"401\", \"msg\": \"尚未登入或登入已逾時\"}");
                                                                 }))
                                 .logout(
                                                 logout -> logout
-                                                                .logoutUrl("/api/logout")// 監聽登出路徑
+                                                                .logoutUrl("/api/v1/auth/logout")// 監聽登出路徑
                                                                 .deleteCookies("token")// 自動刪除 Cookie
                                                                 .clearAuthentication(true)// 自動清除 SecurityContext 身分暫存
                                                                 .invalidateHttpSession(true)// 自動讓 Session 失效
-                                                                .logoutSuccessHandler((request, response, authentication) -> {
-                                                                        com.fasterxml.jackson.databind.ObjectMapper objectMapper = 
-                                                                                new com.fasterxml.jackson.databind.ObjectMapper();// Spring 內建的 JSON 轉換器
-                                                                        com.shop.ecs.common.result.Outbound outbound = 
-                                                                                com.shop.ecs.common.result.Outbound.ok("登出成功");        
-                                                                        response.setContentType("application/json;charset=UTF-8");
-                                                                        response.getWriter().write(objectMapper.writeValueAsString(outbound));
-                                                                }))                                
+                                                                .logoutSuccessHandler(
+                                                                                (request, response, authentication) -> {
+                                                                                        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();// Spring
+                                                                                                                                                                                                     // 內建的
+                                                                                                                                                                                                     // JSON
+                                                                                                                                                                                                     // 轉換器
+                                                                                        com.shop.ecs.common.result.Outbound outbound = com.shop.ecs.common.result.Outbound
+                                                                                                        .ok("登出成功");
+                                                                                        response.setContentType(
+                                                                                                        "application/json;charset=UTF-8");
+                                                                                        response.getWriter().write(
+                                                                                                        objectMapper.writeValueAsString(
+                                                                                                                        outbound));
+                                                                                }))
                                 .addFilterBefore(
                                                 jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
@@ -88,7 +96,7 @@ public class SecurityConfig {
                 CorsConfiguration config = new CorsConfiguration();
                 // 跨域允許清單，指定區網前端 URL
                 config.setAllowedOriginPatterns(
-                                List.of(        "http://localhost", // Nginx
+                                List.of("http://localhost", // Nginx
                                                 "http://localhost:5173", // 本地
                                                 "http://192.168.1.152:5173", // 本地
                                                 "https://palladous-upmost-margaretta.ngrok-free.dev" // ngrok

@@ -10,15 +10,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/coupon")
-@Tag(name = "Coupon", description = "優惠券相關API")
+@RequestMapping("/api/v1/coupons")
+@Tag(name = "優惠券管理 API", description = "優惠券驗證")
 public class CouponController {
 
-  @Autowired private CouponService couponService;
+  @Autowired
+  private CouponService couponService;
 
-  @GetMapping("/validate/{code}")
+  @GetMapping("/validate/{couponCode}")
   @Operation(summary = "驗證優惠券")
-  public ResponseEntity<Outbound> validateCoupon(@PathVariable String code) {
-    return ResponseEntity.ok(couponService.validateCoupon(code));
+  public ResponseEntity<Outbound> validateCoupon(@PathVariable String couponCode) {
+    return ResponseEntity.ok(couponService.validateCoupon(couponCode));
   }
 }

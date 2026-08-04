@@ -17,11 +17,8 @@ import com.shop.ecs.utils.CookieUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
-import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
-@Tag(name = "Authentication", description = "使用者認證相關 API")
+@RequestMapping("/api/v1")
+@Tag(name = "Authentication & User", description = "使用者認證與個人帳號管理 API")
 public class AuthController {
 
   @Autowired
@@ -55,28 +52,28 @@ public class AuthController {
   @Value("${jwt.remember-me-expiration}")
   private long jwtRememberMeExpiration;
 
-  @PostMapping("/register")
-  @Operation(summary = "使用者註冊", description = "建立新使用者帳號")
+  @PostMapping("/auth/register")
+  @Operation(summary = "使用者註冊", description = "建立使用者帳號")
   public ResponseEntity<Outbound> register(@Valid @RequestBody RegisterReq req)
       throws ApplicationException {
     return ResponseEntity.ok(authService.register(req));
   }
 
-  @PostMapping("/send-email-code")
-  @Operation(summary = "發送信箱驗證碼", description = "模擬發送6位數信箱驗證碼")
-  public ResponseEntity<Outbound> sendEmailCode(@Valid@RequestBody SendEmailCodeReq req)
+  @PostMapping("/auth/email-code/send")
+  @Operation(summary = "發送信箱驗證碼", description = "發送 6 位數信箱驗證碼")
+  public ResponseEntity<Outbound> sendEmailCode(@Valid @RequestBody SendEmailCodeReq req)
       throws ApplicationException {
     return ResponseEntity.ok(authService.sendEmailCode(req.getEmail(), req.getType()));
   }
 
-  @PostMapping("/verify-email-code")
+  @PostMapping("/auth/email-code/verify")
   @Operation(summary = "驗證信箱驗證碼", description = "驗證使用者輸入的信箱驗證碼")
   public ResponseEntity<Outbound> verifyEmailCode(
       @Valid @RequestBody VerifyEmailCodeReq req) throws ApplicationException {
     return ResponseEntity.ok(authService.verifyEmailCode(req.getEmail(), req.getCode(), req.getType()));
   }
 
-  @PostMapping("/login")
+  @PostMapping("/auth/login")
   @Operation(summary = "使用者登入", description = "帳密成功後寄出 Email OTP")
   public ResponseEntity<Outbound> login(
       @Valid @RequestBody LoginReq request)
@@ -89,7 +86,7 @@ public class AuthController {
     return ResponseEntity.ok(authService.login(request));
   }
 
-  @PostMapping("/login/verify-email-code")
+  @PostMapping("/auth/2fa/verify")
   @Operation(summary = "登入二階段驗證", description = "驗證 Email OTP，成功後寫入 HttpOnly Cookie")
   public ResponseEntity<Outbound> verifyLoginCode(
       @Valid @RequestBody VerifyLoginCodeReq request,
@@ -109,22 +106,22 @@ public class AuthController {
     return ResponseEntity.ok(outbound);
   }
 
-  @GetMapping("/user")
+  @GetMapping("/users/me")
   public ResponseEntity<Outbound> getUser() throws ApplicationException {
     String username = SecurityContextHolder.getContext().getAuthentication().getName();
     return ResponseEntity.ok(authService.getCurrentUser(username));
   }
 
-  @PutMapping("/profile")
+  @PutMapping("/users/profile")
   @Operation(summary = "更新使用者資料")
   public ResponseEntity<Outbound> updateUserProfile(@Valid @RequestBody UpdateUserReq request)
       throws Exception {
 
     String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-    
+
     if (!currentUsername.equals(request.getUsername())) {
-        throw new ApplicationException(ResultCode.FORBIDDEN);
-    }    
+      throw new ApplicationException(ResultCode.FORBIDDEN);
+    }
 
     return ResponseEntity.ok(authService.updateUserProfile(request.getUsername(), request));
   }
@@ -133,6 +130,6 @@ public class AuthController {
   @Operation(summary = "修改密碼")
   public ResponseEntity<Outbound> changePassword(@Valid @RequestBody ChangePswReq request)
       throws Exception {
-     return ResponseEntity.ok(authService.updatePassword(request));
+    return ResponseEntity.ok(authService.updatePassword(request));
   }
 }

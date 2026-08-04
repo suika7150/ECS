@@ -8,18 +8,18 @@ import com.shop.ecs.common.result.Outbound;
 @Service
 public class CouponService {
 
-  public Outbound validateCoupon(String code) {
+  public Outbound validateCoupon(String couponCode) {
 
-    if (code == null || code.trim().isEmpty()) {
+    if (couponCode == null || couponCode.trim().isEmpty()) {
       return Outbound.builder().code("9999").msg("請輸入優惠代碼").result(Map.of("valid", false)).build();
     }
 
-    String targetCode = code.trim();
+    String targetCode = couponCode.trim();
 
     if ("DOUBLE11".equalsIgnoreCase(targetCode)) {
       return Outbound.builder()
           .code("0000")
-          .msg("成功套用優惠券！")
+          .msg("成功套用優惠券")
           .result(Map.of("valid", true, "discountAmount", 100))
           .build();
     }

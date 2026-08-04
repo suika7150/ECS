@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/v1/payments")
 public class EcpayController {
 
   @Autowired
   private EcpayService ecpayService;
 
-  @PostMapping("/params/{paymentId}")
+  @PostMapping("/ecpay-params/{paymentId}")
   @Operation(summary = "取得綠界付款參數")
   public ResponseEntity<?> getEcpayParams(@PathVariable Long paymentId) {
     return ResponseEntity.ok(ecpayService.generatePaymentParams(paymentId));
@@ -28,7 +28,7 @@ public class EcpayController {
 
   // 綠界付款結果回傳 (Callback)
   // 必須是 POST，且路徑要跟 application-sit.properties 裡的 return-url 對應
-  @PostMapping("/callback")
+  @PostMapping("/ecpay/callback")
   @Operation(summary = "綠界付款結果回傳 (Callback)")
   public String ecpayCallback(@RequestParam Map<String, String> formData) {
 
