@@ -3,6 +3,7 @@ package com.shop.ecs.controller;
 import com.shop.ecs.common.result.Outbound;
 import com.shop.ecs.dto.request.ProductUploadReq;
 import com.shop.ecs.service.ProductService;
+import com.shop.ecs.service.ProductService.ImageInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -82,14 +83,14 @@ public class ProductController {
   @GetMapping("/products/{id}/image")
   @Operation(summary = "取得商品圖片流 (用於訂單詳情或列表)")
   public ResponseEntity<byte[]> getProductImage(@PathVariable Integer id) throws Exception {
-    com.shop.ecs.entity.ProductEntity product = productService.getProductEntityById(id);
+    ImageInfo imageInfo = productService.getProductEntityById(id);
 
-    if (product != null && product.getImageData() != null) {
+    if (imageInfo != null && imageInfo.imageData() != null) {
 
       return ResponseEntity.ok()
           .contentType(
-              MediaType.parseMediaType(product.getImageType())) // 動態設定 image/png 或 image/jpeg
-          .body(product.getImageData());
+              MediaType.parseMediaType(imageInfo.imageType())) // 動態設定 image/png 或 image/jpeg
+          .body(imageInfo.imageData());
     }
     return ResponseEntity.notFound().build();
   }

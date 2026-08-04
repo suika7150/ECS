@@ -1,5 +1,8 @@
 package com.shop.ecs.entity;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,8 +21,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Table(name = "product")
+@SQLDelete(sql = "UPDATE product SET status = 'DELETED' WHERE id = ?")
+@SQLRestriction("status <> 'DELETED'")
 public class ProductEntity extends BaseEntity {
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)

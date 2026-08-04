@@ -1,5 +1,6 @@
 package com.shop.ecs.service;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -103,7 +104,7 @@ public class ProductService {
     ProductEntity product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("ProductEntity not found"));
 
-    if(!ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus())){
+    if (!ProductStatusEnum.ON_SALE.getCode().equals(product.getStatus())) {
       throw new RuntimeException("商品已下架");
     }
 
@@ -126,7 +127,7 @@ public class ProductService {
     if (id == null) {
       throw new IllegalArgumentException("更新商品的ID不能為空");
     }
-    
+
     ProductEntity productEntity = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("找不到更新的商品: " + id));
 
@@ -135,9 +136,9 @@ public class ProductService {
     UserEntity user = userRepository.findByUsername(username)
         .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
     Long currentUserId = user.getId();
-    
+
     if (!productEntity.getUserId().equals(currentUserId)) {
-        throw new RuntimeException("操作失敗");
+      throw new RuntimeException("操作失敗");
     }
 
     ImageInfo imageInfo = processBase64Image(req.getImageBase64(), req.getImageType());
@@ -163,7 +164,7 @@ public class ProductService {
 
     UserEntity user = userRepository.findByUsername(username)
         .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
-    
+
     Long currentUserId = user.getId();
 
     List<ProductResp> result = productRepository.findByUserId(currentUserId).stream()
@@ -188,8 +189,9 @@ public class ProductService {
 
   @Transactional(rollbackFor = Exception.class)
   public Outbound deleteProduct(Integer id) {
+
     if (id == null) {
-          throw new IllegalArgumentException("刪除商品的ID不能為空");
+      throw new IllegalArgumentException("刪除商品的ID不能為空");
     }
 
     ProductEntity product = productRepository.findById(id)
@@ -200,12 +202,12 @@ public class ProductService {
     UserEntity user = userRepository.findByUsername(username)
         .orElseThrow(() -> new RuntimeException("找不到該使用者: " + username));
     Long currentUserId = user.getId();
-    
+
     if (!product.getUserId().equals(currentUserId)) {
-        throw new RuntimeException("操作失敗");
+      throw new RuntimeException("操作失敗");
     }
 
-    productRepository.updateProductStatus(id, ProductStatusEnum.DELETED.getCode());
+    productRepository.delete(product);
 
     ProductResp resp = ProductResp.builder()
         .id(product.getId())
@@ -215,21 +217,28 @@ public class ProductService {
         .description(product.getDescription())
         .category(product.getCategory())
         .imageBase64(ImageUtils.toBase64Src(product.getImageData(), product.getImageType()))
-        .status(ProductStatusEnum.getDesc(product.getStatus()))
+        .status(ProductStatusEnum.DELETED.getCode())
         .build();
 
     return Outbound.ok(resp);
   }
 
-  // 取得商品類別 
+  // 刪除超過指定時間且狀態為 DELETED 的商品 (排程使用)
+  @Transactional(rollbackFor = Exception.class)
+  public int clearExpiredProducts(int daysAgo) {
+    LocalDateTime targetTime = LocalDateTime.now().minusDays(daysAgo);
+    return productRepository.deleteExpiredProducts(targetTime);
+  }
+
+  // 取得商品類別
   @Transactional(readOnly = true)
   public Outbound getCategories() {
     List<String> categories = productRepository.findDistinctCategories();
     return Outbound.ok(categories);
   }
 
-  // 用來傳遞圖片處理結果的 record。 Record 是 Java 14+ 的特性，適合用來傳遞不可變的資料物件
-  private record ImageInfo(byte[] imageData, String imageType) {
+  // 商品圖片資訊封裝物件
+  public record ImageInfo(byte[] imageData, String imageType) {
   }
 
   // 處理 Base64 圖片字串，解析出圖片二進制資料和類型。
@@ -262,9 +271,10 @@ public class ProductService {
   }
 
   // 取得商品圖片
-  public ProductEntity getProductEntityById(Integer id) {
-    return productRepository
-        .findById(id)
+  public ImageInfo getProductEntityById(Integer id) {
+    ProductEntity product = productRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("找不到編號為 " + id + " 的商品"));
+
+    return new ImageInfo(product.getImageData(), product.getImageType());
   }
 }

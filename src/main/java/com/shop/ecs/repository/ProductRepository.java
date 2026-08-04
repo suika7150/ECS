@@ -28,14 +28,18 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
   ProductEntity findByIdForUpdate(@Param("id") Integer id);
 
   // 查詢商品列表
-  @Query(
-      "SELECT p FROM ProductEntity p WHERE"
-          + " LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"
-          + " LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"
-          + " LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  @Query("SELECT p FROM ProductEntity p WHERE"
+      + " LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR"
+      + " LOWER(p.category) LIKE LOWER(CONCAT('%', :keyword, '%'))OR"
+      + " LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
   List<ProductEntity> findByNameContainingIgnoreCase(@Param("keyword") String keyword);
 
   // 篩選商品
   @Query("SELECT DISTINCT p.category FROM ProductEntity p WHERE p.category IS NOT NULL")
   List<String> findDistinctCategories();
+
+  // 刪除超過指定時間且狀態為 DELETED 的商品
+  @Modifying
+  @Query(nativeQuery = true, value = "DELETE FROM product WHERE status = 'DELETED' AND updated_at < :targetTime")
+  int deleteExpiredProducts(@Param("targetTime") java.time.LocalDateTime targetTime);
 }
