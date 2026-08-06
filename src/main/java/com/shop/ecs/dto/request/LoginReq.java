@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 public class LoginReq {
 
   @NotBlank
-  @Schema(description = "使用者帳號", example = "john_doe")
+  @Schema(description = "使用者帳號", example = "elon_musk")
   private String username;
 
   @NotBlank
-  @Schema(description = "使用者密碼", example = "P@ssw0rd123")
+  @Schema(description = "使用者密碼", example = "Mars2026Pass")
   private String password;
 
   @Schema(description = "保持登入", example = "true")
