@@ -11,7 +11,7 @@ services:
 
   # 自動 pull Docker Hub 映像檔
   backend:
-    image: weft71500/ecs-backend:dev
+    image: weft71500/ecs-shop-backend:dev
     container_name: shop-backend
     ports:
       - "8080:8080"
@@ -35,7 +35,7 @@ services:
 
   # 前端服務
   frontend:
-    image: weft71500/ecs-frontend:dev
+    image: weft71500/ecs-shop-frontend:dev
     container_name: shop-frontend
     ports:
       - "80:80"
